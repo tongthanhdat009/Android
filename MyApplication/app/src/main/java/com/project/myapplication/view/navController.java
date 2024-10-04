@@ -1,4 +1,4 @@
-package com.project.myapplication.controller;
+package com.project.myapplication.view;
 
 import android.os.Bundle;
 
