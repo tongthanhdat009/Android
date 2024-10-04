@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background Colors -->
+    <color name="background">#000000</color>
+    <!-- Text Colors -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <!-- Primary Colors -->
+    <color name="primary_color">#3897F0</color>
+    <!-- Icon Colors -->
+    <color name="icon_default">#FFFFFF</color>
+    <color name="icon_selected">#3897F0</color>
+    <!-- Button Colors -->
+    <color name="button_color">#1A1A1A</color>
+    <color name="button_text">#FFFFFF</color>
+    <!-- Divider Colors -->
+    <color name="divider_color">#333333</color>
+    <!-- Accent Colors -->
+    <color name="accent_color">#ED4956</color>
+    <color name="accent_story">#F58529</color>
+    <!-- Search Bar Colors -->
+    <color name="search_bar_background">#333333</color>
+    <!-- Border Colors -->
+    <color name="border_color">#4A4A4A</color>
+</resources>
