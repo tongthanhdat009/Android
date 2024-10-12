@@ -1,26 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/chatbox_profileImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="Profile Image"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher_background"
-        android:background="@drawable/rounded_corners"
-        android:clipToOutline="true"/>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/avatarImageView"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:contentDescription="avatar"
+            android:src="@drawable/home"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_corners"
+            android:clipToOutline="true"
+            tools:ignore="HardcodedText,UnusedAttribute" />
+
+        <View
+            android:id="@+id/onlineIndicator"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
+            android:background="@drawable/green_circle" />
+    </FrameLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="10dp">
 
         <TextView
             android:id="@+id/chatbox_username"
@@ -28,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="Username"
             android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
@@ -39,15 +56,15 @@
             android:maxLines="1"
             android:text="This is a sample message"
             android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/chatbox_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:scaleType="centerInside"
-        android:src="@drawable/not_muted" />
+<!--    <ImageView-->
+<!--        android:id="@+id/chatbox_icon"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:scaleType="centerInside"-->
+<!--        android:src="@drawable/not_muted" />-->
 
 </LinearLayout>

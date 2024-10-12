@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,15 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
 import com.project.myapplication.R;
+import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.util.RoundedTransformation;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class chatController extends RecyclerView.Adapter<chatController.ChatViewHolder> {
 
+    private ChatBoxModel chatBoxModel;
     private List<ChatBox> chatBoxList;
     private Message message;
 
     public chatController(List<ChatBox> chatBoxList, Message message) {
+        this.chatBoxModel=new ChatBoxModel();
         this.chatBoxList = chatBoxList;
         this.message = message;
     }
@@ -37,6 +43,15 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         ChatBox chatItem = chatBoxList.get(position);
         holder.username.setText(chatItem.getName());
         holder.message.setText(message.getText());
+        String imageUrl = chatItem.getImage_url();
+        Picasso.get()
+                .load(imageUrl)
+                .transform(new RoundedTransformation(28, 0))
+                .into(holder.profileImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            Toast.makeText(v.getContext(), "Clicked on: " + chatItem.getName(), Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
@@ -54,8 +69,8 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
             super(itemView);
             username = itemView.findViewById(R.id.chatbox_username);
             message = itemView.findViewById(R.id.chatbox_message);
-            profileImage = itemView.findViewById(R.id.chatbox_profileImage);
-            muted = itemView.findViewById(R.id.chatbox_icon);
+            profileImage = itemView.findViewById(R.id.avatarImageView);
+//            muted = itemView.findViewById(R.id.chatbox_icon);
         }
     }
 }

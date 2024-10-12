@@ -8,6 +8,8 @@ public class ChatBox {
     private String image_url;
     private ArrayList<String> usersID;
 
+    public ChatBox() {}
+
     public ChatBox(String name, boolean muted, String image, ArrayList<String> usersID){
         setName(name);
         setMuted(muted);

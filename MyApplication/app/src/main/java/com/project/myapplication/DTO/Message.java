@@ -8,6 +8,7 @@ public class Message {
     private String text;
     private String userId;
 
+    public Message(){};
     public Message(ZonedDateTime datetime, String seenBy, String text, String userId){
         setDatetime(datetime);
         setSeenBy(seenBy);

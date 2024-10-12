@@ -6,6 +6,7 @@ public class User {
     private String username;
     private String password;
 
+    public User(){};
     public User(String email, String name, String username, String password) {
         setEmail(email);
         setName(name);
