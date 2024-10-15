@@ -21,29 +21,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String userID = "1";
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
-        FirebaseFirestore.setLoggingEnabled(true);
         Intent intent = new Intent(MainActivity.this, navController.class);
+        intent.putExtra("userID", userID);
         startActivity(intent);
-        Map<String, Object> users = new HashMap<>();
-        users.put("Email", "abc@gmail.com");
-        users.put("Name", "abc");
-        users.put("UserName", "abcd");
-        users.put("Password", "abcd");
-        FirebaseFirestore.getInstance().collection("users")
-                .add(users)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("TAG", "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("TAG", "Error adding document", e);
-                    }
-                });
+        finish();
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -8,14 +9,34 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Messages"
-            android:textSize="20sp"
-            android:fontFamily="@font/helvetica_bold"
-            android:padding="8dp"
-            android:layout_gravity="center_horizontal"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Messages"
+                android:textSize="20sp"
+                android:fontFamily="@font/helvetica_bold"
+                android:paddingLeft="15dp"
+                android:padding="8dp"
+                android:layout_weight="1"
+                android:layout_gravity="start|center" />
+
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:contentDescription="addMessage"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add_message"
+                android:layout_gravity="end|center"
+                android:padding="8dp"
+                android:backgroundTint="@color/background"
+                app:tint="@color/icon_default" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewChat"

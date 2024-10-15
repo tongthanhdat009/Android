@@ -1,5 +1,6 @@
 package com.project.myapplication.controller;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.model.MessageModel;
 import com.project.myapplication.util.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -23,12 +25,14 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
 
     private ChatBoxModel chatBoxModel;
     private List<ChatBox> chatBoxList;
-    private Message message;
+    private MessageModel messageModel;
+    private List<Message> messagesList;
 
-    public chatController(List<ChatBox> chatBoxList, Message message) {
+    public chatController(List<ChatBox> chatBoxList,List<Message> messagesList) {
         this.chatBoxModel=new ChatBoxModel();
+        this.messageModel= new MessageModel();
         this.chatBoxList = chatBoxList;
-        this.message = message;
+        this.messagesList = messagesList;
     }
 
     @NonNull
@@ -41,8 +45,9 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatBox chatItem = chatBoxList.get(position);
+        Message messageItem = messagesList.get(position);
         holder.username.setText(chatItem.getName());
-        holder.message.setText(message.getText());
+        holder.message.setText(messageItem.getText());
         String imageUrl = chatItem.getImage_url();
         Picasso.get()
                 .load(imageUrl)

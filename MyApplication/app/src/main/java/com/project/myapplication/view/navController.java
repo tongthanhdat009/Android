@@ -19,15 +19,16 @@ public class navController extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_controller);
+        String userID = getIntent().getStringExtra("userID");
         binding = ActivityNavControllerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         Map<Integer, Fragment> fragmentMap = new HashMap<>();
-        fragmentMap.put(R.id.home, new homeFragment());
-        fragmentMap.put(R.id.search, new searchFragment());
-        fragmentMap.put(R.id.post, new postFragment());
-        fragmentMap.put(R.id.chat, new chatFragment());
-        fragmentMap.put(R.id.profile, new profileFragment());
+        fragmentMap.put(R.id.home, createFragmentWithUserID(new homeFragment(), userID));
+        fragmentMap.put(R.id.search, createFragmentWithUserID(new searchFragment(), userID));
+        fragmentMap.put(R.id.post, createFragmentWithUserID(new postFragment(), userID));
+        fragmentMap.put(R.id.chat, createFragmentWithUserID(new chatFragment(), userID));
+        fragmentMap.put(R.id.profile, createFragmentWithUserID(new profileFragment(), userID));
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = fragmentMap.get(item.getItemId());
@@ -39,6 +40,13 @@ public class navController extends AppCompatActivity {
             return false;
         });
     }
+    private Fragment createFragmentWithUserID(Fragment fragment, String userID) {
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", userID);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager= getSupportFragmentManager();
         FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();

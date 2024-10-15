@@ -1,8 +1,11 @@
 package com.project.myapplication.DTO;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class ChatBox {
+    private String Id;
     private String name;
     private boolean muted=false;
     private String image_url;
@@ -10,11 +13,16 @@ public class ChatBox {
 
     public ChatBox() {}
 
-    public ChatBox(String name, boolean muted, String image, ArrayList<String> usersID){
+    public ChatBox(String Id,String name, boolean muted, String image, ArrayList<String> usersID){
+        setId(Id);
         setName(name);
         setMuted(muted);
         setImage_url(image);
         setUsersID(usersID);
+    }
+
+    public void setId(String id) {
+        Id = id;
     }
 
     public void setName(String name) {
@@ -33,6 +41,10 @@ public class ChatBox {
         this.usersID = usersID;
     }
 
+    public String getId() {
+        return Id;
+    }
+
     public String getName() {
         return name;
     }
@@ -47,5 +59,17 @@ public class ChatBox {
 
     public boolean getMuted(){
         return muted;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ChatBox{" +
+                "Id='" + Id + '\'' +
+                ", name='" + name + '\'' +
+                ", muted=" + muted +
+                ", image_url='" + image_url + '\'' +
+                ", usersID=" + usersID +
+                '}';
     }
 }

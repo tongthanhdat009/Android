@@ -1,21 +1,22 @@
 package com.project.myapplication.DTO;
 
-import java.time.ZonedDateTime;
+import com.google.firebase.Timestamp;
 
 public class Message {
-    private ZonedDateTime datetime;
+    private Timestamp datetime;
     private String seenBy;
     private String text;
-    private String userId;
+    private String userID;
 
     public Message(){};
-    public Message(ZonedDateTime datetime, String seenBy, String text, String userId){
+    public Message(String Id,Timestamp datetime, String seenBy, String text, String userId){
         setDatetime(datetime);
         setSeenBy(seenBy);
         setText(text);
         setUserId(userId);
     }
-    public void setDatetime(ZonedDateTime datetime) {
+
+    public void setDatetime(Timestamp datetime) {
         this.datetime = datetime;
     }
 
@@ -28,7 +29,7 @@ public class Message {
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this.userID = userId;
     }
 
     public String getSeenBy() {
@@ -40,10 +41,20 @@ public class Message {
     }
 
     public String getUserId() {
-        return userId;
+        return userID;
     }
 
-    public ZonedDateTime getDatetime() {
+    public Timestamp getDatetime() {
         return datetime;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                ", datetime=" + datetime +
+                ", seenBy='" + seenBy + '\'' +
+                ", text='" + text + '\'' +
+                ", userId='" + userID + '\'' +
+                '}';
     }
 }
