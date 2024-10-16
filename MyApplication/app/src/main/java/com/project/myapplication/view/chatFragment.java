@@ -60,19 +60,20 @@ public class chatFragment extends Fragment {
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
 
         List<Message> messageList = new ArrayList<>();
-        chatBoxModel.getChatBoxList(userID,new ChatBoxModel.OnChatBoxListRetrievedCallback() {
+        chatBoxModel.getChatBoxList(userID, new ChatBoxModel.OnChatBoxListRetrievedCallback() {
             @Override
             public void onChatBoxListRetrieved(List<ChatBox> chatBoxList) {
-                final int[] count = {0};
+                if (chatBoxList == null || chatBoxList.isEmpty()) {
+                    return;
+                }
+
                 for (ChatBox chatbox : chatBoxList) {
                     messageModel.getClosetMess(chatbox.getId(), newMessage -> {
-                        messageList.add(newMessage);
-                        count[0]++;
-                        if (count[0] == chatBoxList.size()) {
-                            Log.d("TEST", messageList.toString());
-                            chatController = new chatController(chatBoxList, messageList);
-                            recyclerViewChat.setAdapter(chatController);
+                        if (newMessage != null) {
+                            messageList.add(newMessage);
                         }
+                        chatController = new chatController(chatBoxList, messageList);
+                        recyclerViewChat.setAdapter(chatController);
                     });
                 }
             }

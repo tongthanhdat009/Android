@@ -3,11 +3,14 @@ package com.project.myapplication.model;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.project.myapplication.DTO.ChatBox;
 
@@ -21,13 +24,18 @@ public class ChatBoxModel {
         firestore = FirebaseFirestore.getInstance();
     }
 
-    public void getChatBoxList(String userID,final OnChatBoxListRetrievedCallback callback) {
+    public void getChatBoxList(String userID, final OnChatBoxListRetrievedCallback callback) {
         firestore.collection("chatbox")
-                .whereArrayContains("usersID",userID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .whereArrayContains("usersID", userID)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            callback.onChatBoxListRetrieved(null);
+                            return;
+                        }
+
                         List<ChatBox> chatBoxList = new ArrayList<>();
                         for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
                             ChatBox chatBox = document.toObject(ChatBox.class);
@@ -35,13 +43,8 @@ public class ChatBoxModel {
                             chatBox.setId(document.getId());
                             chatBoxList.add(chatBox);
                         }
+                        Log.d("TEST", chatBoxList.toString());
                         callback.onChatBoxListRetrieved(chatBoxList);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        callback.onChatBoxListRetrieved(null);
                     }
                 });
     }

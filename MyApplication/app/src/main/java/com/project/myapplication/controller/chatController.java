@@ -45,14 +45,29 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatBox chatItem = chatBoxList.get(position);
-        Message messageItem = messagesList.get(position);
-        holder.username.setText(chatItem.getName());
-        holder.message.setText(messageItem.getText());
-        String imageUrl = chatItem.getImage_url();
-        Picasso.get()
-                .load(imageUrl)
-                .transform(new RoundedTransformation(28, 0))
-                .into(holder.profileImage);
+        Message messageItem = messagesList.size() > position ? messagesList.get(position) : null; // Kiểm tra kích thước danh sách
+
+        if (chatItem != null && chatItem.getName() != null) {
+            holder.username.setText(chatItem.getName());
+        } else {
+            holder.username.setText("Tên không có");
+        }
+
+        if (messageItem != null) {
+            holder.message.setText(messageItem.getText() != null ? messageItem.getText() : "Tin nhắn trống");
+        } else {
+            holder.message.setText("Không có tin nhắn");
+        }
+
+        String imageUrl = chatItem != null ? chatItem.getImage_url() : null;
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Picasso.get()
+                    .load(imageUrl)
+                    .transform(new RoundedTransformation(28, 0))
+                    .into(holder.profileImage);
+        } else {
+            holder.profileImage.setImageResource(R.drawable.ic_launcher_foreground);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             Toast.makeText(v.getContext(), "Clicked on: " + chatItem.getName(), Toast.LENGTH_SHORT).show();

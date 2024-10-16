@@ -52,4 +52,5 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation (libs.firebase.storage)
     implementation (libs.picasso)
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
 }
