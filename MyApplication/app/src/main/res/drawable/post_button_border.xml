@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <!-- Màu nền của nút -->
+        <shape android:shape="rectangle">
+            <solid android:color="@color/button_color" /> <!-- Màu nền nút -->
+        </shape>
+    </item>
+
+    <item>
+        <!-- Viền ngoài của nút -->
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="2dp"
+                android:color="@color/text_secondary" /> <!-- Màu viền -->
+            <corners android:radius="8dp" /> <!-- Góc bo tròn -->
+        </shape>
+    </item>
+</layer-list>

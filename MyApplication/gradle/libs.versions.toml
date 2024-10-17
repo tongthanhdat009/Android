@@ -4,6 +4,7 @@ firebaseBom = "33.4.0"
 firebaseBomVersion = "32.2.0"
 firebaseFirestoreVersion = "24.9.0"
 firebaseStorage = "21.0.1"
+googleMaterial = "1.9.0"
 googleServices = "4.4.2"
 googleServicesVersion = "4.3.15"
 gradle = "8.1.4"
@@ -20,6 +21,7 @@ navigationUi = "2.8.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
 picasso = "2.71828"
+viewpager2 = "1.1.0"
 
 [libraries]
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -39,10 +41,12 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v180 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+material-v190 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

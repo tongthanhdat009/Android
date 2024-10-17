@@ -3,15 +3,149 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".view.postFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!--TITLE-->
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/newPostTitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Post screen"
-        android:textSize="32sp"
-        android:layout_gravity="center"/>
+        android:fontFamily="@font/helvetica_bold"
+        android:padding="8dp"
+        android:text="Post"
+        android:textSize="20sp"
+        android:gravity="center"
+        />
+    <!--thông tin tài khoản hiện tại-->
+    <LinearLayout
+        android:id="@+id/currentUserInformation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:orientation="horizontal">
+        <!--nhấn vào ảnh đại diện để chuyển hướng sang trang cá nhân-->
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/avatar"
+            android:scaleType="fitCenter"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/button_border"/>
+        <!--nhấn vào tên sẽ chuyển hướng sang trang cá nhân-->
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Tống Thành Đạt"
+            android:textSize="16sp"
+            android:background="@null"
+            android:layout_weight="0"/>
+        <Button
+            android:id="@+id/post_button"
+            android:layout_width="70dp"
+            android:layout_height="40dp"
+            android:text="Đăng"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:background="@drawable/post_button_border"
+            android:layout_gravity="center"
+            android:layout_marginStart="80dp"/>
+    </LinearLayout>
+
+    <!--tùy chỉnh bài viết-->
+    <LinearLayout
+        android:id="@+id/edit_post_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp">
+        <Spinner
+            android:id="@+id/spinner_target"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:spinnerMode="dropdown"
+            android:layout_marginStart="70dp"
+            />
+    </LinearLayout>
+    <!--Nhập nội dung bài viết-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bạn đang nghĩ gì?"
+        android:layout_marginTop="150dp">
+        <!--nhập nội dung-->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/content_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/delete_img_button"
+        android:layout_width="70dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/delete_img_button"
+        android:gravity="center"
+        android:text="Xóa ảnh"
+        android:textSize="16sp"
+        android:visibility="gone"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300dp">
+
+        <!--vùng hiển thị ảnh đã chọn-->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+        <!-- FrameLayout chứa ImageButton và TextView -->
+        <FrameLayout
+            android:id="@+id/choose_Image_Button_container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/viewPager"
+            android:layout_marginTop="10dp">
+
+            <!-- Nút chọn ảnh -->
+            <ImageButton
+                android:id="@+id/choose_image_Button"
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:contentDescription="Chọn ảnh và video"
+                android:background="@drawable/button_border"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:padding="0dp"/>
+
+            <!-- Văn bản nằm trên nút -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn ảnh và video muốn đăng"
+                android:textSize="16sp"
+                android:layout_gravity="center"
+                android:textColor="@color/button_text"
+                android:gravity="center"
+                android:background="@null"/>
+        </FrameLayout>
+    </RelativeLayout>
 
 </FrameLayout>
