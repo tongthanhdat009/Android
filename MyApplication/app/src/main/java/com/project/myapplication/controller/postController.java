@@ -96,7 +96,7 @@ public class postController {
                     // Hiển thị thông báo ảnh đã được xóa
                     Toast.makeText(view.getContext(), "Đã xóa ảnh", Toast.LENGTH_SHORT).show();
 
-                    // Kiểm tra nếu danh sách rỗng, ẩn nút xóa
+                    // Kiểm tra nếu danh sách rỗng, ẩn nút xóa và ViewPager
                     if (imagesUriList.isEmpty()) {
                         postActitvityController.deleteImageBTN.setVisibility(View.GONE);
                         postActitvityController.viewPager.setVisibility(View.GONE); // Ẩn ViewPager nếu không còn ảnh
@@ -109,12 +109,16 @@ public class postController {
 
     // hiển thị ảnh được chọn
     public void displayImageChosen(ArrayList<Uri> images){
-        if(!images.isEmpty()){
+        if (images != null && !images.isEmpty()) {
+            // Nếu danh sách ảnh không rỗng, hiển thị ViewPager và nút xóa
             postImageAdapter adapter = new postImageAdapter(view.getContext(), images);
-            postActitvityController.viewPager.setAdapter(adapter);
+            postActitvityController.viewPager.setVisibility(View.VISIBLE);  // Hiển thị ViewPager
+            postActitvityController.viewPager.setAdapter(adapter);  // Cập nhật adapter cho ViewPager
+            adapter.notifyDataSetChanged();  // Thông báo adapter cập nhật dữ liệu
+            // Hiển thị nút xóa
             postActitvityController.deleteImageBTN.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
+            // Nếu không có ảnh nào, ẩn ViewPager và nút xóa
             postActitvityController.viewPager.setVisibility(View.GONE);
             postActitvityController.deleteImageBTN.setVisibility(View.GONE);
         }
