@@ -55,4 +55,6 @@ dependencies {
     implementation (libs.lifecycle.livedata.ktx)
     implementation (libs.material.v190)
     implementation (libs.viewpager2)
+    implementation (libs.firebase.storage.v2010)
+    implementation (libs.google.firebase.analytics)
 }

@@ -16,7 +16,10 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
@@ -34,7 +37,8 @@ public class postController {
     private View view;
     private PostModel postModel;
     private postActitvityController postBTNController;
-
+    private StorageReference storageRef;
+    private FirebaseStorage storage;
     // Constructor để nhận Activity và Spinner
     public postController(View view) {
         this.view = view;
@@ -70,8 +74,11 @@ public class postController {
                             "Chạy hàm thêm bài viết trong database",
                             Toast.LENGTH_SHORT
                     ).show();
+
                     ArrayList<String>likedBy=new ArrayList<>();
                     Timestamp currentTime = Timestamp.now();
+                    //up ảnh lên firebase storage
+                    uploadImages(imagesUriList);
 
                     Post newPost = new Post(
                             "post123",
@@ -112,6 +119,24 @@ public class postController {
                 }
             }
         });
+    }
+
+    //hàm upload ảnh firebase storage
+    private void uploadImages(ArrayList<Uri> imageUris) {
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        if (!imageUris.isEmpty()) {
+            for (Uri imageUri : imageUris) {
+                StorageReference fileRef = storageRef.child("uploads/" + System.currentTimeMillis() + ".jpg");
+                fileRef.putFile(imageUri)
+                        .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String downloadUrl = uri.toString();
+                        }))
+                        .addOnFailureListener(e -> Toast.makeText(this.view.getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        } else {
+            Toast.makeText(this.view.getContext(), "No images selected", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //Xử lý sự kiện nút chọn ảnh

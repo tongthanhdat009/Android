@@ -53,8 +53,6 @@ public class postFragment extends Fragment {
                         imagesUriList.add(imageUri); // Thêm URI vào danh sách
                     }
                     controller.displayImageChosen(imagesUriList);
-                    // Xử lý danh sách URI ảnh (ví dụ: hiển thị trong ViewPager)
-                    Toast.makeText(getContext(), "Đã chọn " + imagesUriList.size() + " ảnh", Toast.LENGTH_SHORT).show();
                 }
             }
         );
@@ -67,6 +65,7 @@ public class postFragment extends Fragment {
 
         // Gọi hàm xác nhận đăng post
         controller.postBTNAction(imagesUriList);
+
         return view; // Trả về view đã inflate
     }
 }
