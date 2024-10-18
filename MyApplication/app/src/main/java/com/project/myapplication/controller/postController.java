@@ -1,9 +1,9 @@
 package com.project.myapplication.controller;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -16,7 +16,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -26,19 +25,16 @@ import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
 import com.project.myapplication.view.postImageAdapter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class postController {
-    private static final int REQUEST_CODE_PICK_IMAGE = 1;
-    private View view;
-    private PostModel postModel;
-    private postActitvityController postBTNController;
-    private StorageReference storageRef;
-    private FirebaseStorage storage;
+    private final View view;
+    private final PostModel postModel;
+    private final postActitvityController postBTNController;
+
     // Constructor để nhận Activity và Spinner
     public postController(View view) {
         this.view = view;
@@ -58,7 +54,7 @@ public class postController {
         adapter.setDropDownViewResource(android.R.layout.select_dialog_item);
 
         // Gán adapter cho Spinner
-        postBTNController.spinner.setAdapter(adapter);
+        postActitvityController.spinner.setAdapter(adapter);
     }
 
     // Xử lý sự kiện của nút đăng
@@ -66,8 +62,7 @@ public class postController {
         postBTNController.postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String content = Objects.requireNonNull(postBTNController.text.getText()).toString();
-                int imageCount = imagesUriList.size();
+                String content = Objects.requireNonNull(postActitvityController.text.getText()).toString();
                 if(!content.isEmpty()){
                     Toast.makeText(
                             view.getContext(),
@@ -78,37 +73,51 @@ public class postController {
                     ArrayList<String>likedBy=new ArrayList<>();
                     Timestamp currentTime = Timestamp.now();
                     //up ảnh lên firebase storage
-                    uploadImages(imagesUriList);
-
-                    Post newPost = new Post(
-                            "post123",
-                            "user123", // userID
-                            postActitvityController.text.getText().toString(), // content
-                            0, // commentsCount ban đầu
-                            0, // likesCount ban đầu
-                            likedBy, // chưa có người like ban đầu
-                            imagesUriList, // chưa có media ban đầu
-                            currentTime, // thời gian hiện tại
-                            postActitvityController.spinner.getSelectedItem().toString(), // targetAudience
-                            true // mở chế độ comment
-                    );
-                    Comment newComment = new Comment(
-                            "user123",
-                            postActitvityController.text.getText().toString(),
-                            likedBy,
-                            0,
-                            currentTime);
-                    postModel.addPostWithComment(newPost,newComment);
-                    Toast.makeText(
-                            view.getContext(),
-                            "Thêm bài viết thành công",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    postActitvityController.text.setText("");
-                    postActitvityController.deleteImageBTN.setVisibility(View.GONE);
-                    imagesUriList.clear();
-                    postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
-                    adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                    uploadImages(imagesUriList, new UploadCallback() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void onUploadSuccess(ArrayList<Uri> imageUrls) {
+                            for (Uri url : imageUrls) {
+                                Log.d("DownloadLink", "Image URL: " + url);
+                            }
+                            Post newPost = new Post(
+                                    "post123",
+                                    "user123", // userID
+                                    postActitvityController.text.getText().toString(), // content
+                                    0, // commentsCount ban đầu
+                                    0, // likesCount ban đầu
+                                    likedBy, // chưa có người like ban đầu
+                                    imageUrls, // chưa có media ban đầu
+                                    currentTime, // thời gian hiện tại
+                                    postActitvityController.spinner.getSelectedItem().toString(), // targetAudience
+                                    true // mở chế độ comment
+                            );
+                            Comment newComment = new Comment(
+                                    "user123",
+                                    postActitvityController.text.getText().toString(),
+                                    likedBy,
+                                    0,
+                                    currentTime);
+                            postModel.addPostWithComment(newPost,newComment);
+                            Toast.makeText(
+                                    view.getContext(),
+                                    "Thêm bài viết thành công",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                            postActitvityController.text.setText("");
+                            postActitvityController.deleteImageBTN.setVisibility(View.GONE);
+                            imagesUriList.clear();
+                            postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
+                            if(adapter != null){
+                                adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                            }
+                        }
+                        @Override
+                        public void onUploadFailure(String errorMessage) {
+                            // Xử lý khi upload thất bại
+                            Toast.makeText(view.getContext(), "Upload failed: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 else{
                     Toast.makeText(
@@ -121,21 +130,40 @@ public class postController {
         });
     }
 
-    //hàm upload ảnh firebase storage
-    private void uploadImages(ArrayList<Uri> imageUris) {
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
+    // Interface để xử lý callback khi ảnh đã được upload
+    interface UploadCallback {
+        void onUploadSuccess(ArrayList<Uri> imageUrls); // Gọi khi tất cả các ảnh đã được upload thành công
+        void onUploadFailure(String errorMessage);         // Gọi khi xảy ra lỗi upload
+    }
+
+    // Hàm upload ảnh lên Firebase Storage
+    private void uploadImages(ArrayList<Uri> imageUris, UploadCallback callback) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        ArrayList<Uri> downloadLinks = new ArrayList<>();
+
         if (!imageUris.isEmpty()) {
             for (Uri imageUri : imageUris) {
-                StorageReference fileRef = storageRef.child("uploads/" + System.currentTimeMillis() + ".jpg");
+                StorageReference fileRef = storageRef.child("Postuploads/" + System.currentTimeMillis() + ".jpg");
                 fileRef.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            String downloadUrl = uri.toString();
+                            // Thêm link download vào danh sách
+                            downloadLinks.add(uri);
+
+                            // Kiểm tra nếu tất cả các ảnh đã được upload
+                            if (downloadLinks.size() == imageUris.size()) {
+                                // Gọi callback khi tất cả các ảnh đã được upload thành công
+                                callback.onUploadSuccess(downloadLinks);
+                            }
                         }))
-                        .addOnFailureListener(e -> Toast.makeText(this.view.getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        .addOnFailureListener(e -> {
+                            // Gọi callback nếu upload bị lỗi
+                            callback.onUploadFailure(e.getMessage());
+                        });
             }
         } else {
-            Toast.makeText(this.view.getContext(), "No images selected", Toast.LENGTH_SHORT).show();
+            // Không có ảnh được chọn
+            callback.onUploadFailure("No images selected");
         }
     }
 
@@ -158,6 +186,7 @@ public class postController {
 
     public void deleteImgBTNAction(ArrayList<Uri> imagesUriList) {
         postActitvityController.deleteImageBTN.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
                 // Lấy vị trí hiện tại của ảnh trong ViewPager
@@ -170,7 +199,9 @@ public class postController {
 
                     // Cập nhật lại adapter của ViewPager sau khi xóa ảnh
                     postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
-                    adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                    if(adapter != null){
+                        adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                    }
 
                     // Hiển thị thông báo ảnh đã được xóa
                     Toast.makeText(view.getContext(), "Đã xóa ảnh", Toast.LENGTH_SHORT).show();
@@ -187,6 +218,7 @@ public class postController {
 
 
     // hiển thị ảnh được chọn
+    @SuppressLint("NotifyDataSetChanged")
     public void displayImageChosen(ArrayList<Uri> images){
         if (images != null && !images.isEmpty()) {
             // Nếu danh sách ảnh không rỗng, hiển thị ViewPager và nút xóa
@@ -208,7 +240,9 @@ public class postController {
     public static class postActitvityController {
         ImageButton chooseImageBTN;
         Button postButton;
+        @SuppressLint("StaticFieldLeak")
         static Button deleteImageBTN;
+        @SuppressLint("StaticFieldLeak")
         static Spinner spinner;
         static TextInputEditText text;
         static ViewPager2 viewPager;
