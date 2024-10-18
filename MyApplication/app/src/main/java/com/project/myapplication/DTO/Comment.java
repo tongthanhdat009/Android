@@ -1,7 +1,8 @@
 package com.project.myapplication.DTO;
 
+import com.google.firebase.Timestamp;
+
 import java.sql.Array;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Comment {

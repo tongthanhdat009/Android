@@ -37,26 +37,26 @@ public class postFragment extends Fragment {
 
         // Đăng ký ActivityResultLauncher để xử lý kết quả trả về từ việc chọn ảnh
         pickImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Intent data = result.getData();
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Intent data = result.getData();
 
-                        if (data.getClipData() != null) { // Khi người dùng chọn nhiều ảnh
-                            int count = data.getClipData().getItemCount(); // Lấy số lượng ảnh đã chọn
-                            for (int i = 0; i < count; i++) {
-                                Uri imageUri = data.getClipData().getItemAt(i).getUri(); // Lấy URI của từng ảnh
-                                imagesUriList.add(imageUri); // Thêm vào danh sách URI
-                            }
-                        } else if (data.getData() != null) { // Khi người dùng chọn một ảnh
-                            Uri imageUri = data.getData();
-                            imagesUriList.add(imageUri); // Thêm URI vào danh sách
+                    if (data.getClipData() != null) { // Khi người dùng chọn nhiều ảnh
+                        int count = data.getClipData().getItemCount(); // Lấy số lượng ảnh đã chọn
+                        for (int i = 0; i < count; i++) {
+                            Uri imageUri = data.getClipData().getItemAt(i).getUri(); // Lấy URI của từng ảnh
+                            imagesUriList.add(imageUri); // Thêm vào danh sách URI
                         }
-                        controller.displayImageChosen(imagesUriList);
-                        // Xử lý danh sách URI ảnh (ví dụ: hiển thị trong ViewPager)
-                        Toast.makeText(getContext(), "Đã chọn " + imagesUriList.size() + " ảnh", Toast.LENGTH_SHORT).show();
+                    } else if (data.getData() != null) { // Khi người dùng chọn một ảnh
+                        Uri imageUri = data.getData();
+                        imagesUriList.add(imageUri); // Thêm URI vào danh sách
                     }
+                    controller.displayImageChosen(imagesUriList);
+                    // Xử lý danh sách URI ảnh (ví dụ: hiển thị trong ViewPager)
+                    Toast.makeText(getContext(), "Đã chọn " + imagesUriList.size() + " ảnh", Toast.LENGTH_SHORT).show();
                 }
+            }
         );
 
         // Kích hoạt chức năng chọn ảnh khi nhấn nút chọn ảnh trong postController
@@ -65,6 +65,8 @@ public class postFragment extends Fragment {
         // Gọi hàm xử lý xóa ảnh
         controller.deleteImgBTNAction(imagesUriList);
 
+        // Gọi hàm xác nhận đăng post
+        controller.postBTNAction(imagesUriList);
         return view; // Trả về view đã inflate
     }
 }

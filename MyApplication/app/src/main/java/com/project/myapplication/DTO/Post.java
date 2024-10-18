@@ -1,6 +1,9 @@
 package com.project.myapplication.DTO;
 
-import java.sql.Timestamp;
+import android.net.Uri;
+
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 
 public class Post {
@@ -10,12 +13,12 @@ public class Post {
     private int commentsCount; //Số comment trong bài viết
     private int likesCount; // Số like của bài biết
     private ArrayList<String> likedBy; //mảng chứa userID đã like bài viết
-    private ArrayList<String> media; //mảng chứa link media
+    private ArrayList<Uri> media; //mảng chứa link media
     private Timestamp time; //thời gian đăng
     private String targetAudience; //đối tượng xem bài viết
     private boolean commentMode; // chế độ comment true = mở chế độ comment, false = đóng chế độ comment
 
-    public Post(String postID, String userID, String content, int commentsCount, int likesCount, ArrayList<String> likedBy, ArrayList<String> media, Timestamp time, String targetAudience, boolean commentMode){
+    public Post(String postID, String userID, String content, int commentsCount, int likesCount, ArrayList<String> likedBy, ArrayList<Uri> media, Timestamp time, String targetAudience, boolean commentMode){
         setPostID(postID);
         setUserID(userID);
         setContent(content);
@@ -33,7 +36,7 @@ public class Post {
         this.likesCount = 0;
         this.content = "";
         this.likedBy = new ArrayList<String>();
-        this.media = new ArrayList<String>();
+        this.media = new ArrayList<Uri>();
         this.time = null;
         this.userID = "";
         this.postID = "";
@@ -73,11 +76,11 @@ public class Post {
         this.likedBy = likedBy;
     }
 
-    public ArrayList<String> getMedia() {
+    public ArrayList<Uri> getMedia() {
         return media;
     }
 
-    public void setMedia(ArrayList<String> media) {
+    public void setMedia(ArrayList<Uri> media) {
         this.media = media;
     }
 

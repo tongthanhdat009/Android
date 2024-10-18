@@ -1,5 +1,6 @@
 package com.project.myapplication.controller;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,22 +14,32 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.textfield.TextInputEditText;
+
+import com.google.firebase.Timestamp;
+import com.project.myapplication.DTO.Comment;
+import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
+import com.project.myapplication.model.PostModel;
 import com.project.myapplication.view.postImageAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class postController {
     private static final int REQUEST_CODE_PICK_IMAGE = 1;
     private View view;
+    private PostModel postModel;
     private postActitvityController postBTNController;
 
     // Constructor để nhận Activity và Spinner
     public postController(View view) {
         this.view = view;
         postBTNController = new postActitvityController(view);
+        postModel = new PostModel();
     }
 
     // thêm mục vào spinner
@@ -47,15 +58,58 @@ public class postController {
     }
 
     // Xử lý sự kiện của nút đăng
-    public void postBTNAction() {
+    public void postBTNAction(ArrayList<Uri> imagesUriList) {
         postBTNController.postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(
-                        view.getContext(), // Hoặc activity, tùy thuộc vào cách bạn khởi tạo activity
-                        "Đăng thành công",
-                        Toast.LENGTH_SHORT
-                ).show();
+                String content = Objects.requireNonNull(postBTNController.text.getText()).toString();
+                int imageCount = imagesUriList.size();
+                if(!content.isEmpty()){
+                    Toast.makeText(
+                            view.getContext(),
+                            "Chạy hàm thêm bài viết trong database",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    ArrayList<String>likedBy=new ArrayList<>();
+                    Timestamp currentTime = Timestamp.now();
+
+                    Post newPost = new Post(
+                            "post123",
+                            "user123", // userID
+                            postActitvityController.text.getText().toString(), // content
+                            0, // commentsCount ban đầu
+                            0, // likesCount ban đầu
+                            likedBy, // chưa có người like ban đầu
+                            imagesUriList, // chưa có media ban đầu
+                            currentTime, // thời gian hiện tại
+                            postActitvityController.spinner.getSelectedItem().toString(), // targetAudience
+                            true // mở chế độ comment
+                    );
+                    Comment newComment = new Comment(
+                            "user123",
+                            postActitvityController.text.getText().toString(),
+                            likedBy,
+                            0,
+                            currentTime);
+                    postModel.addPostWithComment(newPost,newComment);
+                    Toast.makeText(
+                            view.getContext(),
+                            "Thêm bài viết thành công",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    postActitvityController.text.setText("");
+                    postActitvityController.deleteImageBTN.setVisibility(View.GONE);
+                    imagesUriList.clear();
+                    postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
+                    adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                }
+                else{
+                    Toast.makeText(
+                            view.getContext(),
+                            "Vui lòng nhập nội dung và chọn ảnh",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
         });
     }
@@ -130,14 +184,16 @@ public class postController {
         ImageButton chooseImageBTN;
         Button postButton;
         static Button deleteImageBTN;
-        Spinner spinner;
+        static Spinner spinner;
+        static TextInputEditText text;
         static ViewPager2 viewPager;
-        public postActitvityController(View activity){
-            deleteImageBTN = activity.findViewById(R.id.delete_img_button);
-            chooseImageBTN = activity.findViewById(R.id.choose_image_Button);
-            postButton = activity.findViewById(R.id.post_button);
-            spinner = activity.findViewById(R.id.spinner_target);
-            viewPager = activity.findViewById(R.id.viewPager);
+        public postActitvityController(View view){
+            deleteImageBTN = view.findViewById(R.id.delete_img_button);
+            chooseImageBTN = view.findViewById(R.id.choose_image_Button);
+            postButton = view.findViewById(R.id.post_button);
+            spinner = view.findViewById(R.id.spinner_target);
+            viewPager = view.findViewById(R.id.viewPager);
+            text = view.findViewById(R.id.content_input);
         }
     }
 }
