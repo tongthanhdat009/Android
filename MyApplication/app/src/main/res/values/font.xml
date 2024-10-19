@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="formatted_text">
+        Bằng cách đăng ký, bạn đồng ý với
+        <font color='#FF0000'>Điều khoản</font>,
+        <font color='#FF0000'>Chính sách quyền riêng tư</font>
+        và chính sách Cookie của chúng tôi
+    </string>
+</resources>
