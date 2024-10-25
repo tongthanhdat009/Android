@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/follow"
+        android:title="Theo dõi"
+        android:orderInCategory="100"/>
+    <item
+        android:id="@+id/author_infor"
+        android:title="Xem thông tin người đăng"
+        android:orderInCategory="100"/>
+</menu>

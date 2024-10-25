@@ -25,39 +25,40 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp"
         android:orientation="horizontal">
-        <!--nhấn vào ảnh đại diện để chuyển hướng sang trang cá nhân-->
+
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:id="@+id/avatar"
-            android:scaleType="fitCenter"
-            android:scaleX="1"
-            android:scaleY="1"
+            android:scaleType="centerCrop"
             android:layout_marginStart="10dp"
-            android:background="@drawable/button_border"/>
-        <!--nhấn vào tên sẽ chuyển hướng sang trang cá nhân-->
+            android:background="@drawable/rounded_corners"
+            android:clipToOutline="true"
+            android:layout_gravity="center"/>
+
         <TextView
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:text="Tống Thành Đạt"
+            android:text=""
             android:textSize="16sp"
             android:background="@null"
-            android:layout_weight="0"/>
+            android:layout_weight="8"
+            tools:ignore="InefficientWeight" />
 
         <!--nút xác nhận đăng bài-->
         <Button
             android:id="@+id/post_button"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
+            android:background="@drawable/post_button_border"
+            android:gravity="center"
             android:text="Đăng"
             android:textSize="18sp"
-            android:gravity="center"
-            android:background="@drawable/post_button_border"
-            android:layout_gravity="center"
-            android:layout_marginStart="80dp"/>
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"/>
     </LinearLayout>
 
     <!--tùy chỉnh bài viết-->
@@ -87,6 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="3"
+            android:maxLength="100"
             />
     </com.google.android.material.textfield.TextInputLayout>
 

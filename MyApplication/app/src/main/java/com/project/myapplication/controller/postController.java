@@ -2,13 +2,16 @@ package com.project.myapplication.controller;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,9 +24,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Post;
+import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
 import com.project.myapplication.view.postImageAdapter;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,8 +62,38 @@ public class postController {
         postActitvityController.spinner.setAdapter(adapter);
     }
 
+    public void postTest(){
+        postModel.getAllPost(new PostModel.OnPostListRetrievedCallback() {
+            @Override
+            public void getAllPost(ArrayList<Post> postsList) {
+                for(Post post : postsList){
+                    Toast.makeText(view.getContext(),post.getPostID(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void setUserInfor(String userID){
+        postModel.getUserInfor(userID, new PostModel.OnUserListRetrievedCallback() {
+            @Override
+            public void onUserListRetrievedCallback(User user) {
+                if (user != null) {
+                    postActitvityController.userName.setText(user.getName());
+                    String avatarUrl = user.getAvatar();
+                    if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                        Picasso.get().load(avatarUrl).into(postActitvityController.avatar);
+                    } else {
+                        Log.d("setUserInfor", "Avatar URL is null or empty for user ID: " + userID);
+                    }
+                } else {
+                    Log.d("setUserInfor", "User not found for ID: " + userID);
+                }
+            }
+        });
+    }
+
     // Xử lý sự kiện của nút đăng
-    public void postBTNAction(ArrayList<Uri> imagesUriList) {
+    public void postBTNAction(ArrayList<Uri> imagesUriList, String userID) {
         postBTNController.postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +104,6 @@ public class postController {
                             "Chạy hàm thêm bài viết trong database",
                             Toast.LENGTH_SHORT
                     ).show();
-
                     ArrayList<String>likedBy=new ArrayList<>();
                     Timestamp currentTime = Timestamp.now();
                     //up ảnh lên firebase storage
@@ -77,33 +111,31 @@ public class postController {
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onUploadSuccess(ArrayList<Uri> imageUrls) {
+                            ArrayList<String> imageString = new ArrayList<>();
                             for (Uri url : imageUrls) {
                                 Log.d("DownloadLink", "Image URL: " + url);
+                                imageString.add(url.toString());
                             }
                             Post newPost = new Post(
-                                    "post123",
-                                    "user123", // userID
+                                    "",
+                                    userID, // userID
                                     postActitvityController.text.getText().toString(), // content
                                     0, // commentsCount ban đầu
                                     0, // likesCount ban đầu
                                     likedBy, // chưa có người like ban đầu
-                                    imageUrls, // chưa có media ban đầu
+                                    imageString, // chưa có media ban đầu
                                     currentTime, // thời gian hiện tại
                                     postActitvityController.spinner.getSelectedItem().toString(), // targetAudience
                                     true // mở chế độ comment
                             );
-                            Comment newComment = new Comment(
-                                    "user123",
-                                    postActitvityController.text.getText().toString(),
-                                    likedBy,
-                                    0,
-                                    currentTime);
-                            postModel.addPostWithComment(newPost,newComment);
+
+                            postModel.addPost(newPost);
                             Toast.makeText(
                                     view.getContext(),
                                     "Thêm bài viết thành công",
                                     Toast.LENGTH_SHORT
                             ).show();
+
                             postActitvityController.text.setText("");
                             postActitvityController.deleteImageBTN.setVisibility(View.GONE);
                             imagesUriList.clear();
@@ -241,12 +273,17 @@ public class postController {
         ImageButton chooseImageBTN;
         Button postButton;
         @SuppressLint("StaticFieldLeak")
+        static TextView userName;
+        @SuppressLint("StaticFieldLeak")
         static Button deleteImageBTN;
         @SuppressLint("StaticFieldLeak")
         static Spinner spinner;
         static TextInputEditText text;
         static ViewPager2 viewPager;
+        static ImageView avatar;
         public postActitvityController(View view){
+            avatar = view.findViewById(R.id.avatar);
+            userName = view.findViewById(R.id.username);
             deleteImageBTN = view.findViewById(R.id.delete_img_button);
             chooseImageBTN = view.findViewById(R.id.choose_image_Button);
             postButton = view.findViewById(R.id.post_button);

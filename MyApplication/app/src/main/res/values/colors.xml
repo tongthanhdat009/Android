@@ -22,4 +22,8 @@
     <color name="search_bar_background">#EFEFEF</color>
     <!-- Border Colors -->
     <color name="border_color">#E6E6E6</color>
+    <color name="gray">#858585</color>
+    <color name="white">#FFFFFF</color>
+    <!--like button-->
+    <color name="like_button_color">#000000</color>
 </resources>

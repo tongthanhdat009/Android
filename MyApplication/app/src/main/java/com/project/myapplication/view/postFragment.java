@@ -15,14 +15,22 @@ import androidx.fragment.app.Fragment;
 
 import com.project.myapplication.R;
 import com.project.myapplication.controller.postController;
+import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.model.MessageModel;
 
 import java.util.ArrayList;
 
 public class postFragment extends Fragment {
-
+    private String userID;
     private ArrayList<Uri> imagesUriList;
     private ActivityResultLauncher<Intent> pickImageLauncher;
-
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            userID = getArguments().getString("userID");
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,6 +64,8 @@ public class postFragment extends Fragment {
                 }
             }
         );
+        //gán thông tin người dùng đang sử dụng trong phần post
+        controller.setUserInfor(userID);
 
         // Kích hoạt chức năng chọn ảnh khi nhấn nút chọn ảnh trong postController
         controller.chooseImgBTNAction(pickImageLauncher);
@@ -64,7 +74,7 @@ public class postFragment extends Fragment {
         controller.deleteImgBTNAction(imagesUriList);
 
         // Gọi hàm xác nhận đăng post
-        controller.postBTNAction(imagesUriList);
+        controller.postBTNAction(imagesUriList, userID);
 
         return view; // Trả về view đã inflate
     }

@@ -1,51 +1,69 @@
-package com.project.myapplication.User;
+package com.project.myapplication.DTO;
 
 public class User {
     private String userID;
-    private String fullname;
-    private String username;
-    private String pass;
-    private String email;
+    private String Name;
+    private String UserName;
+    private String Password;
+    private String Email;
+    private String avatar;
     public User() {
 
     }
-    public User(String userID, String fullname, String username, String pass, String email) {
+    public User(String userID, String Name, String UserName, String Password, String Email, String avatar) {
         this.userID = userID;
-        this.fullname = fullname;
-        this.username = username;
-        this.pass = pass;
-        this.email = email;
+        this.Name = Name;
+        this.UserName = UserName;
+        this.Password = Password;
+        this.Email = Email;
+        this.avatar = avatar;
     }
+
     public String getUserID() {
         return userID;
     }
+
     public void setUserID(String userID) {
         this.userID = userID;
     }
-    public String getFullname() {
-        return fullname;
+
+    public String getName() {
+        return Name;
     }
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+
+    public void setName(String name) {
+        Name = name;
     }
-    public String getUsername() {
-        return username;
+
+    public String getUserName() {
+        return UserName;
     }
-    public void setUsername(String username) {
-        this.username = username;
+
+    public void setUserName(String userName) {
+        UserName = userName;
     }
-    public String getPass() {
-        return pass;
+
+    public String getPassword() {
+        return Password;
     }
-    public void setPass(String pass) {
-        this.pass = pass;
+
+    public void setPassword(String password) {
+        Password = password;
     }
+
     public String getEmail() {
-        return email;
+        return Email;
     }
+
     public void setEmail(String email) {
-        this.email = email;
+        Email = email;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
 
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 }
