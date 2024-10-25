@@ -22,7 +22,7 @@
         android:layout_gravity="center"
         android:background="@drawable/custom_edt"
         android:ems="10"
-        android:hint="Tên người dùng hoặc email"
+        android:hint="Email"
         android:inputType="text"
         android:textColorHint="#666464"
         android:paddingLeft="16dp"
