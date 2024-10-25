@@ -1,38 +1,32 @@
 package com.project.myapplication.controller;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
 import com.project.myapplication.R;
-import com.project.myapplication.model.ChatBoxModel;
-import com.project.myapplication.model.MessageModel;
-import com.project.myapplication.util.RoundedTransformation;
+import com.project.myapplication.view.BottomSheetFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class chatController extends RecyclerView.Adapter<chatController.ChatViewHolder> {
 
-    private ChatBoxModel chatBoxModel;
     private List<ChatBox> chatBoxList;
-    private MessageModel messageModel;
-    private List<Message> messagesList;
 
-    public chatController(List<ChatBox> chatBoxList,List<Message> messagesList) {
-        this.chatBoxModel=new ChatBoxModel();
-        this.messageModel= new MessageModel();
+    public chatController(List<ChatBox> chatBoxList, List<Message> messagesList) {
         this.chatBoxList = chatBoxList;
-        this.messagesList = messagesList;
     }
 
     @NonNull
@@ -45,29 +39,21 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatBox chatItem = chatBoxList.get(position);
-        Message messageItem = messagesList.size() > position ? messagesList.get(position) : null; // Kiểm tra kích thước danh sách
-
-        if (chatItem != null && chatItem.getName() != null) {
-            holder.username.setText(chatItem.getName());
-        } else {
-            holder.username.setText("Tên không có");
-        }
-
-        if (messageItem != null) {
-            holder.message.setText(messageItem.getText() != null ? messageItem.getText() : "Tin nhắn trống");
-        } else {
-            holder.message.setText("Không có tin nhắn");
-        }
-
-        String imageUrl = chatItem != null ? chatItem.getImage_url() : null;
+        holder.message.setText(chatItem.getLastMessage()!= null? chatItem.getLastMessage():"Không có tin nhắn");
+        holder.username.setText(chatItem.getName() != null ? chatItem.getName():"Tên không có");
+        String imageUrl = chatItem.getImage_url();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Picasso.get()
                     .load(imageUrl)
-                    .transform(new RoundedTransformation(28, 0))
                     .into(holder.profileImage);
         } else {
             holder.profileImage.setImageResource(R.drawable.ic_launcher_foreground);
         }
+
+        holder.dotButton.setOnClickListener(v -> {
+            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+            bottomSheetFragment.show(((AppCompatActivity) v.getContext()).getSupportFragmentManager(), bottomSheetFragment.getTag());
+        });
 
         holder.itemView.setOnClickListener(v -> {
             Toast.makeText(v.getContext(), "Clicked on: " + chatItem.getName(), Toast.LENGTH_SHORT).show();
@@ -79,18 +65,33 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         return chatBoxList.size();
     }
 
+    public void updateData(List<ChatBox> newChatBoxList) {
+        // Cập nhật danh sách chatBox
+        for (int i = 0; i < newChatBoxList.size(); i++) {
+            if (i < chatBoxList.size()) {
+                // Cập nhật mục hiện tại
+                chatBoxList.set(i, newChatBoxList.get(i));
+                notifyItemChanged(i); // Thông báo đã thay đổi mục tại vị trí i
+            } else {
+                // Nếu có mục mới, thêm vào danh sách
+                chatBoxList.add(newChatBoxList.get(i));
+                notifyItemInserted(chatBoxList.size() - 1); // Thông báo thêm mục mới
+            }
+        }
+    }
+
     // ViewHolder cho từng mục chat
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
         TextView username, message;
         ImageView profileImage;
-        ImageView muted;
+        ImageButton dotButton;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
             username = itemView.findViewById(R.id.chatbox_username);
             message = itemView.findViewById(R.id.chatbox_message);
             profileImage = itemView.findViewById(R.id.avatarImageView);
-//            muted = itemView.findViewById(R.id.chatbox_icon);
+            dotButton = itemView.findViewById(R.id.dot_icon);
         }
     }
 }

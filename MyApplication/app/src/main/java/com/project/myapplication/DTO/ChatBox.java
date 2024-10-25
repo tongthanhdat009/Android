@@ -2,6 +2,7 @@ package com.project.myapplication.DTO;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
 import java.util.ArrayList;
 
 public class ChatBox {
@@ -10,15 +11,27 @@ public class ChatBox {
     private boolean muted=false;
     private String image_url;
     private ArrayList<String> usersID;
+    private Timestamp lastMessageTimestamp;
+    private String lastMessage;
 
     public ChatBox() {}
 
-    public ChatBox(String Id,String name, boolean muted, String image, ArrayList<String> usersID){
+    public ChatBox(String lastMessage,Timestamp lastMessageTimestamp,String Id,String name, boolean muted, String image, ArrayList<String> usersID){
+        setLastMessage(lastMessage);
         setId(Id);
         setName(name);
         setMuted(muted);
         setImage_url(image);
         setUsersID(usersID);
+        setLastMessageTimestamp(lastMessageTimestamp);
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public void setLastMessageTimestamp(Timestamp lastMessageTimestamp) {
+        this.lastMessageTimestamp = lastMessageTimestamp;
     }
 
     public void setId(String id) {
@@ -41,6 +54,10 @@ public class ChatBox {
         this.usersID = usersID;
     }
 
+    public Timestamp getLastMessageTimestamp() {
+        return lastMessageTimestamp;
+    }
+
     public String getId() {
         return Id;
     }
@@ -61,7 +78,10 @@ public class ChatBox {
         return muted;
     }
 
-    @NonNull
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
     @Override
     public String toString() {
         return "ChatBox{" +
@@ -70,6 +90,7 @@ public class ChatBox {
                 ", muted=" + muted +
                 ", image_url='" + image_url + '\'' +
                 ", usersID=" + usersID +
+                ", lastMessageTimestamp=" + lastMessageTimestamp +
                 '}';
     }
 }

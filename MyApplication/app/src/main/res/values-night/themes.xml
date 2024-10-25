@@ -1,6 +1,5 @@
 <!-- res/values-night/styles.xml -->
 <resources>
-
     <!-- Theme cho Dark Mode -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Màu nền -->
@@ -13,19 +12,12 @@
         <!-- Màu cho Button -->
         <item name="colorAccent">@color/primary_color</item>
 
-        <!-- Ẩn nền bottomBar -->
-        <item name="android:colorControlHighlight">@android:color/transparent</item>
-
         <!-- Màu cho Divider -->
         <item name="android:divider">@color/divider_color</item>
 
-        <!-- Nút -->
-        <item name="android:buttonStyle">@style/CustomButtonStyle</item>
-    </style>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/ModalStyle.Transparent</item>
 
-    <style name="CustomButtonStyle">
-        <item name="android:background">@color/button_color</item>
-        <item name="android:textColor">@color/button_text</item>
     </style>
 
 </resources>

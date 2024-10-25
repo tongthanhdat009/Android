@@ -30,10 +30,13 @@ public class navController extends AppCompatActivity {
         fragmentMap.put(R.id.chat, createFragmentWithUserID(new chatFragment(), userID));
         fragmentMap.put(R.id.profile, createFragmentWithUserID(new profileFragment(), userID));
 
+        showFragment(fragmentMap.get(R.id.home));
+        updateIcons(R.id.home);
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = fragmentMap.get(item.getItemId());
             if (selectedFragment != null) {
-                replaceFragment(selectedFragment);
+                showFragment(selectedFragment);
                 updateIcons(item.getItemId());
                 return true;
             }
@@ -47,12 +50,20 @@ public class navController extends AppCompatActivity {
         return fragment;
     }
 
-    private void replaceFragment(Fragment fragment){
-        FragmentManager fragmentManager= getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction= fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout,fragment);
-        fragmentTransaction.commit();
+    private void showFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        for (Fragment frag : fragmentManager.getFragments()) {
+            transaction.hide(frag);
+        }
+        if (fragment.isAdded()) {
+            transaction.show(fragment);
+        } else {
+            transaction.add(R.id.frame_layout, fragment, fragment.getClass().getName());
+        }
+        transaction.commit();
     }
+
     private void updateIcons(int selectedItemId) {
         binding.bottomNavigationView.getMenu().findItem(R.id.home).setIcon(selectedItemId == R.id.home ? R.drawable.home_selected : R.drawable.home);
         binding.bottomNavigationView.getMenu().findItem(R.id.search).setIcon(selectedItemId == R.id.search ? R.drawable.search_selected : R.drawable.search);

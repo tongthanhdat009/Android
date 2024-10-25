@@ -13,20 +13,16 @@
         <!-- Màu cho Button -->
         <item name="colorAccent">@color/primary_color</item>
 
-        <!-- Ẩn nền bottomBar -->
-        <item name="android:colorControlHighlight">@android:color/transparent</item>
-
         <!-- Màu cho Divider -->
         <item name="android:divider">@color/divider_color</item>
-
-        <!-- Nút -->
-        <item name="android:buttonStyle">@style/CustomButtonStyle</item>
-
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/ModalStyle.Transparent</item>
     </style>
 
-    <style name="CustomButtonStyle">
-        <item name="android:background">@color/button_color</item>
-        <item name="android:textColor">@color/button_text</item>
+    <style name="ModalStyle.Transparent" parent="Theme.MaterialComponents.Dialog">
+    </style>
+
+    <style name="SaveBottomSheetDialogStyle" parent="Theme.MaterialComponents.BottomSheetDialog">
     </style>
 
 </resources>

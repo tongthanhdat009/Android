@@ -35,7 +35,6 @@ public class MessageModel {
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                         if (e != null) {
-                            Log.e("FirestoreError", "Listen failed.", e);
                             callback.onClosetMessRetrieved(null);
                             return;
                         }
@@ -43,9 +42,8 @@ public class MessageModel {
                         if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
                             QueryDocumentSnapshot document = (QueryDocumentSnapshot) queryDocumentSnapshots.getDocuments().get(0);
                             Message closetMessage = document.toObject(Message.class);
+                            closetMessage.setChatboxID(boxChatId);
                             callback.onClosetMessRetrieved(closetMessage);
-                        } else {
-                            callback.onClosetMessRetrieved(null);
                         }
                     }
                 });
