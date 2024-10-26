@@ -37,10 +37,9 @@ public class postImageAdapter extends RecyclerView.Adapter<postImageAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Uri imageUri = imagesUriList.get(position); // Lấy URI của ảnh
         Picasso.get()
-                .load(imageUri)
+                .load(imageUri).resize(1080,1080).centerCrop()
                 .into(holder.imageView); // Hiển thị ảnh vào ImageView
 
-        // Thêm OnClickListener để mở ảnh toàn màn hình
         holder.imageView.setOnClickListener(v -> {
             Intent intent = new Intent(context, FullscreenImageActivity.class);
             intent.putExtra("imageUri", imageUri); // Truyền URI vào Intent

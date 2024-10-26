@@ -12,6 +12,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Post;
@@ -98,7 +99,8 @@ public class PostModel {
     public void getAllPost(OnPostListRetrievedCallback callback) {
         CollectionReference postRef = firestore.collection("post");
 
-        postRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        postRef.orderBy("time", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -124,11 +126,26 @@ public class PostModel {
         });
     }
 
+    public void deletePost(Post post, OnPostDeletedCallback callback) {
+        DocumentReference postRef = firestore.collection("post").document(post.getPostID());
+
+        postRef.delete().addOnSuccessListener(aVoid -> {
+            // Xóa thành công
+            Log.d("PostModel", "Post successfully deleted!");
+            callback.onPostDeleted(true);
+        }).addOnFailureListener(e -> {
+            // Xóa thất bại
+            Log.e("PostModel", "Error deleting post: ", e);
+            callback.onPostDeleted(false);
+        });
+    }
+
     public void postUpdate(Post post) {
         DocumentReference docPost = firestore.collection("post").document(post.getPostID());
         Map<String, Object> updates = new HashMap<>();
         updates.put("likedBy", post.getLikedBy());
         updates.put("likesCount", post.getLikedBy().size());
+        updates.put("content", post.getContent());
         docPost.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -145,11 +162,16 @@ public class PostModel {
     }
 
     // Định nghĩa interface callback
+    // Lấy tất cả post
     public interface OnPostListRetrievedCallback {
         void getAllPost(ArrayList<Post> postsList); // Sửa tên phương thức cho phù hợp
     }
-
+    // lấy thông tin người dăng
     public interface OnUserListRetrievedCallback {
         void onUserListRetrievedCallback(User user);
+    }
+    // xóa post
+    public interface OnPostDeletedCallback {
+        void onPostDeleted(boolean success);
     }
 }

@@ -25,7 +25,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
             android:text="jadt.1405"
             android:textSize="17sp"
             android:background="@null"
@@ -59,11 +58,41 @@
             android:layout_marginEnd="5dp"
             android:fontFamily="@font/helvetica"/>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/imageViewPager"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/imageViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:id="@+id/picture_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/0"
+                android:textSize="16sp"
+                android:maxLength="125"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/helvetica"
+                android:layout_gravity="end|top"
+                android:background="@drawable/backround_picture_counter"
+                android:textColor="@color/white"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/time_post"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Thời gian đăng bài"
+                android:layout_marginStart="5dp"/>
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/action_bar"
             android:layout_width="match_parent"

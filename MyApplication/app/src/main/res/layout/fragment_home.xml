@@ -16,19 +16,11 @@
         android:fontFamily="@font/helvetica_bold"
         android:gravity="center"/>
 
-    <!-- ScrollView để bao các post -->
-    <ScrollView
+    <!-- RecyclerView để hiển thị các bài đăng -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/post_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="none"> <!-- Dùng layout_weight để ScrollView chiếm toàn bộ không gian còn lại -->
-
-        <!-- Container cho các post -->
-        <LinearLayout
-            android:id="@+id/post_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
-    </ScrollView>
+        android:scrollbars="none" />
 </LinearLayout>

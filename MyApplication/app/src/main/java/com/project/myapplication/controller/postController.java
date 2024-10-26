@@ -62,17 +62,6 @@ public class postController {
         postActitvityController.spinner.setAdapter(adapter);
     }
 
-    public void postTest(){
-        postModel.getAllPost(new PostModel.OnPostListRetrievedCallback() {
-            @Override
-            public void getAllPost(ArrayList<Post> postsList) {
-                for(Post post : postsList){
-                    Toast.makeText(view.getContext(),post.getPostID(),Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     public void setUserInfor(String userID){
         postModel.getUserInfor(userID, new PostModel.OnUserListRetrievedCallback() {
             @Override
