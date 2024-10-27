@@ -14,7 +14,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.project.myapplication.DTO.Comment;
+import com.project.myapplication.DTO.Followers;
+import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 
@@ -161,6 +162,162 @@ public class PostModel {
                 });
     }
 
+    public void getAllFollowing(String userID, OnFollowingListRetrievedCallback callback){
+        CollectionReference followingRef = firestore.collection("users")
+                .document(userID)
+                .collection("following");
+
+        followingRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (!querySnapshot.isEmpty()) {
+                        ArrayList<Following> followingList = new ArrayList<>();
+
+                        // Duyệt qua từng DocumentSnapshot trong QuerySnapshot
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            Following following = document.toObject(Following.class);
+                            followingList.add(following);
+                        }
+
+                        // Gọi callback với danh sách bài đăng
+                        callback.getAllFollowing(followingList);
+                    } else {
+                        Log.d("PostModel", "No posts found");
+                    }
+                } else {
+                    Log.e("PostModel", "Error getting documents: " + task.getException());
+                }
+            }
+        });
+    }
+
+    public void getAllFollower(String authorID, OnFollowerListRetrievedCallback callback){
+        CollectionReference followingRef = firestore.collection("users")
+                .document(authorID)
+                .collection("followers");
+
+        followingRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if (!querySnapshot.isEmpty()) {
+                        ArrayList<Followers> followerList = new ArrayList<>();
+
+                        // Duyệt qua từng DocumentSnapshot trong QuerySnapshot
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            Followers follower = document.toObject(Followers.class);
+                            followerList.add(follower);
+                        }
+
+                        // Gọi callback với danh sách bài đăng
+                        callback.getAllFollower(followerList);
+                    } else {
+                        Log.d("PostModel", "No posts found");
+                    }
+                } else {
+                    Log.e("PostModel", "Error getting documents: " + task.getException());
+                }
+            }
+        });
+    }
+
+    public void addFollowingUser(String userID, Following following) {
+        CollectionReference followingRef = firestore.collection("users").document(userID).collection("following");
+        String generatedID = followingRef.document().getId();
+        following.setIdFollowing(generatedID);
+        followingRef.add(following).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if (task.isSuccessful()) {
+                    Log.d("PostModel", "Following user successfully!");
+                    String followingID = task.getResult().getId();
+                    following.setIdFollowing(followingID);
+                    followingRef.document(followingID).set(following).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                System.out.println("Post updated with ID: " + followingID);
+                            } else {
+                                System.err.println("Error updating post ID: " + task.getException());
+                            }
+                        }
+                    });
+                }
+                else {
+                    Log.d("PostModel", "Following user failed!");
+                }
+
+            }
+        });
+    }
+
+    public void addFollowerUser(String authorID, Followers follower){
+        CollectionReference followerRef = firestore.collection("users").document(authorID).collection("followers");
+        followerRef.add(follower).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if (task.isSuccessful()) {
+                    Log.d("PostModel", "Follower added successfully!");
+                    String followerID = task.getResult().getId();
+                    follower.setIdFollower(followerID);
+                    followerRef.document(followerID).set(follower).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                System.out.println("Post updated with ID: " + followerID);
+                            } else {
+                                System.err.println("Error updating post ID: " + task.getException());
+                            }
+                        }
+                    });
+                }
+                else {
+                    Log.d("PostModel", "Follower not added failed!");
+                }
+
+            }
+        });
+    }
+
+    public void removeFollowingUser(String userID, String followingId) {
+        DocumentReference followingRef = firestore.collection("users")
+                .document(userID)
+                .collection("following")
+                .document(followingId);
+
+        followingRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    System.out.println("Successfully removed following with ID: " + followingId);
+                } else {
+                    System.err.println("Error removing document: " + task.getException());
+                }
+            }
+        });
+    }
+
+    public void removeFollowerUser(String authorID, String followerId) {
+        DocumentReference followingRef = firestore.collection("users")
+                .document(authorID)
+                .collection("followers")
+                .document(followerId);
+
+        followingRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    System.out.println("Successfully removed follower with ID: " + followerId);
+                } else {
+                    System.err.println("Error removing document: " + task.getException());
+                }
+            }
+        });
+    }
+
     // Định nghĩa interface callback
     // Lấy tất cả post
     public interface OnPostListRetrievedCallback {
@@ -169,6 +326,14 @@ public class PostModel {
     // lấy thông tin người dăng
     public interface OnUserListRetrievedCallback {
         void onUserListRetrievedCallback(User user);
+    }
+    // lấy thông tin người đang theo dõi dăng
+    public interface OnFollowingListRetrievedCallback {
+        void getAllFollowing(ArrayList<Following> followingList);
+    }
+    // lấy thông tin người theo dõi dăng
+    public interface OnFollowerListRetrievedCallback {
+        void getAllFollower(ArrayList<Followers> followerList);
     }
     // xóa post
     public interface OnPostDeletedCallback {

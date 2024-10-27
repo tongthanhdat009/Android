@@ -3,23 +3,28 @@
     <item
         android:id="@+id/follow"
         android:title="Theo dõi"
-        android:orderInCategory="100"/>
-    <item
-        android:id="@+id/author_infor"
-        android:title="Xem thông tin người đăng"
-        android:orderInCategory="100"/>
+        android:orderInCategory="100"
+        android:visible="false"/>
     <item
         android:id="@+id/unfollow"
         android:title="Bỏ theo dõi"
-        android:orderInCategory="100"/>
+        android:orderInCategory="100"
+        android:visible="false"/>
+    <item
+        android:id="@+id/author_infor"
+        android:title="Xem thông tin người đăng"
+        android:orderInCategory="100"
+        android:visible="false"/>
     <item
         android:id="@+id/edit_post"
-        android:title="Sửa bài viết"
-        android:orderInCategory="100"/>
+        android:title="Sửa caption"
+        android:orderInCategory="100"
+        android:visible="false"/>
     <item
         android:id="@+id/delete_post"
         android:title="Xóa bài viết"
         android:orderInCategory="100"
-        android:icon="@drawable/home"/>
+        android:icon="@drawable/home"
+        android:visible="false"/>
 
 </menu>

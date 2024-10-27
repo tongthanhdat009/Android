@@ -19,10 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.Timestamp;
+import com.project.myapplication.DTO.Followers;
+import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
-import com.project.myapplication.view.postImageAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -93,22 +95,64 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.more_option.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.more_option);
             popupMenu.getMenuInflater().inflate(R.menu.post_popup_menu, popupMenu.getMenu());
-
             if (post.getUserID().equals(userID)) {
-                popupMenu.getMenu().getItem(0).setVisible(false);
-                popupMenu.getMenu().getItem(1).setVisible(false);
-                popupMenu.getMenu().getItem(2).setVisible(false);
+                popupMenu.getMenu().getItem(3).setVisible(true);
+                popupMenu.getMenu().getItem(4).setVisible(true);
+            }
+            else{
+                popupMenu.getMenu().getItem(2).setVisible(true);
+                postModel.getAllFollowing(userID, followingList -> {
+                    ArrayList<String> followingListID = new ArrayList<>();
+
+                    // Lấy ID của những người đang theo dõi
+                    for (Following following : followingList) {
+                        followingListID.add(following.getUserID()); // Lưu ID theo dõi
+                        Toast.makeText(context, "followingListID: " + following.getIdFollowing(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    // Kiểm tra xem người dùng có đang theo dõi người đăng bài hay không
+                    if (followingListID.contains(post.getUserID())) {
+                        popupMenu.getMenu().getItem(1).setVisible(true); // Có theo dõi
+                    } else {
+                        popupMenu.getMenu().getItem(0).setVisible(true); // Không theo dõi
+                    }
+                });
             }
 
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 if(menuItem.getItemId() == R.id.follow){
-                    return true;
-                }
-                else if(menuItem.getItemId() == R.id.author_infor){
+                    postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()));
+                    postModel.addFollowerUser(post.getUserID(), new Followers("",userID, Timestamp.now()));
                     return true;
                 }
                 else if(menuItem.getItemId() == R.id.unfollow){
+                    // xóa người dùng trong following
+                    postModel.getAllFollowing(userID, followingList -> {
+                        String idFollowing = "";
+                        for (Following following : followingList) {
+                            if(following.getUserID().equals(post.getUserID())){
+                                idFollowing = following.getIdFollowing();
+                                break;
+                            }
+                        }
+                        postModel.removeFollowingUser(userID, idFollowing);
+                    });
+                    //xóa người dùng trong follower
+                    postModel.getAllFollower(post.getUserID(), followerList -> {
+                        String idFollower = "";
+                        for (Followers follower : followerList) {
+                            if(follower.getUserID().equals(userID)){
+                                idFollower = follower.getIdFollower();
+                                break;
+                            }
+                        }
+                        postModel.removeFollowerUser(post.getUserID(), idFollower);
+                    });
+                    Toast.makeText(context,"Đã bỏ theo dõi", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                else if(menuItem.getItemId() == R.id.author_infor){
                     return true;
                 }
                 else if (menuItem.getItemId() == R.id.edit_post) {
@@ -219,10 +263,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         // Load thông tin người dùng
-         postModel.getUserInfor(userID, user -> {
+         postModel.getUserInfor(post.getUserID(), user -> {
              Picasso.get().load(user.getAvatar()).into(holder.avatar);
              holder.username.setText(user.getName());
          });
+
     }
 
     @Override
