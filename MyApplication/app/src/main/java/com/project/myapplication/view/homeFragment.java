@@ -23,12 +23,8 @@ public class homeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        RecyclerView postRecyclerView = view.findViewById(R.id.post_recycler_view);
-
         homeController controller = new homeController(view);
         controller.postDiplay(userID);
-
         return view;
     }
 }

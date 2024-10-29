@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -268,6 +269,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
              holder.username.setText(user.getName());
          });
 
+         // Sự kiện nút comment
+        holder.comment.setOnClickListener(v -> {
+           Intent intent = new Intent(context, commentActivity.class);
+           intent.putExtra("postID", post.getPostID());
+           context.startActivity(intent);
+        });
     }
 
     @Override
@@ -276,12 +283,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        ImageView avatar, more_option, like;
+        ImageView avatar, more_option, like, comment;
         TextView username, caption, likes_count, time_post, picture_counter;
         ViewPager2 imageViewPager;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
+            comment = itemView.findViewById(R.id.comment);
             avatar = itemView.findViewById(R.id.avatar);
             username = itemView.findViewById(R.id.username);
             more_option = itemView.findViewById(R.id.more_option);

@@ -13,12 +13,17 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 
+import org.checkerframework.checker.interning.qual.CompareToMethod;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -317,6 +322,8 @@ public class PostModel {
             }
         });
     }
+
+
 
     // Định nghĩa interface callback
     // Lấy tất cả post

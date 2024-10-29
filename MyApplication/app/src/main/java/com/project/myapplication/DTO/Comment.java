@@ -11,7 +11,9 @@ public class Comment {
     private ArrayList<String> likedBy;
     private int likesCount;
     private Timestamp time;
-    public Comment(String userID, String commentText, ArrayList<String> likedBy, int likesCount, Timestamp time){
+    private String commentID;
+    public Comment(String commentID, String userID, String commentText, ArrayList<String> likedBy, int likesCount, Timestamp time){
+        setCommenntID(commentID);
         setUserID(userID);
         setCommentText(commentText);
         setLikedBy(likedBy);
@@ -19,11 +21,20 @@ public class Comment {
         setTime(time);
     }
     public Comment(){
+        this.commentID = "";
         this.commentText = "";
         this.likedBy = new ArrayList<String>();
         this.likesCount = 0;
         this.time = null;
     }
+
+    public String getCommenntID() {
+        return commentID;
+    }
+    public void setCommenntID(String commentID) {
+        this.commentID = commentID;
+    }
+
     public String getUserID() {
         return userID;
     }
