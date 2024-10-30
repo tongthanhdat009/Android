@@ -1,12 +1,17 @@
 package com.project.myapplication.view;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
+import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,16 +54,110 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
     @Override
     public void onBindViewHolder(@NonNull commentViewHolder holder, int position) {
         Comment cmt = cmts.get(position);
-        Toast.makeText(context,"Comments ID" + cmt.getCommentID(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context,"Comments ID" + cmt.getCommentID(), Toast.LENGTH_SHORT).show();
 
         holder.content.setText(cmt.getCommentText()); // Giả sử có phương thức getCommentText()
 
         holder.likes_count.setText(String.valueOf(cmt.getLikesCount())); // Giả sử có phương thức getLikesCount()
 
+        holder.content.setOnLongClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(context, view);
+            popupMenu.getMenuInflater().inflate(R.menu.comment_menu, popupMenu.getMenu());
+
+            // Thêm mục mới vào menu động
+            popupMenu.getMenu().add(0, 0, 0, "Xóa comment");
+            popupMenu.getMenu().add(0, 1, 0, "Sửa comment");
+
+            popupMenu.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == 0) { // Kiểm tra ID của mục động
+                    new AlertDialog.Builder(holder.itemView.getContext())
+                            .setTitle("Xác nhận xóa")
+                            .setMessage("Bạn có chắc chắn muốn xóa bình luận này?")
+                            .setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    commentModel.deleteComment(cmt, postID, new CommentModel.OnCommentDeletedCallback() {
+                                        @Override
+                                        public boolean onCommentDeleted(boolean success) {
+                                            if(success){
+                                                if(position != RecyclerView.NO_POSITION){
+                                                    cmts.remove(position);
+                                                    notifyItemRemoved(position);
+                                                    Toast.makeText(holder.itemView.getContext(), "Xóa bình luận thành công!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                            else {
+                                                Toast.makeText(holder.itemView.getContext(), "Lỗi khi xóa bình luận!", Toast.LENGTH_SHORT).show();
+                                            }
+                                            return false;
+                                        }
+
+                                    });
+                                }
+                            })
+                            .setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert) // Icon cho hộp thoại
+                            .show();
+                    return true;
+                }
+                if (item.getItemId() == 1) { // Kiểm tra ID của mục động
+                    Toast.makeText(context, "Sửa comment", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Sửa comment");
+
+                    // Tạo EditText để nhập thông tin
+                    final EditText input = new EditText(context);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(input);
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String newCaption = input.getText().toString();
+                            // Xử lý thông tin nhập vào
+                            if(newCaption.isEmpty()){
+                                Toast.makeText(context, "Vui lòng nhập caption để sửa!", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                Toast.makeText(context, "Caption đã nhập: " + newCaption, Toast.LENGTH_SHORT).show();
+                                cmt.setCommentText(newCaption);
+                                commentModel.commentUpdate(cmt, postID);
+                                Toast.makeText(context, " Sửa caption thành công! " + newCaption, Toast.LENGTH_SHORT).show();
+                                holder.content.setText(cmt.getCommentText());
+                            }
+                        }
+                    });
+
+                    builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    if(cmt.getUserID().equals(userID)){
+                        builder.show();
+                    }
+                    return true;
+                }
+                return false;
+            });
+
+            popupMenu.show();
+            return false;
+        });
+
         //hiển thị cho các bài viết đã được like bởi người dùng hiện tại
         if (cmt.getLikedBy().contains(userID)) {
             holder.like_comment.setImageResource(R.drawable.liked);
             holder.like_comment.clearColorFilter();
+        }
+        else {
+            holder.like_comment.setImageResource(R.drawable.like);
         }
 
         //xử lý khi nhấn thích bài viết

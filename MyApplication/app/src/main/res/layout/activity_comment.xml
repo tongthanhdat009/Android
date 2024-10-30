@@ -25,7 +25,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.1"
+        android:layout_weight="0.11"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -39,12 +39,17 @@
             <EditText
                 android:id="@+id/type_comment"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:maxLength="100"
-                android:clipToOutline="true" />
+                android:clipToOutline="true"
+                android:hint="Nhập những gì bạn nghĩ..."
+                android:maxLines="4"
+                android:minLines="1"
+                android:inputType="textMultiLine"
+                android:textCursorDrawable="@android:color/transparent"/>
         </LinearLayout>
 
         <ImageView

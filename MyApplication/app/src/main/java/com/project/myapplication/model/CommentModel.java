@@ -12,6 +12,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Post;
@@ -27,25 +28,31 @@ public class CommentModel {
         // Khởi tạo Firestore
         firestore = FirebaseFirestore.getInstance();
     }
-    public void getAllCommentInPost(String postID, CommentModel.OnCommentListRetrievedCallback callback){
+    public void getAllCommentInPost(String postID, CommentModel.OnCommentListRetrievedCallback callback) {
         CollectionReference cmtRef = firestore.collection("post").document(postID).collection("Comments");
-        cmtRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                QuerySnapshot querySnapshot = task.getResult();
-                if (!querySnapshot.isEmpty()) {
-                    ArrayList<Comment> commentList = new ArrayList<>();
-                    // Duyệt qua từng DocumentSnapshot trong QuerySnapshot
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        Comment cmt = document.toObject(Comment.class);
-                        commentList.add(cmt);
-                    }
-                    // Gọi callback với danh sách bài đăng
-                    callback.getAllCommentInPost(commentList);
-                } else {
-                    Log.d("PostModel", "No posts found");
+
+        // Lắng nghe sự thay đổi thời gian thực
+        cmtRef.orderBy("time", Query.Direction.DESCENDING).addSnapshotListener((querySnapshot, error) -> {
+            if (error != null) {
+                System.err.println("Error getting comments: " + error);
+                return;
+            }
+
+            if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                ArrayList<Comment> commentList = new ArrayList<>();
+
+                // Duyệt qua từng DocumentSnapshot trong QuerySnapshot
+                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                    Comment cmt = document.toObject(Comment.class);
+                    commentList.add(cmt);
                 }
+
+                // Gọi callback với danh sách bình luận
+                callback.getAllCommentInPost(commentList);
             } else {
-                System.err.println("Error getting comments: " + task.getException());
+                Log.d("PostModel", "No comments found");
+                // Có thể gọi callback với danh sách rỗng nếu không có bình luận
+                callback.getAllCommentInPost(new ArrayList<>());
             }
         });
     }
@@ -79,7 +86,7 @@ public class CommentModel {
         Map<String, Object> updates = new HashMap<>();
         updates.put("likedBy", cmt.getLikedBy());
         updates.put("likesCount", cmt.getLikedBy().size());
-        updates.put("content", cmt.getCommentText());
+        updates.put("commentText", cmt.getCommentText());
         docPost.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -135,6 +142,23 @@ public class CommentModel {
         });
     }
 
+    public void deleteComment(Comment comment, String postID, CommentModel.OnCommentDeletedCallback callback) {
+        DocumentReference commentRef = firestore.collection("post")
+                .document(postID)
+                .collection("Comments")
+                .document(comment.getCommentID());
+
+        commentRef.delete().addOnSuccessListener(aVoid -> {
+            // Xóa thành công
+            Log.d("PostModel", "Post successfully deleted!");
+            callback.onCommentDeleted(true);
+        }).addOnFailureListener(e -> {
+            // Xóa thất bại
+            Log.e("PostModel", "Error deleting post: ", e);
+            callback.onCommentDeleted(false);
+        });
+    }
+
     public interface onUserCommentRetrievedCallBack{
         void getUserCommentInfor(User user);
     }
@@ -142,5 +166,9 @@ public class CommentModel {
     //lấy tất cả comment trong 1 post
     public interface OnCommentListRetrievedCallback {
         void getAllCommentInPost(ArrayList<Comment> commentsList);
+    }
+
+    public interface OnCommentDeletedCallback {
+        boolean onCommentDeleted(boolean success);
     }
 }
