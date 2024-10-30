@@ -24,5 +24,6 @@
     <color name="border_color">#4A4A4A</color>
     <!--like button-->
     <color name="like_button_color">#FFFFFF</color>
-
+    <!--picture counter backgrond-->
+    <color name="picture_counter_bg">#000000</color>
 </resources>

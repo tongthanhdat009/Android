@@ -13,7 +13,7 @@ public class Comment {
     private Timestamp time;
     private String commentID;
     public Comment(String commentID, String userID, String commentText, ArrayList<String> likedBy, int likesCount, Timestamp time){
-        setCommenntID(commentID);
+        setCommentID(commentID);
         setUserID(userID);
         setCommentText(commentText);
         setLikedBy(likedBy);
@@ -28,10 +28,10 @@ public class Comment {
         this.time = null;
     }
 
-    public String getCommenntID() {
+    public String getCommentID() {
         return commentID;
     }
-    public void setCommenntID(String commentID) {
+    public void setCommentID(String commentID) {
         this.commentID = commentID;
     }
 
