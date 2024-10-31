@@ -1,5 +1,6 @@
 package com.project.myapplication.view;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,7 +53,7 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
     }
 
     @Override
-    public void onBindViewHolder(@NonNull commentViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull commentViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Comment cmt = cmts.get(position);
 //        Toast.makeText(context,"Comments ID" + cmt.getCommentID(), Toast.LENGTH_SHORT).show();
 
@@ -132,22 +133,21 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
                             }
                         }
                     });
-
                     builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     });
-                    if(cmt.getUserID().equals(userID)){
-                        builder.show();
-                    }
+                    builder.show();
+
                     return true;
                 }
                 return false;
             });
-
-            popupMenu.show();
+            if(userID.equals(cmt.getUserID())){
+                popupMenu.show();
+            }
             return false;
         });
 

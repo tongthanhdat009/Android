@@ -21,10 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.Timestamp;
+import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
+import com.project.myapplication.model.CommentModel;
 import com.project.myapplication.model.PostModel;
 import com.squareup.picasso.Picasso;
 
@@ -38,11 +40,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final ArrayList<Post> posts;
     private final String userID;
     private final PostModel postModel;
+    private final CommentModel commentModel;
     public PostAdapter(Context context, ArrayList<Post> posts, String userID, PostModel postModel) {
         this.context = context;
         this.posts = posts;
         this.userID = userID;
         this.postModel = postModel;
+        this.commentModel = new CommentModel();
     }
 
     @NonNull
@@ -269,6 +273,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
              holder.username.setText(user.getName());
          });
 
+         //đếm số comment hiển tại
+        commentModel.getAllCommentInPost(post.getPostID(), commentsList -> {
+            holder.commentsCount.setText(String.valueOf(commentsList.size()));
+
+        });
+
          // Sự kiện nút comment
         holder.comment.setOnClickListener(v -> {
            Intent intent = new Intent(context, commentActivity.class);
@@ -285,7 +295,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar, more_option, like, comment;
-        TextView username, caption, likes_count, time_post, picture_counter;
+        TextView username, caption, likes_count, commentsCount, time_post, picture_counter;
         ViewPager2 imageViewPager;
 
         public PostViewHolder(@NonNull View itemView) {
@@ -300,6 +310,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likes_count = itemView.findViewById(R.id.likes_count);
             time_post = itemView.findViewById(R.id.time_post);
             picture_counter = itemView.findViewById(R.id.picture_counter);
+            commentsCount = itemView.findViewById(R.id.cmts_count);
         }
     }
 }
