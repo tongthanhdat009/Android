@@ -78,7 +78,7 @@ public class PostModel {
         });
     }
 
-    public void getUserInfor(String userID, OnUserListRetrievedCallback callback) {
+    public void getUserInfor(String userID, OnUserRetrievedCallback callback) {
         // Tham chiếu đến collection "users"
         CollectionReference usersRef = firestore.collection("users");
 
@@ -91,7 +91,7 @@ public class PostModel {
                     if (document.exists()) {
                         // Gọi callback với userID
                         User tempUser = document.toObject(User.class);
-                        callback.onUserListRetrievedCallback(tempUser);
+                        callback.onUserRetrievedCallback(tempUser);
                     } else {
                         Log.d("PostModel", "No such user with ID: " + userID);
                     }
@@ -331,8 +331,8 @@ public class PostModel {
         void getAllPost(ArrayList<Post> postsList); // Sửa tên phương thức cho phù hợp
     }
     // lấy thông tin người dăng
-    public interface OnUserListRetrievedCallback {
-        void onUserListRetrievedCallback(User user);
+    public interface OnUserRetrievedCallback {
+        void onUserRetrievedCallback(User user);
     }
     // lấy thông tin người đang theo dõi dăng
     public interface OnFollowingListRetrievedCallback {

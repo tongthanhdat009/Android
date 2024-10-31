@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.firebase.Timestamp;
-import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
@@ -158,6 +157,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     return true;
                 }
                 else if(menuItem.getItemId() == R.id.author_infor){
+                    Intent intent = new Intent(context, authorProfileActivity.class);
+                    intent.putExtra("postID", post.getPostID());
+                    intent.putExtra("userID", post.getUserID());
+                    context.startActivity(intent);
                     return true;
                 }
                 else if (menuItem.getItemId() == R.id.edit_post) {

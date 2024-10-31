@@ -7,16 +7,18 @@ public class User {
     private String Password;
     private String Email;
     private String avatar;
+    private String Biography;
     public User() {
 
     }
-    public User(String userID, String Name, String UserName, String Password, String Email, String avatar) {
+    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography) {
         this.userID = userID;
         this.Name = Name;
         this.UserName = UserName;
         this.Password = Password;
         this.Email = Email;
         this.avatar = avatar;
+        this.Biography = Biography;
     }
 
     public String getUserID() {
@@ -65,5 +67,13 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public String getBiography() {
+        return Biography;
+    }
+
+    public void setBiography(String biography) {
+        Biography = biography;
     }
 }

@@ -63,9 +63,9 @@ public class postController {
     }
 
     public void setUserInfor(String userID){
-        postModel.getUserInfor(userID, new PostModel.OnUserListRetrievedCallback() {
+        postModel.getUserInfor(userID, new PostModel.OnUserRetrievedCallback() {
             @Override
-            public void onUserListRetrievedCallback(User user) {
+            public void onUserRetrievedCallback(User user) {
                 if (user != null) {
                     postActitvityController.userName.setText(user.getName());
                     String avatarUrl = user.getAvatar();
