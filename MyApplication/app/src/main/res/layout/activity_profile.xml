@@ -89,7 +89,7 @@
         android:paddingLeft="20dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Biography"
+        android:text="Tiểu sử"
         android:textSize="16sp"
         android:textStyle="bold"
         android:paddingBottom="4dp" />
