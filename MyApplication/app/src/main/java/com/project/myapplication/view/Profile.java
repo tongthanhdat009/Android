@@ -1,13 +1,18 @@
 package com.example.login_page;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import androidx.annotation.NonNull;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -15,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -37,8 +43,8 @@ public class Profile extends AppCompatActivity {
     private static final long MAX_FILE_SIZE = 8 * 1024 * 1024; // 8MB
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
-    TextView tvusername, tvfullname;
-    Button btnchange;
+    TextView tvusername, tvfullname,tvBiography;
+    Button btnedit;
     ImageView imgAvatar;
     FirebaseUser user;
     FirebaseFirestore db;
@@ -63,20 +69,37 @@ public class Profile extends AppCompatActivity {
 
         tvusername = findViewById(R.id.tvusername);
         tvfullname = findViewById(R.id.tvfullname);
-        btnchange = findViewById(R.id.btnchange);
+        btnedit = findViewById(R.id.btnedit);
         imgAvatar = findViewById(R.id.imageView);
+        tvBiography = findViewById(R.id.tvBiography);
 
         // Load user info
         loadUserInfo();
 
-        // Handle change avatar button click
-        btnchange.setOnClickListener(new View.OnClickListener() {
+        // Handle edit profile button click
+        btnedit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent1 = new Intent();
-                intent1.setType("image/*");
-                intent1.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(Intent.createChooser(intent1, "Chọn ảnh"), PICK_IMAGE_REQUEST);
+                // Show PopupMenu for profile options
+                PopupMenu popupMenu = new PopupMenu(Profile.this, btnedit);
+                MenuInflater inflater = popupMenu.getMenuInflater();
+                inflater.inflate(R.menu.edit_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        if (menuItem.getItemId() == R.id.menu_change_avatar) {
+                            openImagePicker();
+                            return true;
+                        } else if (menuItem.getItemId() == R.id.menu_edit_bio) {
+                            // Mở trang chỉnh sửa tiểu sử
+                            editBiography();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
             }
         });
 
@@ -109,23 +132,23 @@ public class Profile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData(); // Sử dụng biến toàn cục đã khai báo
+            imageUri = data.getData();
             try {
-                // Kiểm tra kích thước tệp
+     
                 InputStream inputStream = getContentResolver().openInputStream(imageUri);
                 long fileSizeInBytes = inputStream.available();
                 inputStream.close();
 
                 if (fileSizeInBytes > MAX_FILE_SIZE) {
                     Toast.makeText(this, "Kích thước tệp quá lớn. Vui lòng chọn tệp nhỏ hơn.", Toast.LENGTH_SHORT).show();
-                    return; // Không tiến hành upload
+                    return;
                 }
 
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 imgAvatar.setImageBitmap(bitmap);
 
-                // Tiến hành upload hình ảnh
-                uploadImageToFirebase(imageUri); // Gọi phương thức upload ảnh
+  
+                uploadImageToFirebase(imageUri);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -134,7 +157,7 @@ public class Profile extends AppCompatActivity {
         }
     }
 
-    // Upload image to Firebase Storage
+
     private void uploadImageToFirebase(Uri uri) {
         if (imageUri != null) {
             StorageReference avatarRef = storageRef;
@@ -164,7 +187,7 @@ public class Profile extends AppCompatActivity {
         }
     }
 
-    // Load user info including avatar
+ 
     private void loadUserInfo() {
         db.collection("users").document(user.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -173,6 +196,7 @@ public class Profile extends AppCompatActivity {
                     String username = documentSnapshot.getString("username");
                     String fullname = documentSnapshot.getString("fullname");
                     String avatarUrl = documentSnapshot.getString("avatarUrl");
+                    String biography = documentSnapshot.getString("biography");
 
                     if (username != null) {
                         tvusername.setText(username);
@@ -183,10 +207,71 @@ public class Profile extends AppCompatActivity {
                     if (avatarUrl != null) {
                         Glide.with(Profile.this).load(avatarUrl).into(imgAvatar);
                     } else {
-                        imgAvatar.setImageResource(R.drawable.images); // Sử dụng ảnh đại diện mặc định nếu không có avatarUrl
+                        imgAvatar.setImageResource(R.drawable.images);
+                    }
+                    if (biography != null) {
+                        tvBiography.setText(biography);
                     }
                 }
             }
         });
+    }
+
+ 
+    private void openImagePicker() {
+        Intent intent1 = new Intent();
+        intent1.setType("image/*");
+        intent1.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent1, "Chọn ảnh"), PICK_IMAGE_REQUEST);
+    }
+
+   
+    private void editBiography() {
+     
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chỉnh sửa tiểu sử");
+
+       
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        input.setLines(3); 
+        builder.setView(input);
+
+        // Nút Lưu
+        builder.setPositiveButton("Lưu", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newBiography = input.getText().toString().trim();
+
+                if (!newBiography.isEmpty()) {
+                    tvBiography.setText(newBiography);
+                    db.collection("users").document(user.getUid())
+                            .update("biography", newBiography)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(Profile.this, "Tiểu sử đã được cập nhật", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(Profile.this, "Lỗi khi cập nhật tiểu sử", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(Profile.this, "Tiểu sử không được để trống", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Nút Hủy
+        builder.setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }
