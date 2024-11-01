@@ -51,7 +51,7 @@ public class register_page extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(register_page.this,MainActivity.class);
+                Intent intent = new Intent(register_page.this, Login_page.class);
                 startActivity(intent);
                 finish();
             }
@@ -63,6 +63,7 @@ public class register_page extends AppCompatActivity {
                 String pass = edtpass.getText().toString().trim();
                 String username = edtusername.getText().toString().trim();
                 String fullname = edtfullname.getText().toString().trim();
+
                 if(TextUtils.isEmpty(connect)){
                     edtconnect.setError("Nhập Email ");
                     return;
@@ -79,33 +80,35 @@ public class register_page extends AppCompatActivity {
                     edtfullname.setError("Nhập tên đầy đủ");
                     return;
                 }
-                fire.createUserWithEmailAndPassword(connect,pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+                fire.createUserWithEmailAndPassword(connect, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             FirebaseUser user = fire.getCurrentUser();
                             String userId = user.getUid();
+
                             Map<String, Object> usermap = new HashMap<>();
-                            usermap.put("username",username);
-                            usermap.put("fullname",fullname);
-                            usermap.put("email",connect);
+                            usermap.put("username", username);
+                            usermap.put("fullname", fullname);
+                            usermap.put("email", connect);
+                            usermap.put("biography", "");
+
                             db.collection("users").document(userId).set(usermap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     Toast.makeText(register_page.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(register_page.this, MainActivity.class);
+                                    Intent intent = new Intent(register_page.this, Login_page.class);
                                     startActivity(intent);
                                     finish();
                                 }
-                            })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(register_page.this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
-                        else{
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(register_page.this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
                             Toast.makeText(register_page.this, "Đăng ký thất bại: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
