@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ImageButton
+        android:id="@+id/backBTN"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="TODO"
+        android:background="@drawable/back"/>
 
     <ImageView
         android:id="@+id/fullscreen_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitCenter" />
-</FrameLayout>
+</LinearLayout>

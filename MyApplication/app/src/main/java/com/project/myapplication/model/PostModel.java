@@ -185,11 +185,11 @@ public class PostModel {
                             Following following = document.toObject(Following.class);
                             followingList.add(following);
                         }
-
-                        // Gọi callback với danh sách bài đăng
                         callback.getAllFollowing(followingList);
                     } else {
-                        Log.d("PostModel", "No posts found");
+                        Log.d("PostModel", "No following found");
+                        ArrayList<Following> followingList = new ArrayList<>();
+                        callback.getAllFollowing(followingList);
                     }
                 } else {
                     Log.e("PostModel", "Error getting documents: " + task.getException());
@@ -199,11 +199,11 @@ public class PostModel {
     }
 
     public void getAllFollower(String authorID, OnFollowerListRetrievedCallback callback){
-        CollectionReference followingRef = firestore.collection("users")
+        CollectionReference followerRef = firestore.collection("users")
                 .document(authorID)
                 .collection("followers");
 
-        followingRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        followerRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -220,7 +220,9 @@ public class PostModel {
                         // Gọi callback với danh sách bài đăng
                         callback.getAllFollower(followerList);
                     } else {
-                        Log.d("PostModel", "No posts found");
+                        Log.d("PostModel", "No follower found");
+                        ArrayList<Followers> followerList = new ArrayList<>();
+                        callback.getAllFollower(followerList);
                     }
                 } else {
                     Log.e("PostModel", "Error getting documents: " + task.getException());
@@ -323,9 +325,30 @@ public class PostModel {
         });
     }
 
-
+    public void getUserPost(String userID, OnUserPostListRetrievedCallback callback){
+        Query postQuery = firestore.collection("post").whereEqualTo("userID", userID);
+        postQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()){
+                    ArrayList<Post> postsList = new ArrayList<>();
+                    for (DocumentSnapshot document : task.getResult()) {
+                        postsList.add(document.toObject(Post.class));
+                    }
+                    callback.getUserPost(postsList);
+                }
+                else{
+                    Log.d("Firebase", "Lỗi không lấy được danh sách post người dùng đã đăng",task.getException());
+                }
+            }
+        });
+    }
 
     // Định nghĩa interface callback
+    // Lấy tất cả bài đăng của 1 người dùng
+    public interface  OnUserPostListRetrievedCallback {
+        void getUserPost(ArrayList<Post> postsList);
+    }
     // Lấy tất cả post
     public interface OnPostListRetrievedCallback {
         void getAllPost(ArrayList<Post> postsList); // Sửa tên phương thức cho phù hợp

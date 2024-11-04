@@ -113,12 +113,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         followingListID.add(following.getUserID()); // Lưu ID theo dõi
                         Toast.makeText(context, "followingListID: " + following.getIdFollowing(), Toast.LENGTH_SHORT).show();
                     }
-
-                    // Kiểm tra xem người dùng có đang theo dõi người đăng bài hay không
-                    if (followingListID.contains(post.getUserID())) {
-                        popupMenu.getMenu().getItem(1).setVisible(true); // Có theo dõi
-                    } else {
+                    if(followingListID.isEmpty()){
                         popupMenu.getMenu().getItem(0).setVisible(true); // Không theo dõi
+                    }
+                    else{
+                        // Kiểm tra xem người dùng có đang theo dõi người đăng bài hay không
+                        if (followingListID.contains(post.getUserID())) {
+                            popupMenu.getMenu().getItem(1).setVisible(true); // Có theo dõi
+                        } else {
+                            popupMenu.getMenu().getItem(0).setVisible(true); // Không theo dõi
+                        }
                     }
                 });
             }
@@ -159,7 +163,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 else if(menuItem.getItemId() == R.id.author_infor){
                     Intent intent = new Intent(context, authorProfileActivity.class);
                     intent.putExtra("postID", post.getPostID());
-                    intent.putExtra("userID", post.getUserID());
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("authorID", post.getUserID());
                     context.startActivity(intent);
                     return true;
                 }
@@ -279,7 +284,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
          //đếm số comment hiển tại
         commentModel.getAllCommentInPost(post.getPostID(), commentsList -> {
             holder.commentsCount.setText(String.valueOf(commentsList.size()));
-
         });
 
          // Sự kiện nút comment

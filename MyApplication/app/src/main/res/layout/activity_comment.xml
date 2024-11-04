@@ -6,14 +6,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/helvetica_bold"
-        android:gravity="center"
-        android:text="Comments"
-        android:textSize="20sp" />
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/backBTN"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/back"
+            android:contentDescription="TODO" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/helvetica_bold"
+            android:gravity="center"
+            android:text="Comments"
+            android:textSize="20sp"
+            android:paddingEnd="25dp"/>
+    </LinearLayout>
     <!-- RecyclerView để hiển thị các bài đăng -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comment_recycler_view"

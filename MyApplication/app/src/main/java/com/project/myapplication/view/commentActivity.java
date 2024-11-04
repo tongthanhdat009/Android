@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ public class commentActivity extends AppCompatActivity {
 
         EditText commentInput = findViewById(R.id.type_comment);
         ImageView sendComment = findViewById(R.id.send_btn);
+        ImageButton backBTN = findViewById(R.id.backBTN);
 
         // Nhận postID, userID từ Intent
         postID = getIntent().getStringExtra("postID");
@@ -130,5 +132,6 @@ public class commentActivity extends AppCompatActivity {
             }
         });
 
+        backBTN.setOnClickListener(v -> finish());
     }
 }

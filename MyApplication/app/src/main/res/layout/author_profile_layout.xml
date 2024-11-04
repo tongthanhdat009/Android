@@ -5,16 +5,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <!--TITLE-->
-    <TextView
-        android:id="@+id/author_profile_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/helvetica_bold"
-        android:padding="8dp"
-        android:text="Tên người đăng"
-        android:textSize="20sp"
-        android:gravity="center"
-        />
+        android:orientation="horizontal">
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/backBTN"
+            android:background="@drawable/back"
+            android:contentDescription="TODO" />
+        <TextView
+            android:id="@+id/author_profile_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_bold"
+            android:padding="8dp"
+            android:text="Tên người đăng"
+            android:textSize="20sp"
+            android:paddingEnd="25dp"
+            android:gravity="center"
+            tools:ignore="RtlSymmetry" />
+    </LinearLayout>
     <!--thông tin tài khoản hiện tại-->
     <LinearLayout
         android:id="@+id/currentUserInformation"
@@ -61,7 +73,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
                         tools:ignore="NestedWeights"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
                         android:textAlignment="center"
                         android:textColor="@color/text_primary"/>
                     <TextView
@@ -86,7 +98,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
                         android:textAlignment="center"
                         android:textColor="@color/text_primary"/>
 
@@ -113,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="0.33"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
                         android:textAlignment="center"
                         android:textColor="@color/text_primary">
                     </TextView>
@@ -148,7 +160,9 @@
                 android:text="Tiểu sử"
                 android:textSize="16sp"
                 android:background="@null"
-                android:textColor="@color/text_primary"/>
+                android:textColor="@color/text_primary"
+                android:maxLength="100"
+                android:maxLines="3"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -169,7 +183,19 @@
                         android:text="Theo dõi"
                         tools:ignore="NestedWeights"
                         android:background="@drawable/author_profile_button"
-                        android:textColor="@color/button_text"/>
+                        android:textColor="@color/button_text"
+                        android:visibility="gone"/>
+                    <Button
+                        android:id="@+id/unfollow_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:layout_margin="10dp"
+                        android:text="Bỏ theo dõi"
+                        tools:ignore="NestedWeights"
+                        android:background="@drawable/author_profile_button"
+                        android:textColor="@color/button_text"
+                        android:visibility="gone"/>
                     <Button
                         android:id="@+id/chat"
                         android:layout_width="wrap_content"
@@ -193,7 +219,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <TextView
+            <Button
                 android:id="@+id/display_post_image_choice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -201,9 +227,8 @@
                 android:text="Ảnh"
                 android:textSize="20sp"
                 android:textAlignment="center"
-                android:textColor="@color/text_primary"
-                android:background="@drawable/button_border"/>
-            <TextView
+                android:textColor="@color/text_primary"/>
+            <Button
                 android:id="@+id/display_post_video_choice"
                 android:textColor="@color/text_primary"
                 android:layout_width="0dp"
@@ -212,7 +237,6 @@
                 android:text="Video"
                 android:textSize="20sp"
                 android:textAlignment="center"
-                android:background="@drawable/button_border"
                />
         </LinearLayout>
     </LinearLayout>

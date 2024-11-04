@@ -3,6 +3,8 @@ package com.project.myapplication.view;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,13 @@ public class FullscreenImageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fullscreen_image);
 
         ImageView imageView = findViewById(R.id.fullscreen_image);
+        ImageButton backButton = findViewById(R.id.backBTN);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         // Lấy URI từ Intent
         Uri imageUri = getIntent().getParcelableExtra("imageUri");
