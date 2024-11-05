@@ -130,8 +130,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             popupMenu.setOnMenuItemClickListener(menuItem -> {
                 Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 if(menuItem.getItemId() == R.id.follow){
-                    postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()));
-                    postModel.addFollowerUser(post.getUserID(), new Followers("",userID, Timestamp.now()));
+                    postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()), new PostModel.OnAddFollowingCallback(){
+                        @Override
+                        public void onAddFollowing(boolean success) {
+
+                        }
+                    });
+                    postModel.addFollowerUser(post.getUserID(), new Followers("", userID, Timestamp.now()), new PostModel.OnAddFollowerCallback() {
+                        @Override
+                        public void onAddFollower(boolean success) {
+
+                        }
+                    });
                     return true;
                 }
                 else if(menuItem.getItemId() == R.id.unfollow){
@@ -144,7 +154,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 break;
                             }
                         }
-                        postModel.removeFollowingUser(userID, idFollowing);
+                        postModel.removeFollowingUser(userID, idFollowing, new PostModel.OnRemoveFollowingCallback(){
+
+                            @Override
+                            public void onRemoveFollowing(boolean success) {
+
+                            }
+                        });
                     });
                     //xóa người dùng trong follower
                     postModel.getAllFollower(post.getUserID(), followerList -> {
@@ -155,7 +171,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 break;
                             }
                         }
-                        postModel.removeFollowerUser(post.getUserID(), idFollower);
+                        postModel.removeFollowerUser(post.getUserID(), idFollower, new PostModel.OnRemoveFollowerCallback(){
+                            @Override
+                            public void onRemoveFollower(boolean success) {
+
+                            }
+                        });
                     });
                     Toast.makeText(context,"Đã bỏ theo dõi", Toast.LENGTH_SHORT).show();
                     return true;

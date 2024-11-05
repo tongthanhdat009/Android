@@ -29,8 +29,8 @@ public class authorProfileActivity extends AppCompatActivity {
     private String postID;
     private String authorID;
     private PostModel postModel = new PostModel();
-    final Button followButton = findViewById(R.id.follow_button);
-    final Button unfollowButton = findViewById(R.id.unfollow_button);
+    private Button followButton = null;
+    private Button unfollowButton = null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +42,9 @@ public class authorProfileActivity extends AppCompatActivity {
         authorID = getIntent().getStringExtra("authorID");
 
         Toast.makeText(authorProfileActivity.this,userID,Toast.LENGTH_SHORT).show();
+
+        followButton = findViewById(R.id.follow_button);
+        unfollowButton = findViewById(R.id.unfollow_button);
 
         ImageButton backBTN = findViewById(R.id.backBTN);
         backBTN.setOnClickListener(v -> finish());
@@ -92,41 +95,17 @@ public class authorProfileActivity extends AppCompatActivity {
             }
         });
 
-
-
-//        unfollowButton.setOnClickListener(v -> {
-//            postModel.getAllFollower(authorID, followerList -> {
-//                for (Followers follower : followerList){
-//                    if(follower.getUserID().equals(userID)){
-//                        postModel.removeFollowerUser(authorID, follower.getIdFollower());
-//                        break;
-//                    }
-//                }
-//            });
-//            postModel.getAllFollowing(userID, followingList -> {
-//                for (Following following : followingList){
-//                    if(following.getUserID().equals(authorID)){
-//                        postModel.removeFollowingUser(userID, following.getIdFollowing());
-//                        break;
-//                    }
-//                }
-//            });
-//            recreate();
-//        });
-//
-//        followButton.setOnClickListener(v -> {
-//            postModel.addFollowerUser(authorID,new Followers("",userID, Timestamp.now()));
-//            postModel.addFollowingUser(userID,new Following("",authorID, Timestamp.now()));
-//            recreate();
-//        });
-
         unfollowButton.setOnClickListener(v -> {
             postModel.getAllFollower(authorID, followerList -> {
                 for (Followers follower : followerList){
                     if(follower.getUserID().equals(userID)){
-                        postModel.removeFollowerUser(authorID, follower.getIdFollower(), () -> {
-                            updateFollowButton(false);
-                        });
+                        postModel.removeFollowerUser(authorID, follower.getIdFollower(), new PostModel.OnRemoveFollowerCallback() {
+                                    @Override
+                                    public void onRemoveFollower(boolean success) {
+                                        updateFollowButton(false);
+                                        updateTotalFollow();
+                                    }
+                                });
                         break;
                     }
                 }
@@ -134,8 +113,12 @@ public class authorProfileActivity extends AppCompatActivity {
             postModel.getAllFollowing(userID, followingList -> {
                 for (Following following : followingList){
                     if(following.getUserID().equals(authorID)){
-                        postModel.removeFollowingUser(userID, following.getIdFollowing(), () -> {
-                            updateFollowButton(false);
+                        postModel.removeFollowingUser(userID, following.getIdFollowing(), new PostModel.OnRemoveFollowingCallback(){
+                            @Override
+                            public void onRemoveFollowing(boolean success) {
+                                updateFollowButton(false);
+                                updateTotalFollow();
+                            }
                         });
                         break;
                     }
@@ -143,14 +126,22 @@ public class authorProfileActivity extends AppCompatActivity {
             });
         });
 
-
         followButton.setOnClickListener(v -> {
-            postModel.addFollowerUser(authorID, new Followers("", userID, Timestamp.now()), () -> {
-                updateFollowButton(true);
+            postModel.addFollowerUser(authorID, new Followers("", userID, Timestamp.now()), new PostModel.OnAddFollowerCallback() {
+                @Override
+                public void onAddFollower(boolean success) {
+                    updateFollowButton(true);
+                    updateTotalFollow();
+                }
             });
-            postModel.addFollowingUser(userID, new Following("", authorID, Timestamp.now()), () -> {
-                updateFollowButton(true);
+            postModel.addFollowingUser(userID, new Following("", authorID, Timestamp.now()), new PostModel.OnAddFollowingCallback() {
+                @Override
+                public void onAddFollowing(boolean success) {
+                    updateFollowButton(true);
+                    updateTotalFollow();
+                }
             });
+            updateTotalFollow();
         });
 
         postModel.getAllFollowing(userID, new PostModel.OnFollowingListRetrievedCallback(){
@@ -181,5 +172,23 @@ public class authorProfileActivity extends AppCompatActivity {
             followButton.setVisibility(View.VISIBLE);
             unfollowButton.setVisibility(View.GONE);
         }
+    }
+
+    private void updateTotalFollow(){
+        postModel.getAllFollower(authorID, new PostModel.OnFollowerListRetrievedCallback() {
+            final TextView totalFollowers = findViewById(R.id.total_followers);
+            @Override
+            public void getAllFollower(ArrayList<Followers> followerList) {
+                totalFollowers.setText(String.valueOf(followerList.size()));
+            }
+        });
+
+        postModel.getAllFollowing(authorID, new PostModel.OnFollowingListRetrievedCallback() {
+            final TextView totalFollowing = findViewById(R.id.total_following);
+            @Override
+            public void getAllFollowing(ArrayList<Following> followingList) {
+                totalFollowing.setText(String.valueOf(followingList.size()));
+            }
+        });
     }
 }

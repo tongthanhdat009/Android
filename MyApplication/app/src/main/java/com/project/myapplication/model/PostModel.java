@@ -231,7 +231,7 @@ public class PostModel {
         });
     }
 
-    public void addFollowingUser(String userID, Following following) {
+    public void addFollowingUser(String userID, Following following, OnAddFollowingCallback callback) {
         CollectionReference followingRef = firestore.collection("users").document(userID).collection("following");
         String generatedID = followingRef.document().getId();
         following.setIdFollowing(generatedID);
@@ -247,6 +247,7 @@ public class PostModel {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 System.out.println("Post updated with ID: " + followingID);
+                                callback.onAddFollowing(true);
                             } else {
                                 System.err.println("Error updating post ID: " + task.getException());
                             }
@@ -261,7 +262,7 @@ public class PostModel {
         });
     }
 
-    public void addFollowerUser(String authorID, Followers follower){
+    public void addFollowerUser(String authorID, Followers follower, OnAddFollowerCallback callback){
         CollectionReference followerRef = firestore.collection("users").document(authorID).collection("followers");
         followerRef.add(follower).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
@@ -275,6 +276,7 @@ public class PostModel {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 System.out.println("Post updated with ID: " + followerID);
+                                callback.onAddFollower(true);
                             } else {
                                 System.err.println("Error updating post ID: " + task.getException());
                             }
@@ -289,7 +291,7 @@ public class PostModel {
         });
     }
 
-    public void removeFollowingUser(String userID, String followingId) {
+    public void removeFollowingUser(String userID, String followingId, OnRemoveFollowingCallback callback) {
         DocumentReference followingRef = firestore.collection("users")
                 .document(userID)
                 .collection("following")
@@ -300,6 +302,7 @@ public class PostModel {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     System.out.println("Successfully removed following with ID: " + followingId);
+                    callback.onRemoveFollowing(false);
                 } else {
                     System.err.println("Error removing document: " + task.getException());
                 }
@@ -307,7 +310,7 @@ public class PostModel {
         });
     }
 
-    public void removeFollowerUser(String authorID, String followerId) {
+    public void removeFollowerUser(String authorID, String followerId, OnRemoveFollowerCallback callback) {
         DocumentReference followingRef = firestore.collection("users")
                 .document(authorID)
                 .collection("followers")
@@ -318,6 +321,7 @@ public class PostModel {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     System.out.println("Successfully removed follower with ID: " + followerId);
+                    callback.onRemoveFollower(false);
                 } else {
                     System.err.println("Error removing document: " + task.getException());
                 }
@@ -368,5 +372,18 @@ public class PostModel {
     // xóa post
     public interface OnPostDeletedCallback {
         void onPostDeleted(boolean success);
+    }
+    // hàm lấy thông tin khi người dùng nhấn follow hoặc unfollow
+    public interface  OnAddFollowerCallback{
+        void onAddFollower(boolean success);
+    }
+    public interface  OnAddFollowingCallback{
+        void onAddFollowing(boolean success);
+    }
+    public interface  OnRemoveFollowerCallback{
+        void onRemoveFollower(boolean success);
+    }
+    public interface  OnRemoveFollowingCallback{
+        void onRemoveFollowing(boolean success);
     }
 }
