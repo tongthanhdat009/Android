@@ -27,6 +27,8 @@ import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
+import com.project.myapplication.view.PostAdapter;
+import com.project.myapplication.view.homeFragment;
 import com.project.myapplication.view.postImageAdapter;
 import com.squareup.picasso.Picasso;
 
@@ -124,7 +126,6 @@ public class postController {
                                     "Thêm bài viết thành công",
                                     Toast.LENGTH_SHORT
                             ).show();
-
                             postActitvityController.text.setText("");
                             postActitvityController.deleteImageBTN.setVisibility(View.GONE);
                             imagesUriList.clear();

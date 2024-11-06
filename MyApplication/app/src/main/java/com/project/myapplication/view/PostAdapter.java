@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -183,7 +184,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
                 else if(menuItem.getItemId() == R.id.author_infor){
                     Intent intent = new Intent(context, authorProfileActivity.class);
-                    intent.putExtra("postID", post.getPostID());
                     intent.putExtra("userID", userID);
                     intent.putExtra("authorID", post.getUserID());
                     context.startActivity(intent);
@@ -275,7 +275,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.like.setImageResource(R.drawable.liked);
             holder.like.clearColorFilter();
         }
-
+        else {
+            holder.like.setImageResource(R.drawable.like);
+            holder.like.setColorFilter(context.getResources().getColor(R.color.like_button_color));
+        }
         //xử lý khi nhấn thích bài viết
         holder.like.setOnClickListener(v -> {
             boolean isLiked = post.getLikedBy().contains(userID);
