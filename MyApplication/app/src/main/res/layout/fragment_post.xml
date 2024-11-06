@@ -41,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:text=""
             android:textSize="16sp"
             android:background="@null"
@@ -66,14 +67,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp">
-
         <Spinner
             android:id="@+id/spinner_target"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_marginStart="70dp"
             android:spinnerMode="dropdown"
-            android:visibility="gone" />
+            android:layout_marginStart="70dp"
+            />
     </LinearLayout>
     <!--Nhập nội dung bài viết-->
     <com.google.android.material.textfield.TextInputLayout
@@ -87,7 +87,7 @@
             android:id="@+id/content_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="2"
+            android:maxLines="3"
             android:maxLength="100"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -149,7 +149,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chọn ảnh muốn đăng"
+                android:text="Chọn ảnh và video muốn đăng"
                 android:textSize="16sp"
                 android:layout_gravity="center"
                 android:textColor="@color/button_text"

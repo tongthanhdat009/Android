@@ -5,17 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
 import com.project.myapplication.DTO.Followers;
@@ -42,37 +38,18 @@ public class authorProfileActivity extends AppCompatActivity {
 
         // Nhận userID và postID từ Intent
         userID = getIntent().getStringExtra("userID");
+        postID = getIntent().getStringExtra("postID");
         authorID = getIntent().getStringExtra("authorID");
 
-        LinearLayout totalFollowerContainer = findViewById(R.id.total_followers_container);
-        LinearLayout totalFollowingContainer = findViewById(R.id.total_following_container);
+        Toast.makeText(authorProfileActivity.this,userID,Toast.LENGTH_SHORT).show();
+
         followButton = findViewById(R.id.follow_button);
         unfollowButton = findViewById(R.id.unfollow_button);
 
         ImageButton backBTN = findViewById(R.id.backBTN);
         backBTN.setOnClickListener(v -> finish());
 
-        totalFollowerContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(authorProfileActivity.this, ShowFollowActivity.class);
-                intent.putExtra("AuthorID", authorID);
-                intent.putExtra("CurrentUser", userID);
-                startActivity(intent);
-            }
-        });
-
-        totalFollowingContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(authorProfileActivity.this, ShowFollowActivity.class);
-                intent.putExtra("AuthorID", authorID);
-                intent.putExtra("CurrentUser", userID);
-                startActivity(intent);
-            }
-        });
-
-        postModel.getUserPost(authorID, new PostModel.OnUserPostListRetrievedCallback(){
+        postModel.getUserPost(userID, new PostModel.OnUserPostListRetrievedCallback(){
             final TextView totalPosts = findViewById(R.id.total_posts);
             @Override
             public void getUserPost(ArrayList<Post> postsList) {
@@ -99,6 +76,7 @@ public class authorProfileActivity extends AppCompatActivity {
                     }
                 });
             }
+
         });
 
         postModel.getAllFollower(authorID, new PostModel.OnFollowerListRetrievedCallback() {
@@ -185,16 +163,6 @@ public class authorProfileActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.post_show_recycler_view);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
-        postModel.getUserPost(authorID, new PostModel.OnUserPostListRetrievedCallback() {
-            @Override
-            public void getUserPost(ArrayList<Post> postsList) {
-                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel, authorID);
-                recyclerView.setLayoutManager(gridLayoutManager);
-                recyclerView.setAdapter(postShowAdapter);
-            }
-        });
     }
     private void updateFollowButton(boolean isFollowing) {
         if (isFollowing) {

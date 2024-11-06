@@ -62,26 +62,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.ShowFollowActivity"
-            android:exported="true"
-            android:launchMode="singleInstance"
-            tools:ignore="Instantiatable">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".view.postShowFullScreenActivity"
-            android:exported="true"
-            android:launchMode="singleInstance"
-            tools:ignore="Instantiatable">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_key" />

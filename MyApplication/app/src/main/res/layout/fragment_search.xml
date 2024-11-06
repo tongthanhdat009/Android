@@ -1,55 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".view.searchFragment"
-    android:orientation="vertical">
-    <TextView
-        android:id="@+id/newPostTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/helvetica_bold"
-        android:padding="8dp"
-        android:text="Search"
-        android:textSize="20sp"
-        android:gravity="center"
-        />
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Nhập tên người bạn đang tìm..."
-        android:layout_weight="0.01">
-        <!--nhập nội dung-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/search_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="40"
-            android:maxLines="3"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+    tools:context=".view.searchFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="0.7">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/result_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:ignore="NestedWeights" />
-        <TextView
-            android:id="@+id/notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Không có ai ở đây cả..."
-            android:textColor="@color/text_primary"
-            android:layout_gravity="top|center"
-            android:visibility="gone"
-            android:textSize="25dp"/>
-    </FrameLayout>
-</LinearLayout>
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search screen"
+        android:textSize="32sp"
+        android:layout_gravity="center"/>
+
+</FrameLayout>

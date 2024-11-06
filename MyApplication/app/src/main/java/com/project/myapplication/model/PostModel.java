@@ -348,34 +348,6 @@ public class PostModel {
         });
     }
 
-    public void getPostByID(String postID, OnGetPostByID callback) {
-        Query postQuery = firestore.collection("post").whereEqualTo("postID", postID);
-        postQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Post post = null;
-                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            post = document.toObject(Post.class);
-                            break;
-                        }
-                        if (post != null) {
-                            callback.getPostByID(post);
-                        } else {
-                            Log.d("Firebase", "Không tìm thấy post với ID: " + postID);
-                        }
-                    } else {
-                        Log.d("Firebase", "Không có dữ liệu với ID: " + postID);
-                    }
-                } else {
-                    Log.d("Firebase", "Lỗi không lấy được danh sách post người dùng đã đăng", task.getException());
-                }
-            }
-        });
-    }
-
     // Định nghĩa interface callback
     // Lấy tất cả bài đăng của 1 người dùng
     public interface  OnUserPostListRetrievedCallback {
@@ -413,8 +385,5 @@ public class PostModel {
     }
     public interface  OnRemoveFollowingCallback{
         void onRemoveFollowing(boolean success);
-    }
-    public interface OnGetPostByID{
-        void getPostByID(Post post);
     }
 }

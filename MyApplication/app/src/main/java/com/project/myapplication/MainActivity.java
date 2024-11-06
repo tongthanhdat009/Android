@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String userID = "2";
+        String userID = "1";
         super.onCreate(savedInstanceState);
         Intent intent = new Intent(MainActivity.this, navController.class);
         intent.putExtra("userID", userID);
