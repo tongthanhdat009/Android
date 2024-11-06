@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -143,9 +144,21 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
 
                     return true;
                 }
+                if(item.getItemId() == 2){
+                    Intent intent = new Intent(context, authorProfileActivity.class);
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("authorID", cmts.get(position).getUserID());
+                    context.startActivity(intent);
+                }
                 return false;
             });
             if(userID.equals(cmt.getUserID())){
+                popupMenu.show();
+            }
+            else{
+                popupMenu.getMenu().removeItem(0);
+                popupMenu.getMenu().removeItem(1);
+                popupMenu.getMenu().add(0, 2, 0, "Xem thông tin cá nhân");
                 popupMenu.show();
             }
             return false;
@@ -158,6 +171,7 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
         }
         else {
             holder.like_comment.setImageResource(R.drawable.like);
+            holder.like_comment.setColorFilter(context.getResources().getColor(R.color.like_button_color));
         }
 
         //xử lý khi nhấn thích bài viết
@@ -182,7 +196,9 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
         commentModel.getUserCommentInfor(cmt.getUserID(), new CommentModel.onUserCommentRetrievedCallBack() {
             @Override
             public void getUserCommentInfor(User user) {
-                Picasso.get().load(user.getAvatar()).into(holder.avatar);
+                if(!user.getAvatar().isEmpty()){
+                    Picasso.get().load(user.getAvatar()).resize(1080,1080).into(holder.avatar);
+                }
                 holder.username.setText(user.getName());
             }
         });

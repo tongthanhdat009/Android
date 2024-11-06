@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,21 +10,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
             android:id="@+id/backBTN"
-            android:background="@drawable/back"
-            android:contentDescription="TODO" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:contentDescription="TODO"
+            android:backgroundTint="@android:color/transparent"
+            android:background="@null"
+            android:foreground="?attr/selectableItemBackground"
+            app:tint="@color/like_button_color" />
         <TextView
             android:id="@+id/author_profile_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/helvetica_bold"
-            android:padding="8dp"
+            android:textColor="@color/text_primary"
             android:text="Tên người đăng"
             android:textSize="20sp"
             android:paddingEnd="25dp"
+            android:maxLength="40"
             android:gravity="center"
             tools:ignore="RtlSymmetry" />
     </LinearLayout>
@@ -32,7 +40,7 @@
         android:id="@+id/currentUserInformation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.2"
+        android:layout_weight="0.1"
         android:orientation="vertical">
 
         <LinearLayout
@@ -74,7 +82,7 @@
                         android:layout_weight="0.5"
                         tools:ignore="NestedWeights"
                         android:textSize="20sp"
-                        android:textAlignment="center"
+                        android:gravity="bottom|center_horizontal"
                         android:textColor="@color/text_primary"/>
                     <TextView
                         android:id="@+id/total_posts_title"
@@ -99,7 +107,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="0.5"
                         android:textSize="20sp"
-                        android:textAlignment="center"
+                        android:gravity="bottom|center_horizontal"
                         android:textColor="@color/text_primary"/>
 
                     <TextView
@@ -126,7 +134,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="0.33"
                         android:textSize="20sp"
-                        android:textAlignment="center"
+                        android:gravity="bottom|center_horizontal"
                         android:textColor="@color/text_primary">
                     </TextView>
 
@@ -167,7 +175,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="horizontal"
-                android:layout_weight="0.005"
+                android:layout_weight="0.5"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
                 <LinearLayout
@@ -177,7 +185,7 @@
                     <Button
                         android:id="@+id/follow_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:layout_margin="10dp"
                         android:text="Theo dõi"
@@ -188,7 +196,7 @@
                     <Button
                         android:id="@+id/unfollow_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:layout_margin="10dp"
                         android:text="Bỏ theo dõi"
@@ -199,7 +207,7 @@
                     <Button
                         android:id="@+id/chat"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.5"
                         android:layout_margin="10dp"
                         android:text="Nhắn tin"
@@ -213,31 +221,22 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.75">
-        <LinearLayout
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/display_post_image_choice"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Ảnh"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                android:textColor="@color/text_primary"/>
-            <Button
-                android:id="@+id/display_post_video_choice"
-                android:textColor="@color/text_primary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Video"
-                android:textSize="20sp"
-                android:textAlignment="center"
-               />
-        </LinearLayout>
+            android:text="Các bài viết đã đăng"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:fontFamily="@font/helvetica_bold"
+            android:textColor="@color/text_secondary"
+            tools:ignore="NestedWeights" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/post_show_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="NestedWeights" />
     </LinearLayout>
 </LinearLayout>

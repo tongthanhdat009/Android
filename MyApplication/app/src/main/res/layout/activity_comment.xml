@@ -13,8 +13,13 @@
             android:id="@+id/backBTN"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/back"
-            android:contentDescription="TODO" />
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:contentDescription="TODO"
+            android:backgroundTint="@android:color/transparent"
+            android:background="@null"
+            android:foreground="?attr/selectableItemBackground"
+            app:tint="@color/like_button_color" />
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -52,8 +57,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:maxLength="100"
                 android:clipToOutline="true"
                 android:hint="Nhập những gì bạn nghĩ..."

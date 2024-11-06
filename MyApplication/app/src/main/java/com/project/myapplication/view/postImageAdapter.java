@@ -61,13 +61,4 @@ public class postImageAdapter extends RecyclerView.Adapter<postImageAdapter.View
             imageView = itemView.findViewById(R.id.imageView);
         }
     }
-    private boolean isImage(Uri uri) {
-        String mimeType = context.getContentResolver().getType(uri);
-        return mimeType != null && mimeType.startsWith("image");
-    }
-
-    private boolean isVideo(Uri uri) {
-        String mimeType = context.getContentResolver().getType(uri);
-        return mimeType != null && mimeType.startsWith("video");
-    }
 }

@@ -8,13 +8,17 @@
     tools:context=".view.homeFragment">
 
     <!-- Header TextView -->
+    <!--TITLE-->
     <TextView
+        android:id="@+id/newPostTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/helvetica_bold"
+        android:padding="8dp"
         android:text="Home"
         android:textSize="20sp"
-        android:fontFamily="@font/helvetica_bold"
-        android:gravity="center"/>
+        android:gravity="center"
+        />
 
     <!-- RecyclerView để hiển thị các bài đăng -->
     <androidx.recyclerview.widget.RecyclerView
