@@ -6,18 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity"
     android:background="@android:color/white">
-
-    <TextView
-        android:id="@+id/tvusername"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:text="TextView"
-        android:textSize="25sp"
-        android:gravity="center"
-        android:layout_marginTop="16dp"/>
+        android:orientation="horizontal">
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/backBTN"
+            android:background="@drawable/back"
+            android:contentDescription="TODO" />
+        <TextView
+            android:id="@+id/tvusername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:text="TextView"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,43 +42,97 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:contentDescription="Avatar"
+            android:src="@drawable/images"
             android:scaleType="centerCrop"/>
-
-        <TextView
-            android:id="@+id/tvpost"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="0 bài viết"
-            android:layout_weight="1"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:gravity="center" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <LinearLayout
+                android:id="@+id/total_posts_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:orientation="vertical"
+                tools:ignore="NestedWeights">
 
-        <TextView
-            android:id="@+id/tvfollow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="0 người theo dõi"
-            android:textColor="@android:color/black"
-            android:layout_weight="1"
-            android:textSize="16sp"
-            android:gravity="center" />
+                <TextView
+                    android:id="@+id/total_posts"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5"
+                    tools:ignore="NestedWeights"
+                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary"/>
+                <TextView
+                    android:id="@+id/total_posts_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5"
+                    tools:ignore="NestedWeights"
+                    android:text="Bài viết"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/total_followers_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/total_followers"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5"
+                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary"/>
 
-        <TextView
-            android:id="@+id/tvfollowing"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="Đang theo dõi 0"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:gravity="center" />
+                <TextView
+                    android:id="@+id/total_followers_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5"
+                    android:text="Người theo dõi"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/total_following_container"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/total_following"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.33"
+                    android:textSize="20sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/total_following_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.33"
+                    android:text="Đang theo dõi"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_primary"
+                    android:maxLength="200">
+                </TextView>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -119,9 +183,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:backgroundTint="@color/black"
         android:text="Chỉnh sửa trang cá nhân"
         android:textColor="@android:color/white"
         android:layout_gravity="center"
         android:padding="10dp"
         android:textSize="16sp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.75">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/display_post_image_choice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Ảnh"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                android:textColor="@color/text_primary"/>
+            <Button
+                android:id="@+id/display_post_video_choice"
+                android:textColor="@color/text_primary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="Video"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
