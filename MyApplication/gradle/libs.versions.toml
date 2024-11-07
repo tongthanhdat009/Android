@@ -4,6 +4,7 @@ firebaseAnalytics = "22.1.2"
 firebaseBom = "33.4.0"
 firebaseBomVersion = "32.2.0"
 firebaseFirestoreVersion = "24.9.0"
+firebaseMessaging = "24.0.3"
 firebaseStorage = "21.0.1"
 firebaseStorageVersion = "20.1.0"
 googleMaterial = "1.9.0"
@@ -24,6 +25,7 @@ navigationUi = "2.8.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
 picasso = "2.71828"
+swiperefreshlayout = "1.1.0"
 viewpager2 = "1.1.0"
 
 [libraries]
@@ -32,6 +34,7 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-bom-v3220 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase-firestore-v2490 = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 firebase-storage-v2010 = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorageVersion" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
@@ -52,6 +55,7 @@ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragme
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 
 [plugins]

@@ -44,12 +44,15 @@
                 android:layout_marginStart="10dp"
                 android:text="Thời gian"/>
             <TextView
+                android:foreground="?attr/selectableItemBackground"
                 android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textSize="18sp"
                 android:text="Nội dung"
+                android:maxLength="500"
+                android:maxLines="2"
                 />
         </LinearLayout>
         <LinearLayout

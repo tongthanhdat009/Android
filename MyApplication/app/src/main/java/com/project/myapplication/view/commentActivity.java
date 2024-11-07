@@ -20,6 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.R;
 import com.project.myapplication.controller.commentController;
+import com.project.myapplication.model.CommentModel;
+
+import java.util.ArrayList;
+import java.util.PropertyPermission;
 
 public class commentActivity extends AppCompatActivity {
     private RecyclerView commentRecyclerView; // Để sử dụng RecyclerView
@@ -34,10 +38,22 @@ public class commentActivity extends AppCompatActivity {
         EditText commentInput = findViewById(R.id.type_comment);
         ImageView sendComment = findViewById(R.id.send_btn);
         ImageButton backBTN = findViewById(R.id.backBTN);
-
+        TextView notification = findViewById(R.id.notification);
+        CommentModel commentModel = new CommentModel();
         // Nhận postID, userID từ Intent
         postID = getIntent().getStringExtra("postID");
         userID = getIntent().getStringExtra("userID");
+        commentModel.getAllCommentInPost(postID, new CommentModel.OnCommentListRetrievedCallback() {
+            @Override
+            public void getAllCommentInPost(ArrayList<Comment> commentsList) {
+                if(commentsList.isEmpty()){
+                    notification.setVisibility(View.VISIBLE);
+                }
+                else{
+                    notification.setVisibility(View.GONE);
+                }
+            }
+        });
 
         // Thiết lập RecyclerView
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
@@ -49,72 +65,6 @@ public class commentActivity extends AppCompatActivity {
         commentInput.setLongClickable(false);
         commentInput.setOnLongClickListener(v -> true); // Chặn long click
         commentInput.setTextIsSelectable(false); // Vô hiệu hóa chế độ lựa chọn văn bản
-
-// Vô hiệu hóa menu ngữ cảnh
-        commentInput.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return false; // Không hiển thị menu ngữ cảnh
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
-
-// Vô hiệu hóa menu chèn văn bản khi nhấn vào điểm chèn
-        commentInput.setCustomInsertionActionModeCallback(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
-
-// Sử dụng InputConnectionWrapper để chặn cắt, sao chép, dán
-        commentInput.setCustomInsertionActionModeCallback(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
-        });
 
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override

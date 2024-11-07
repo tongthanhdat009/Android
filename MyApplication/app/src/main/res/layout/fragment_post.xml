@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
+    android:orientation="vertical"
     tools:context=".view.postFragment">
 
     <!--TITLE-->
@@ -23,7 +24,6 @@
         android:id="@+id/currentUserInformation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -64,9 +64,7 @@
     <LinearLayout
         android:id="@+id/edit_post_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp">
-
+        android:layout_height="wrap_content">
         <Spinner
             android:id="@+id/spinner_target"
             android:layout_width="wrap_content"
@@ -75,27 +73,26 @@
             android:spinnerMode="dropdown"
             android:visibility="gone" />
     </LinearLayout>
+
     <!--Nhập nội dung bài viết-->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Bạn đang nghĩ gì?"
-        android:layout_marginTop="150dp">
+        android:hint="Bạn đang nghĩ gì?">
         <!--nhập nội dung-->
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/content_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:maxLength="100"
+            android:maxLines="3"
+            android:maxLength="500"
             />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="240dp"
         android:orientation="horizontal"
         android:gravity="end">
 
@@ -114,8 +111,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="300dp">
+        android:layout_height="wrap_content">
 
         <!--vùng hiển thị ảnh đã chọn-->
         <androidx.viewpager2.widget.ViewPager2
@@ -157,4 +153,4 @@
                 android:background="@null"/>
         </FrameLayout>
     </RelativeLayout>
-</FrameLayout>
+</LinearLayout>

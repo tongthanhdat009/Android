@@ -3,6 +3,7 @@ package com.project.myapplication.controller;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,9 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
+import com.project.myapplication.model.PostModel;
 import com.project.myapplication.model.SearchModel;
+import com.project.myapplication.view.postShowAdapter;
 import com.project.myapplication.view.searchResultAdapter;
 
 import org.w3c.dom.Text;
@@ -23,6 +27,7 @@ import java.util.Objects;
 public class searchController {
     private View view;
     private SearchModel searchModel;
+    private PostModel postModel;
     private searchActivity activity;
     private String currentUserID;
     public searchController(View view, String currentUserID){
@@ -30,6 +35,7 @@ public class searchController {
         this.currentUserID = currentUserID;
         searchModel = new SearchModel();
         activity = new searchActivity(view);
+        postModel = new PostModel();
     }
 
     public void inputSearch(){
@@ -46,6 +52,8 @@ public class searchController {
                     @Override
                     public void getSearchResult(ArrayList<User> usersList) {
                         if(!input.isEmpty()){
+                            activity.thinkingIcon.setVisibility(View.GONE);
+                            activity.hint.setVisibility(View.GONE);
                             searchResultAdapter adapter = new searchResultAdapter(view.getContext(), usersList, searchModel, currentUserID);
                             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
                             activity.recyclerView.setLayoutManager(linearLayoutManager);
@@ -59,6 +67,9 @@ public class searchController {
                         }
                         else {
                             activity.recyclerView.setAdapter(null);
+                            activity.notification.setVisibility(View.GONE);
+                            activity.thinkingIcon.setVisibility(View.VISIBLE);
+                            activity.hint.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -74,11 +85,14 @@ public class searchController {
     public static class searchActivity{
         TextInputEditText inputSearch;
         RecyclerView recyclerView;
-        TextView notification;
+        TextView notification, hint;
+        ImageView thinkingIcon;
         public searchActivity(View view){
             notification = view.findViewById(R.id.notification);
             inputSearch = view.findViewById(R.id.search_input);
             recyclerView = view.findViewById(R.id.result_container);
+            hint = view.findViewById(R.id.hint);
+            thinkingIcon = view.findViewById(R.id.thinking_icon);
         }
     }
 }

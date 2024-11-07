@@ -1,12 +1,15 @@
 package com.project.myapplication.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +26,13 @@ import java.util.ArrayList;
 
 public class followerAdapter extends RecyclerView.Adapter<followerAdapter.followerViewHolder> {
     private Context context;
-    private String userID;
+    private String authorID;
     private PostModel postModel;
     private ArrayList<Followers> followersList;
     private String currentUserID;
-    public followerAdapter(Context context, String userID, String currentUserID, ArrayList<Followers> followersList, PostModel postModel){
+    public followerAdapter(Context context, String authorID, String currentUserID, ArrayList<Followers> followersList, PostModel postModel){
         this.context = context;
-        this.userID = userID;
+        this.authorID = authorID;
         this.followersList = followersList;
         this.postModel = postModel;
         this.currentUserID = currentUserID;
@@ -52,6 +55,16 @@ public class followerAdapter extends RecyclerView.Adapter<followerAdapter.follow
                 }
             }
         });
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, authorProfileActivity.class);
+                intent.putExtra("authorID", followersList.get(position).getUserID());
+                intent.putExtra("userID", currentUserID);
+                context.startActivity(intent);
+                ((Activity) context).finish();
+            }
+        });
     }
 
     @Override
@@ -65,8 +78,10 @@ public class followerAdapter extends RecyclerView.Adapter<followerAdapter.follow
     public static class followerViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar;
         TextView userName;
+        LinearLayout container;
         public followerViewHolder(@NonNull View itemView) {
             super(itemView);
+            container = itemView.findViewById(R.id.total_followers_container);
             avatar = itemView.findViewById(R.id.avatar);
             userName = itemView.findViewById(R.id.username);
         }

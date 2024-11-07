@@ -3,6 +3,7 @@ package com.project.myapplication.view;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -32,7 +33,7 @@ public class authorProfileActivity extends AppCompatActivity {
     private String userID;
     private String postID;
     private String authorID;
-    private PostModel postModel = new PostModel();
+    private final PostModel postModel = new PostModel();
     private Button followButton = null;
     private Button unfollowButton = null;
     @Override
@@ -59,6 +60,7 @@ public class authorProfileActivity extends AppCompatActivity {
                 intent.putExtra("AuthorID", authorID);
                 intent.putExtra("CurrentUser", userID);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -69,6 +71,7 @@ public class authorProfileActivity extends AppCompatActivity {
                 intent.putExtra("AuthorID", authorID);
                 intent.putExtra("CurrentUser", userID);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -90,6 +93,23 @@ public class authorProfileActivity extends AppCompatActivity {
                 authorName.setText(user.getName());
                 Picasso.get().load(user.getAvatar()).into(avatar);
                 biography.setText(user.getBiography());
+                biography.setEllipsize(TextUtils.TruncateAt.END);
+
+                biography.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(biography.getEllipsize() != null) {
+                            biography.setEllipsize(null);
+                            biography.setMaxLines(Integer.MAX_VALUE);
+                            biography.setText(user.getBiography());
+                        } else {
+                            biography.setEllipsize(TextUtils.TruncateAt.END);
+                            biography.setMaxLines(2);
+                        }
+                        biography.requestLayout();
+                    }
+                });
+
                 avatar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -172,7 +192,7 @@ public class authorProfileActivity extends AppCompatActivity {
                 ArrayList<String> followingIDList = new ArrayList<>();
                 for (Following following : followingList) {
                     followingIDList.add(following.getUserID());
-                    Toast.makeText(authorProfileActivity.this, "following ID:" + following.getUserID(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(authorProfileActivity.this, "following ID:" + following.getUserID(), Toast.LENGTH_SHORT).show();
                 }
                 if (!followingIDList.isEmpty() && followingIDList.contains(authorID)){
                     unfollowButton.setVisibility(View.VISIBLE);
@@ -190,7 +210,7 @@ public class authorProfileActivity extends AppCompatActivity {
         postModel.getUserPost(authorID, new PostModel.OnUserPostListRetrievedCallback() {
             @Override
             public void getUserPost(ArrayList<Post> postsList) {
-                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel, authorID);
+                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel);
                 recyclerView.setLayoutManager(gridLayoutManager);
                 recyclerView.setAdapter(postShowAdapter);
             }
@@ -223,4 +243,5 @@ public class authorProfileActivity extends AppCompatActivity {
             }
         });
     }
+
 }

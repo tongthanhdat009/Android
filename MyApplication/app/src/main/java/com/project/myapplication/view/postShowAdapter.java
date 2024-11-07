@@ -1,5 +1,6 @@
 package com.project.myapplication.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
@@ -25,12 +26,10 @@ public class postShowAdapter extends RecyclerView.Adapter<postShowAdapter.postSh
     private final Context context;
     private final ArrayList<Post> postsList;
     private final PostModel postModel;
-    private final String userID;
-    public postShowAdapter(Context context, ArrayList<Post> postsList, PostModel postModel, String userID){
+    public postShowAdapter(Context context, ArrayList<Post> postsList, PostModel postModel){
         this.context = context;
         this.postsList = postsList;
         this.postModel = postModel;
-        this.userID = userID;
     }
     @NonNull
     @Override
@@ -40,7 +39,7 @@ public class postShowAdapter extends RecyclerView.Adapter<postShowAdapter.postSh
     }
 
     @Override
-    public void onBindViewHolder(@NonNull postShowAdapter.postShowViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull postShowAdapter.postShowViewHolder holder, @SuppressLint("RecyclerView") int position) {
         ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
         layoutParams.height = 350;
         layoutParams.width = 350;

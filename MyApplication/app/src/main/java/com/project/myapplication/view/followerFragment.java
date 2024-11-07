@@ -19,22 +19,23 @@ import com.project.myapplication.model.PostModel;
 import java.util.ArrayList;
 
 public class followerFragment extends Fragment {
-    private String userID;
+    private String authorID;
     private String currentUserID;
     private PostModel postModel = new PostModel();
-    public followerFragment(String userID, String currentUserID){
-        this.userID = userID;
+    public followerFragment(String authorID, String currentUserID){
+        this.authorID = authorID;
         this.currentUserID = currentUserID;
-    }    @Nullable
+    }
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.follower_fragment, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.follower_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        postModel.getAllFollower(userID, new PostModel.OnFollowerListRetrievedCallback() {
+        postModel.getAllFollower(authorID, new PostModel.OnFollowerListRetrievedCallback() {
             @Override
             public void getAllFollower(ArrayList<Followers> followersList) {
-                followerAdapter followerAdapter = new followerAdapter(view.getContext(), userID, currentUserID, followersList,postModel);
+                followerAdapter followerAdapter = new followerAdapter(view.getContext(), authorID, currentUserID, followersList,postModel);
                 recyclerView.setAdapter(followerAdapter);
             }
         });

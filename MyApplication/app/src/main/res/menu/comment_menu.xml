@@ -1,3 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/edit_comment"
+        android:title="Sửa bình luận"
+        android:orderInCategory="100"
+        android:iconTint="@color/text_primary"
+        android:icon="@drawable/baseline_edit_24"
+        android:visible="false"/>
+    <item
+        android:id="@+id/delete_comment"
+        android:title="Xóa bình luận"
+        android:orderInCategory="100"
+        android:iconTint="@color/text_primary"
+        android:icon="@drawable/baseline_delete_24"
+        android:visible="false"/>
+    <item
+        android:id="@+id/author_infor"
+        android:title="Xem thông tin cá nhân"
+        android:orderInCategory="100"
+        android:iconTint="@color/text_primary"
+        android:icon="@drawable/baseline_info_24"
+        android:visible="false"/>
 </menu>

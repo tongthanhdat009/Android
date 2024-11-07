@@ -26,6 +26,8 @@
     <color name="white">#FFFFFF</color>
     <!--like button-->
     <color name="like_button_color">#000000</color>
+    <!--touch like button-->
+    <color name="touch_like_button">#FF0000</color>
     <!--picture counter backgrond-->
     <color name="picture_counter_bg">#FFFFFF</color>
 </resources>

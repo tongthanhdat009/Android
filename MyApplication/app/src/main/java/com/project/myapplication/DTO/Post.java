@@ -116,7 +116,7 @@ public class Post {
         this.targetAudience = targetAudience;
     }
 
-    public boolean isCommentMode() {
+    public boolean getCommentMode() {
         return commentMode;
     }
 

@@ -57,4 +57,7 @@ dependencies {
     implementation (libs.viewpager2)
     implementation (libs.firebase.storage.v2010)
     implementation (libs.google.firebase.analytics)
+    implementation (libs.firebase.messaging)
+    implementation (libs.swiperefreshlayout)
+
 }

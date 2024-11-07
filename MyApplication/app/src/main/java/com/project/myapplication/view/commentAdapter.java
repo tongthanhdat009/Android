@@ -5,8 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.os.Build;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.myapplication.DTO.Comment;
@@ -28,6 +32,7 @@ import com.project.myapplication.model.CommentModel;
 import com.project.myapplication.model.PostModel;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,6 +64,23 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
 //        Toast.makeText(context,"Comments ID" + cmt.getCommentID(), Toast.LENGTH_SHORT).show();
 
         holder.content.setText(cmt.getCommentText()); // Giả sử có phương thức getCommentText()
+        holder.content.setEllipsize(TextUtils.TruncateAt.END);
+        holder.content.setMaxLines(2);
+
+        holder.content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(holder.content.getEllipsize() != null) {
+                    holder.content.setEllipsize(null);
+                    holder.content.setMaxLines(Integer.MAX_VALUE);
+                    holder.content.setText(cmt.getCommentText());
+                } else {
+                    holder.content.setEllipsize(TextUtils.TruncateAt.END);
+                    holder.content.setMaxLines(2);
+                }
+                holder.content.requestLayout();
+            }
+        });
 
         holder.likes_count.setText(String.valueOf(cmt.getLikesCount())); // Giả sử có phương thức getLikesCount()
 
@@ -66,12 +88,8 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
             PopupMenu popupMenu = new PopupMenu(context, view);
             popupMenu.getMenuInflater().inflate(R.menu.comment_menu, popupMenu.getMenu());
 
-            // Thêm mục mới vào menu động
-            popupMenu.getMenu().add(0, 0, 0, "Xóa comment");
-            popupMenu.getMenu().add(0, 1, 0, "Sửa comment");
-
             popupMenu.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == 0) { // Kiểm tra ID của mục động
+                if (item.getItemId() == R.id.delete_comment) { // Kiểm tra ID của mục động
                     new AlertDialog.Builder(holder.itemView.getContext())
                             .setTitle("Xác nhận xóa")
                             .setMessage("Bạn có chắc chắn muốn xóa bình luận này?")
@@ -107,7 +125,7 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
                             .show();
                     return true;
                 }
-                if (item.getItemId() == 1) { // Kiểm tra ID của mục động
+                if (item.getItemId() == R.id.edit_comment) { // Kiểm tra ID của mục động
                     Toast.makeText(context, "Sửa comment", Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Sửa comment");
@@ -144,7 +162,7 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
 
                     return true;
                 }
-                if(item.getItemId() == 2){
+                if(item.getItemId() == R.id.author_infor){
                     Intent intent = new Intent(context, authorProfileActivity.class);
                     intent.putExtra("userID", userID);
                     intent.putExtra("authorID", cmts.get(position).getUserID());
@@ -153,14 +171,25 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
                 return false;
             });
             if(userID.equals(cmt.getUserID())){
-                popupMenu.show();
+                popupMenu.getMenu().getItem(0).setVisible(true);
+                popupMenu.getMenu().getItem(1).setVisible(true);
             }
             else{
-                popupMenu.getMenu().removeItem(0);
-                popupMenu.getMenu().removeItem(1);
-                popupMenu.getMenu().add(0, 2, 0, "Xem thông tin cá nhân");
-                popupMenu.show();
+                popupMenu.getMenu().getItem(0).setVisible(false);
+                popupMenu.getMenu().getItem(1).setVisible(false);
+                popupMenu.getMenu().getItem(2).setVisible(true);
             }
+            try {
+                Field popup = PopupMenu.class.getDeclaredField("mPopup");
+                popup.setAccessible(true);
+                Object menuPopupHelper = popup.get(popupMenu);
+                menuPopupHelper.getClass()
+                        .getDeclaredMethod("setForceShowIcon", boolean.class)
+                        .invoke(menuPopupHelper, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            popupMenu.show();
             return false;
         });
 

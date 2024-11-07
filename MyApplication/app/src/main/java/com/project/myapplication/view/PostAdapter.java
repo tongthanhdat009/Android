@@ -5,9 +5,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -30,6 +35,7 @@ import com.project.myapplication.model.CommentModel;
 import com.project.myapplication.model.PostModel;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,7 +43,7 @@ import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private final Context context;
-    private final ArrayList<Post> posts;
+    private ArrayList<Post> posts;
     private final String userID;
     private final PostModel postModel;
     private final CommentModel commentModel;
@@ -56,13 +62,31 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Post post = posts.get(position);
 
         // Cài đặt nội dung cho từng bài đăng
         holder.caption.setText(post.getContent());
+        holder.caption.setEllipsize(TextUtils.TruncateAt.END);
+        holder.caption.setMaxLines(3);
+
+        holder.caption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(holder.caption.getEllipsize() != null) {
+                    holder.caption.setEllipsize(null);
+                    holder.caption.setMaxLines(Integer.MAX_VALUE);
+                    holder.caption.setText(post.getContent());
+                } else {
+                    holder.caption.setEllipsize(TextUtils.TruncateAt.END);
+                    holder.caption.setMaxLines(3);
+                }
+                holder.caption.requestLayout();
+            }
+        });
+
         ArrayList<Uri> mediaList = new ArrayList<>();
         for (String media : post.getMedia()) {
             mediaList.add(Uri.parse(media));
@@ -100,9 +124,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.more_option.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, holder.more_option);
             popupMenu.getMenuInflater().inflate(R.menu.post_popup_menu, popupMenu.getMenu());
+
             if (post.getUserID().equals(userID)) {
                 popupMenu.getMenu().getItem(3).setVisible(true);
                 popupMenu.getMenu().getItem(4).setVisible(true);
+                if(post.getCommentMode()){
+                    popupMenu.getMenu().getItem(6).setVisible(true);
+                }
+                else {
+                    popupMenu.getMenu().getItem(5).setVisible(true);
+                }
             }
             else{
                 popupMenu.getMenu().getItem(2).setVisible(true);
@@ -260,8 +291,31 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             .show();
                     return true;
                 }
+                else if(menuItem.getItemId() == R.id.close_comment){
+                    post.setCommentMode(false);
+                    postModel.postUpdate(post);
+                    holder.comment.setVisibility(View.GONE);
+                    holder.commentsCount.setVisibility(View.GONE);
+                }
+                else if (menuItem.getItemId() == R.id.open_comment) {
+                    post.setCommentMode(true);
+                    postModel.postUpdate(post);
+                    holder.comment.setVisibility(View.VISIBLE);
+                    holder.commentsCount.setVisibility(View.VISIBLE);
+                }
                 return false;
             });
+
+            try {
+                Field popup = PopupMenu.class.getDeclaredField("mPopup");
+                popup.setAccessible(true);
+                Object menuPopupHelper = popup.get(popupMenu);
+                menuPopupHelper.getClass()
+                        .getDeclaredMethod("setForceShowIcon", boolean.class)
+                        .invoke(menuPopupHelper, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             popupMenu.show();
         });
@@ -311,12 +365,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
          // Sự kiện nút comment
-        holder.comment.setOnClickListener(v -> {
-           Intent intent = new Intent(context, commentActivity.class);
-           intent.putExtra("postID", post.getPostID());
-           intent.putExtra("userID", userID);
-           context.startActivity(intent);
-        });
+        if (post.getCommentMode()){
+            holder.comment.setOnClickListener(v -> {
+                Intent intent = new Intent(context, commentActivity.class);
+                intent.putExtra("postID", post.getPostID());
+                intent.putExtra("userID", userID);
+                context.startActivity(intent);
+            });
+        }
+        else{
+            holder.comment.setVisibility(View.GONE);
+            holder.commentsCount.setVisibility(View.GONE);
+        }
     }
 
     @Override

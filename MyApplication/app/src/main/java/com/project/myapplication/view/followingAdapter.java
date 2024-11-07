@@ -1,13 +1,17 @@
 package com.project.myapplication.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,6 +53,17 @@ public class followingAdapter extends RecyclerView.Adapter<followingAdapter.foll
                 Picasso.get().load(user.getAvatar()).into(holder.avatar);
             }
         });
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, authorProfileActivity.class);
+                intent.putExtra("authorID", followingList.get(position).getUserID());
+                intent.putExtra("userID", currentUserID);
+//                Toast.makeText(context, "authorID: "+followingList.get(position).getUserID()+" currentID: "+currentUserID);
+                context.startActivity(intent);
+                ((Activity) context).finish();
+            }
+        });
     }
 
     @Override
@@ -62,8 +77,10 @@ public class followingAdapter extends RecyclerView.Adapter<followingAdapter.foll
     public static class followingViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar;
         TextView userName;
+        LinearLayout container;
         public followingViewHolder(@NonNull View itemView) {
             super(itemView);
+            container = itemView.findViewById(R.id.total_following_container);
             avatar = itemView.findViewById(R.id.avatar);
             userName = itemView.findViewById(R.id.username);
         }

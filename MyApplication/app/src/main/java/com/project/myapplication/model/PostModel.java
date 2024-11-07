@@ -152,6 +152,7 @@ public class PostModel {
         updates.put("likedBy", post.getLikedBy());
         updates.put("likesCount", post.getLikedBy().size());
         updates.put("content", post.getContent());
+        updates.put("commentMode", post.getCommentMode());
         docPost.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

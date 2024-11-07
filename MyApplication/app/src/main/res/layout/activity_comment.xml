@@ -31,12 +31,25 @@
             android:paddingEnd="25dp"/>
     </LinearLayout>
     <!-- RecyclerView để hiển thị các bài đăng -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/comment_recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="none" />
+        android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/comment_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none" />
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/notification"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:text="Bài viết chưa có bình Luận nào hãy là người đầu tiên bình luận..."
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

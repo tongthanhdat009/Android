@@ -4,27 +4,50 @@
         android:id="@+id/follow"
         android:title="Theo dõi"
         android:orderInCategory="100"
+        android:iconTint="@color/text_primary"
+        android:icon="@drawable/baseline_person_add_24"
         android:visible="false"/>
     <item
         android:id="@+id/unfollow"
         android:title="Bỏ theo dõi"
         android:orderInCategory="100"
+        android:iconTint="@color/text_primary"
+        android:icon="@drawable/baseline_person_remove_24"
         android:visible="false"/>
     <item
         android:id="@+id/author_infor"
         android:title="Xem thông tin người đăng"
+        android:icon="@drawable/baseline_info_24"
+        android:iconTint="@color/text_primary"
         android:orderInCategory="100"
         android:visible="false"/>
     <item
         android:id="@+id/edit_post"
-        android:title="Sửa caption"
+        android:title="Sửa trạng thái"
         android:orderInCategory="100"
+        android:icon="@drawable/baseline_edit_24"
+        android:iconTint="@color/text_primary"
         android:visible="false"/>
     <item
         android:id="@+id/delete_post"
         android:title="Xóa bài viết"
         android:orderInCategory="100"
-        android:icon="@drawable/home"
+        android:icon="@drawable/baseline_delete_24"
+        android:iconTint="@color/text_primary"
         android:visible="false"/>
+    <item
+        android:id="@+id/open_comment"
+        android:title="Cho phép bình luận bài viết"
+        android:orderInCategory="100"
+        android:icon="@drawable/baseline_comment_24"
+        android:iconTint="@color/text_primary"
+        android:visible="false"/>
+    <item
+        android:id="@+id/close_comment"
+        android:title="Không cho phép bình luận bài viết"
+        android:icon="@drawable/baseline_comments_disabled_24"
+        android:iconTint="@color/text_primary"
+        android:orderInCategory="100"
+        android:visible="false" />
 
 </menu>

@@ -26,14 +26,13 @@ public class ShowFollowActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.follow_show_activity);
-
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TextView title = findViewById(R.id.title);
         ImageButton backBTN = findViewById(R.id.backBTN);
         PostModel postModel = new PostModel();
 
-        String userID = getIntent().getStringExtra("AuthorID");
+        String authorID = getIntent().getStringExtra("AuthorID");
         String currentUserID = getIntent().getStringExtra("CurrentUser");
 
         backBTN.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +42,7 @@ public class ShowFollowActivity extends AppCompatActivity {
             }
         });
 
-        postModel.getUserInfor(userID, new PostModel.OnUserRetrievedCallback() {
+        postModel.getUserInfor(authorID, new PostModel.OnUserRetrievedCallback() {
             @Override
             public void onUserRetrievedCallback(User user) {
                 title.setText(user.getName());
@@ -51,8 +50,8 @@ public class ShowFollowActivity extends AppCompatActivity {
         });
 
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
-        fragmentList.add(new followerFragment(userID, currentUserID));
-        fragmentList.add(new followingFragment(userID, currentUserID));
+        fragmentList.add(new followerFragment(authorID, currentUserID));
+        fragmentList.add(new followingFragment(authorID, currentUserID));
         FollowShowViewPagerAdapter viewPagerAdapter = new FollowShowViewPagerAdapter(this, fragmentList);
         viewPager.setAdapter(viewPagerAdapter);
 
