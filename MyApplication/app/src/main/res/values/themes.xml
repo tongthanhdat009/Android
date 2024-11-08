@@ -3,26 +3,16 @@
 
     <!-- Theme cho Light Mode -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Màu nền -->
-        <item name="android:background">@color/background</item>
 
-        <!-- Màu chữ chính -->
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-
-        <!-- Màu cho Button -->
-        <item name="colorAccent">@color/primary_color</item>
-
-        <!-- Màu cho Divider -->
-        <item name="android:divider">@color/divider_color</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="bottomSheetStyle">@style/ModalStyle.Transparent</item>
     </style>
 
-    <style name="ModalStyle.Transparent" parent="Theme.MaterialComponents.Dialog">
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@color/white</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheet</item>
     </style>
 
-    <style name="SaveBottomSheetDialogStyle" parent="Theme.MaterialComponents.BottomSheetDialog">
+    <style name="ShapeAppearanceOverlay.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
-
 </resources>

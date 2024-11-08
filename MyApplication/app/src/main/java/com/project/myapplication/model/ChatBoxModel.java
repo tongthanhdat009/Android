@@ -17,6 +17,7 @@ import com.project.myapplication.DTO.ChatBox;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ChatBoxModel {
@@ -26,35 +27,45 @@ public class ChatBoxModel {
         firestore = FirebaseFirestore.getInstance();
     }
 
-    public void getChatBoxList(String userID, final OnChatBoxListRetrievedCallback callback) {
-        firestore.collection("chatbox")
-                .whereArrayContains("usersID", userID)
-                .orderBy("lastMessageTimestamp",  Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.d("TESTTRUYXUAT", Objects.requireNonNull(e.getMessage()));
-                            callback.onChatBoxListRetrieved(null);
-                            return;
-                        }
+    public interface ChatBoxCallback {
+        void onCallback(List<ChatBox> chatBoxList);
+    }
 
-                        List<ChatBox> chatBoxList = new ArrayList<>();
-                        assert queryDocumentSnapshots != null;
-                        for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+    public void getChatBoxesByUserID(String userID, ChatBoxCallback callback) {
+        firestore.collection("chatbox")
+                .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.e("ChatBoxModel", "Error getting documents: ", e);
+                        return;
+                    }
+                    if (queryDocumentSnapshots != null) {
+                        List<ChatBox> filteredList = new ArrayList<>();
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
                             ChatBox chatBox = document.toObject(ChatBox.class);
-                            assert chatBox != null;
-                            chatBox.setId(document.getId());
-                            chatBoxList.add(chatBox);
+                            if (chatBox != null && chatBox.getShowed() != null) {
+                                // Duyệt qua Map<String, Boolean> 'showed'
+                                for (Map.Entry<String, Boolean> entry : chatBox.getShowed().entrySet()) {
+                                    // Kiểm tra nếu userID có giá trị true
+                                    if (entry.getKey().equals(userID) && entry.getValue()) {
+                                        chatBox.setId(document.getId());
+                                        filteredList.add(chatBox);
+                                        break; // Thoát khỏi vòng lặp khi đã tìm thấy
+                                    }
+                                }
+                            }
                         }
-//                        Log.d("TESTTRUYXUAT",chatBoxList.toString());
-                        callback.onChatBoxListRetrieved(chatBoxList);
+                        callback.onCallback(filteredList);  // Trả về kết quả sau khi lọc
                     }
                 });
     }
 
-    public interface OnChatBoxListRetrievedCallback {
-        void onChatBoxListRetrieved(List<ChatBox> chatBox);
+
+    public void hideChatBox(String chatBoxId, String userID) {
+        firestore.collection("chatbox")
+                .document(chatBoxId)
+                .update("showed." + userID, false)
+                .addOnSuccessListener(aVoid -> Log.d("ChatBoxModel", "ChatBox hidden successfully"))
+                .addOnFailureListener(e -> Log.e("ChatBoxModel", "Error hiding chatbox", e));
     }
 }

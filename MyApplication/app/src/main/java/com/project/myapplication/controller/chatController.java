@@ -1,5 +1,7 @@
 package com.project.myapplication.controller;
 
+import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +25,12 @@ import java.util.List;
 
 public class chatController extends RecyclerView.Adapter<chatController.ChatViewHolder> {
 
-    private List<ChatBox> chatBoxList;
+    private final List<ChatBox> chatBoxList;
+    private final String userID;
 
-    public chatController(List<ChatBox> chatBoxList, List<Message> messagesList) {
+    public chatController(List<ChatBox> chatBoxList, String userID) {
         this.chatBoxList = chatBoxList;
+        this.userID = userID;
     }
 
     @NonNull
@@ -51,7 +55,7 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         }
 
         holder.dotButton.setOnClickListener(v -> {
-            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(chatItem,userID);
             bottomSheetFragment.show(((AppCompatActivity) v.getContext()).getSupportFragmentManager(), bottomSheetFragment.getTag());
         });
 
@@ -65,19 +69,11 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         return chatBoxList.size();
     }
 
-    public void updateData(List<ChatBox> newChatBoxList) {
-        // Cập nhật danh sách chatBox
-        for (int i = 0; i < newChatBoxList.size(); i++) {
-            if (i < chatBoxList.size()) {
-                // Cập nhật mục hiện tại
-                chatBoxList.set(i, newChatBoxList.get(i));
-                notifyItemChanged(i); // Thông báo đã thay đổi mục tại vị trí i
-            } else {
-                // Nếu có mục mới, thêm vào danh sách
-                chatBoxList.add(newChatBoxList.get(i));
-                notifyItemInserted(chatBoxList.size() - 1); // Thông báo thêm mục mới
-            }
-        }
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateChatBoxes(List<ChatBox> newChatBoxList) {
+        this.chatBoxList.clear();
+        this.chatBoxList.addAll(newChatBoxList);
+        notifyDataSetChanged();
     }
 
     // ViewHolder cho từng mục chat

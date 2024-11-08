@@ -1,6 +1,7 @@
 package com.project.myapplication.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +14,29 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.R;
+import com.project.myapplication.model.ChatBoxModel;
 
 import java.util.Objects;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
+    private final ChatBox chatBox;
+    private final String userID;
+
+    public BottomSheetFragment(ChatBox chatBox, String userID) {
+        this.chatBox = chatBox;
+        this.userID = userID;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.SaveBottomSheetDialogStyle);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetStyle);
         View view = inflater.inflate(R.layout.bottomsheet, container, false);
         view.findViewById(R.id.deleteButton).setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Button in BottomSheet clicked", Toast.LENGTH_SHORT).show();
+            ChatBoxModel chatBoxModel = new ChatBoxModel();
+            chatBoxModel.hideChatBox(chatBox.getId(), userID);
+            Toast.makeText(getContext(), "Đã xóa hộp thoại " + chatBox.getName(), Toast.LENGTH_SHORT).show();
             dismiss();
         });
 

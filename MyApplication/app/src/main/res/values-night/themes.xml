@@ -2,22 +2,17 @@
 <resources>
     <!-- Theme cho Dark Mode -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <!-- Màu nền -->
-        <item name="android:background">@color/background</item>
-
-        <!-- Màu chữ chính -->
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-
-        <!-- Màu cho Button -->
-        <item name="colorAccent">@color/primary_color</item>
-
-        <!-- Màu cho Divider -->
-        <item name="android:divider">@color/divider_color</item>
-
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="bottomSheetStyle">@style/ModalStyle.Transparent</item>
 
     </style>
 
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <!-- Customize your bottom sheet appearance here -->
+        <item name="android:background">@color/white</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheet</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
 </resources>

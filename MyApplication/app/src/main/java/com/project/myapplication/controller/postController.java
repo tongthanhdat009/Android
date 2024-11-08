@@ -44,6 +44,7 @@ public class postController {
 
     // Constructor để nhận Activity và Spinner
     public postController(View view) {
+
         this.view = view;
         postBTNController = new postActitvityController(view);
         postModel = new PostModel();
