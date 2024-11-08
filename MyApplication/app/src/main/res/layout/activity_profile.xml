@@ -206,16 +206,6 @@
                 android:textSize="20sp"
                 android:textAlignment="center"
                 android:textColor="@color/text_primary"/>
-            <Button
-                android:id="@+id/display_post_video_choice"
-                android:textColor="@color/text_primary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Video"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
