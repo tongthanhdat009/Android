@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     android:orientation="vertical"
+    android:id="@+id/fragment_post_container"
     tools:context=".view.postFragment">
 
     <!--TITLE-->
@@ -64,31 +65,55 @@
     <LinearLayout
         android:id="@+id/edit_post_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <Spinner
             android:id="@+id/spinner_target"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
-            android:spinnerMode="dropdown"
-            android:visibility="gone" />
+            android:spinnerMode="dropdown" />
+        <CheckBox
+            android:id="@+id/allow_comment_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cho phép bình luận"
+            android:layout_marginStart="70dp"
+            android:checked="true"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary" />
     </LinearLayout>
 
     <!--Nhập nội dung bài viết-->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Bạn đang nghĩ gì?">
-        <!--nhập nội dung-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/content_input"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/word_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="16dp"
+            android:text="0 / 500"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:maxLines="3"
-            android:maxLength="500"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:hint="Bạn đang nghĩ gì?">
+            <!--nhập nội dung-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/content_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="3"
+                android:maxLength="500"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

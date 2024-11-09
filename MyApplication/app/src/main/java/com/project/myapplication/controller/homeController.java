@@ -5,12 +5,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
 import com.project.myapplication.view.PostAdapter;
 import com.project.myapplication.model.PostModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class homeController {
     private final View view;
@@ -31,7 +34,7 @@ public class homeController {
         postRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
-    public void postDiplay(String userID) {
+    public void postDisplay(String userID) {
         // Lấy dữ liệu ban đầu từ model và hiển thị
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         // Lắng nghe sự kiện kéo xuống (pull-to-refresh)
@@ -46,6 +49,6 @@ public class homeController {
             postAdapter = new PostAdapter(view.getContext(), postsList, userID, postModel);
             postRecyclerView.setAdapter(postAdapter);
         });
-
     }
+
 }
