@@ -42,7 +42,6 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:contentDescription="Avatar"
-            android:src="@drawable/images"
             android:scaleType="centerCrop"/>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -183,7 +182,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/black"
         android:text="Chỉnh sửa trang cá nhân"
         android:textColor="@android:color/white"
         android:layout_gravity="center"
@@ -206,16 +204,6 @@
                 android:textSize="20sp"
                 android:textAlignment="center"
                 android:textColor="@color/text_primary"/>
-            <Button
-                android:id="@+id/display_post_video_choice"
-                android:textColor="@color/text_primary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Video"
-                android:textSize="20sp"
-                android:textAlignment="center"
-                />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

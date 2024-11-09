@@ -45,6 +45,8 @@
             android:layout_width="wrap_content"
             android:id="@+id/notification"
             android:textSize="20sp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:textAlignment="center"
             android:text="Bài viết chưa có bình Luận nào hãy là người đầu tiên bình luận..."
             android:layout_gravity="center"

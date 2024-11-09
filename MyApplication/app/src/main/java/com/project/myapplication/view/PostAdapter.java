@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -39,12 +41,14 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private final Context context;
     private ArrayList<Post> posts;
-    private final String userID;
+    private final String userID; // ID người dùng hiện tại
     private final PostModel postModel;
     private final CommentModel commentModel;
     public PostAdapter(Context context, ArrayList<Post> posts, String userID, PostModel postModel) {
@@ -62,10 +66,52 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
-    @SuppressLint({"DefaultLocale", "SetTextI18n"})
+    @SuppressLint({"DefaultLocale", "SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Post post = posts.get(position);
+
+        //đối tượng hiển thị
+        holder.targetAudience.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(post.getTargetAudience().equals("Công khai")){
+                    Toast.makeText(context, "Trạng thái bài viết là công khai", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(context, "Trạng thái bài viết là: Chỉ cho người theo dõi", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        if (post.getTargetAudience().equals("Công khai")) {
+            holder.targetAudience.setImageResource(R.drawable.baseline_public_24);
+            holder.itemView.setVisibility(View.VISIBLE); // Hiển thị bài viết công khai
+        } else {
+            holder.targetAudience.setImageResource(R.drawable.baseline_public_off_24);
+
+            // Lấy danh sách người theo dõi chỉ khi bài viết không phải là công khai
+            postModel.getAllFollower(post.getUserID(), new PostModel.OnFollowerListRetrievedCallback() {
+                @Override
+                public void getAllFollower(ArrayList<Followers> followerList) {
+                    // Sử dụng Set để tối ưu hiệu suất kiểm tra
+                    Set<String> IDUserFollowed = new HashSet<>();
+                    for (Followers follower : followerList) {
+                        IDUserFollowed.add(follower.getUserID());
+                    }
+
+                    // Kiểm tra nếu userID hợp lệ cho phép xem bài viết
+                    if (IDUserFollowed.contains(userID) || userID.equals(post.getUserID())) {
+                        holder.itemView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        // Nếu không hợp lệ, loại bỏ bài đăng khỏi danh sách
+                        posts.remove(position);
+                        notifyItemRemoved(position);  // Xóa vị trí hiện tại
+                    }
+                }
+            });
+        }
+
 
         // Cài đặt nội dung cho từng bài đăng
         holder.caption.setText(post.getContent());
@@ -91,6 +137,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         for (String media : post.getMedia()) {
             mediaList.add(Uri.parse(media));
         }
+
         //thêm ảnh vào post
         holder.imageViewPager.setAdapter(new postImageAdapter(context, mediaList));
 
@@ -163,15 +210,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 if(menuItem.getItemId() == R.id.follow){
                     postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()), new PostModel.OnAddFollowingCallback(){
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onAddFollowing(boolean success) {
-
+                            notifyDataSetChanged();
                         }
                     });
                     postModel.addFollowerUser(post.getUserID(), new Followers("", userID, Timestamp.now()), new PostModel.OnAddFollowerCallback() {
+                        @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onAddFollower(boolean success) {
-
                         }
                     });
                     return true;
@@ -188,9 +236,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         }
                         postModel.removeFollowingUser(userID, idFollowing, new PostModel.OnRemoveFollowingCallback(){
 
+                            @SuppressLint("NotifyDataSetChanged")
                             @Override
                             public void onRemoveFollowing(boolean success) {
-
+                                notifyDataSetChanged();
                             }
                         });
                     });
@@ -204,9 +253,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             }
                         }
                         postModel.removeFollowerUser(post.getUserID(), idFollower, new PostModel.OnRemoveFollowerCallback(){
+                            @SuppressLint("NotifyDataSetChanged")
                             @Override
                             public void onRemoveFollower(boolean success) {
-
                             }
                         });
                     });
@@ -307,9 +356,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             });
 
             try {
-                Field popup = PopupMenu.class.getDeclaredField("mPopup");
+                @SuppressLint("DiscouragedPrivateApi") Field popup = PopupMenu.class.getDeclaredField("mPopup");
                 popup.setAccessible(true);
                 Object menuPopupHelper = popup.get(popupMenu);
+                assert menuPopupHelper != null;
                 menuPopupHelper.getClass()
                         .getDeclaredMethod("setForceShowIcon", boolean.class)
                         .invoke(menuPopupHelper, true);
@@ -385,12 +435,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        ImageView avatar, more_option, like, comment;
+        ImageView avatar, more_option, like, comment, targetAudience;
         TextView username, caption, likes_count, commentsCount, time_post, picture_counter;
         ViewPager2 imageViewPager;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
+            targetAudience = itemView.findViewById(R.id.target_audience);
             comment = itemView.findViewById(R.id.comment);
             avatar = itemView.findViewById(R.id.avatar);
             username = itemView.findViewById(R.id.username);

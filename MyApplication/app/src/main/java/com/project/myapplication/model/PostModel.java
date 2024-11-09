@@ -37,7 +37,7 @@ public class PostModel {
     }
 
     // Thêm post mới và tạo sub-collection cho comment
-    public void addPost(Post post) {
+    public void addPost(Post post, OnAddPostSuccess callback) {
         // Tham chiếu đến collection "posts"
         CollectionReference postsRef = firestore.collection("post");
 
@@ -58,19 +58,12 @@ public class PostModel {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                System.out.println("Post updated with ID: " + postId);
+                                callback.addPost(task.isSuccessful());
                             } else {
-                                System.err.println("Error updating post ID: " + task.getException());
+                                callback.addPost(task.isSuccessful());
                             }
                         }
                     });
-
-                    // Tạo sub-collection "Comments" cho bài đăng
-                    CollectionReference commentsRef = postsRef.document(postId).collection("Comments");
-                    System.out.println("Comments sub-collection created for post ID: " + postId);
-
-                    // Tại đây, bạn có thể thêm bình luận vào commentsRef sau này nếu cần thiết
-
                 } else {
                     System.err.println("Error adding post: " + task.getException());
                 }
@@ -417,5 +410,9 @@ public class PostModel {
     }
     public interface OnGetPostByID{
         void getPostByID(Post post);
+    }
+    //thêm post callback
+    public interface OnAddPostSuccess{
+        void addPost(boolean success);
     }
 }

@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:visibility="gone"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,7 +26,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="jadt.1405"
             android:textSize="17sp"
             android:background="@null"
             android:layout_marginTop="10dp"
@@ -53,7 +53,6 @@
             android:id="@+id/caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Caption"
             android:textSize="18sp"
             android:maxLength="500"
             android:maxLines="2"
@@ -89,12 +88,19 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="10dp"
+            >
+            <ImageView
+                android:id="@+id/target_audience"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:tint="@color/text_primary" />
             <TextView
                 android:id="@+id/time_post"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Thời gian đăng bài"
                 android:layout_marginStart="5dp"/>
         </LinearLayout>
         <LinearLayout

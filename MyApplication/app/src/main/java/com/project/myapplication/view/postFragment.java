@@ -77,6 +77,8 @@ public class postFragment extends Fragment {
         // Gọi hàm xác nhận đăng post
         controller.postBTNAction(imagesUriList, userID);
 
+        // Gọi hàm đếm sso ký tự
+        controller.wordCounter();
         return view; // Trả về view đã inflate
     }
 }

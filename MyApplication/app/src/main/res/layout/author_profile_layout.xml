@@ -100,7 +100,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.3"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
                     <TextView
                         android:id="@+id/total_followers"
                         android:layout_width="match_parent"
@@ -126,7 +127,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.3"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <TextView
                         android:id="@+id/total_following"
