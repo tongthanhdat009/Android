@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/userAvatar"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/unknow_avatar"
+        android:background="@drawable/circle_background"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="User Avatar"
+        android:clipToOutline="true" />
+
+    <TextView
+        android:id="@+id/userName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="User Name"
+        android:textSize="24sp"
+        android:textColor="@color/text_primary" />
+
+    <CheckBox
+        android:id="@+id/customCheckBox"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5" />
+</LinearLayout>

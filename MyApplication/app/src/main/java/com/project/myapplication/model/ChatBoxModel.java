@@ -9,11 +9,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.project.myapplication.DTO.ChatBox;
+import com.project.myapplication.DTO.Followers;
+import com.project.myapplication.DTO.Following;
+import com.project.myapplication.DTO.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +64,6 @@ public class ChatBoxModel {
                 });
     }
 
-
     public void hideChatBox(String chatBoxId, String userID) {
         firestore.collection("chatbox")
                 .document(chatBoxId)
@@ -68,4 +71,46 @@ public class ChatBoxModel {
                 .addOnSuccessListener(aVoid -> Log.d("ChatBoxModel", "ChatBox hidden successfully"))
                 .addOnFailureListener(e -> Log.e("ChatBoxModel", "Error hiding chatbox", e));
     }
+
+    public interface OnFollowingListRetrievedListener {
+        void onRetrieved(List<String> userIds);
+    }
+
+    public void getListFollowingUser(String userID, OnFollowingListRetrievedListener listener) {
+        firestore.collection("users")
+                .document(userID)
+                .collection("following")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> listFollowingUserIds = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Following following = document.toObject(Following.class);
+                        if (following != null) {
+                            listFollowingUserIds.add(following.getUserID());
+                        }
+                    }
+                    listener.onRetrieved(listFollowingUserIds); // Gọi callback sau khi có danh sách userID
+                });
+    }
+
+    public interface OnUsersInfoRetrievedListener {
+        void onRetrieved(List<User> users);
+    }
+
+    public void getUsersInfo(List<String> userIds, OnUsersInfoRetrievedListener listener) {
+        firestore.collection("users")
+                .whereIn(FieldPath.documentId(), userIds)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<User> users = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        User user = document.toObject(User.class);
+                        if (user != null) {
+                            users.add(user);
+                        }
+                    }
+                    listener.onRetrieved(users); // Gọi callback sau khi có danh sách User
+                });
+    }
+
 }

@@ -4,29 +4,36 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.Timestamp;
 
+import java.util.List;
+
 public class Message {
     private String chatboxID;
     private Timestamp datetime;
-    private String seenBy;
+    private List<String> media;
+    private List<String> seenBy;
     private String text;
     private String userID;
 
     public Message(){};
-    public Message(String chatboxID,Timestamp datetime, String seenBy, String text, String userId){
-        setChatboxID(chatboxID);
-        setDatetime(datetime);
-        setSeenBy(seenBy);
-        setText(text);
-        setUserId(userId);
+    public Message(String chatboxID, Timestamp datetime, List<String> media, List<String> seenBy, String text, String userID){
+        this.chatboxID = chatboxID;
+        this.datetime = datetime;
+        this.media = media;
+        this.seenBy = seenBy;
+        this.text = text;
+        this.userID = userID;
     }
 
+    public void setMedia(List<String> media) {
+        this.media = media;
+    }
     public void setChatboxID(String chatboxID) {
         this.chatboxID = chatboxID;
     }
     public void setDatetime(Timestamp datetime) {
         this.datetime = datetime;
     }
-    public void setSeenBy(String seenBy) {
+    public void setSeenBy(List<String> seenBy) {
         this.seenBy = seenBy;
     }
     public void setText(String text) {
@@ -36,10 +43,13 @@ public class Message {
         this.userID = userId;
     }
 
+    public List<String> getMedia() {
+        return media;
+    }
     public String getChatboxID() {
         return chatboxID;
     }
-    public String getSeenBy() {
+    public List<String> getSeenBy() {
         return seenBy;
     }
     public String getText() {
@@ -53,13 +63,14 @@ public class Message {
     }
 
     @NonNull
-    @Override
-    public String toString() {
+    public String toString(){
         return "Message{" +
+                "chatboxID='" + chatboxID + '\'' +
                 ", datetime=" + datetime +
+                ", media=" + media +
                 ", seenBy='" + seenBy + '\'' +
                 ", text='" + text + '\'' +
-                ", userId='" + userID + '\'' +
+                ", userID='" + userID + '\'' +
                 '}';
     }
 }

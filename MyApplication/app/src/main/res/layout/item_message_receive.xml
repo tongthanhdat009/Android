@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="start"
+    android:padding="8dp">
+
+    <!-- Avatar của người gửi -->
+    <ImageView
+        android:id="@+id/sender_avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/unknow_avatar"
+        android:background="@drawable/circle_background"
+        android:contentDescription="Sender Avatar"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"/>
+
+    <!-- Nội dung tin nhắn -->
+    <TextView
+        android:id="@+id/message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_message_received"
+        android:padding="8dp"
+        android:textColor="#000000"
+        android:maxWidth="250dp" />
+</LinearLayout>

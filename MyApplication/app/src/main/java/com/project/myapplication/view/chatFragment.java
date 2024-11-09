@@ -1,5 +1,6 @@
 package com.project.myapplication.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.project.myapplication.controller.chatController;
 
@@ -35,7 +37,6 @@ public class chatFragment extends Fragment {
         chatBoxModel=new ChatBoxModel();
         if (getArguments() != null) {
             userID = getArguments().getString("userID");
-            userID = "user" + userID;
         }
     }
 
@@ -45,13 +46,22 @@ public class chatFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         RecyclerView recyclerViewChat = view.findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
-        chatController = new chatController(new ArrayList<>(), userID);
+        String TestuserID = "user" + userID;
+        chatController = new chatController(new ArrayList<>(), TestuserID);
         recyclerViewChat.setAdapter(chatController);
         if (userID != null) {
-            chatBoxModel.getChatBoxesByUserID(userID, chatBoxList -> {
+            chatBoxModel.getChatBoxesByUserID(TestuserID, chatBoxList -> {
                 chatController.updateChatBoxes(chatBoxList);
             });
         }
+
+        ImageButton addChatBox = view.findViewById(R.id.addChatBox);
+        addChatBox.setOnClickListener(v -> {
+            // Truyền userID vào Intent
+            Intent intent = new Intent(getActivity(), UserSelectionActivity.class);
+            intent.putExtra("userID", userID); // Truyền userID vào Intent
+            startActivityForResult(intent, 1); // Mã yêu cầu 1
+        });
         return view;
     }
 }

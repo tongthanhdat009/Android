@@ -3,11 +3,11 @@
 
     <!-- Theme cho Light Mode -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <item name="android:selectableItemBackground">@android:color/transparent</item>
+        <item name="selectableItemBackground">@android:color/transparent</item>
     </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@color/white</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheet</item>
     </style>
 

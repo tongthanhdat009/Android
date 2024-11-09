@@ -2,12 +2,11 @@
 <resources>
     <!-- Theme cho Dark Mode -->
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-
+        <item name="android:selectableItemBackground">@android:color/transparent</item>
+        <item name="selectableItemBackground">@android:color/transparent</item>
     </style>
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <!-- Customize your bottom sheet appearance here -->
-        <item name="android:background">@color/white</item>
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheet</item>
     </style>
 
