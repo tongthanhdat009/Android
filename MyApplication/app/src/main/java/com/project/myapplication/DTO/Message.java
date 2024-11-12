@@ -10,12 +10,12 @@ public class Message {
     private String chatboxID;
     private Timestamp datetime;
     private List<String> media;
-    private List<String> seenBy;
+    private Boolean seenBy;
     private String text;
     private String userID;
 
     public Message(){};
-    public Message(String chatboxID, Timestamp datetime, List<String> media, List<String> seenBy, String text, String userID){
+    public Message(String chatboxID, Timestamp datetime, List<String> media, Boolean seenBy, String text, String userID){
         this.chatboxID = chatboxID;
         this.datetime = datetime;
         this.media = media;
@@ -33,7 +33,7 @@ public class Message {
     public void setDatetime(Timestamp datetime) {
         this.datetime = datetime;
     }
-    public void setSeenBy(List<String> seenBy) {
+    public void setSeenBy(Boolean seenBy) {
         this.seenBy = seenBy;
     }
     public void setText(String text) {
@@ -49,7 +49,7 @@ public class Message {
     public String getChatboxID() {
         return chatboxID;
     }
-    public List<String> getSeenBy() {
+    public Boolean getSeenBy() {
         return seenBy;
     }
     public String getText() {

@@ -47,7 +47,7 @@ public class chatFragment extends Fragment {
         RecyclerView recyclerViewChat = view.findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
         String TestuserID = "user" + userID;
-        chatController = new chatController(new ArrayList<>(), TestuserID);
+        chatController = new chatController(new ArrayList<>(), TestuserID, view.getContext());
         recyclerViewChat.setAdapter(chatController);
         if (userID != null) {
             chatBoxModel.getChatBoxesByUserID(TestuserID, chatBoxList -> {

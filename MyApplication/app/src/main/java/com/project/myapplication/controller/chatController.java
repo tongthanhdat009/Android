@@ -1,24 +1,23 @@
 package com.project.myapplication.controller;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.project.myapplication.DTO.ChatBox;
-import com.project.myapplication.DTO.Message;
 import com.project.myapplication.R;
 import com.project.myapplication.view.BottomSheetFragment;
+import com.project.myapplication.view.message_activity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -27,8 +26,10 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
 
     private final List<ChatBox> chatBoxList;
     private final String userID;
+    private final Context context;
 
-    public chatController(List<ChatBox> chatBoxList, String userID) {
+    public chatController(List<ChatBox> chatBoxList, String userID, Context context) {
+        this.context = context;
         this.chatBoxList = chatBoxList;
         this.userID = userID;
     }
@@ -45,13 +46,13 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         ChatBox chatItem = chatBoxList.get(position);
         holder.message.setText(chatItem.getLastMessage()!= null? chatItem.getLastMessage():"Không có tin nhắn");
         holder.username.setText(chatItem.getName() != null ? chatItem.getName():"Tên không có");
-        String imageUrl = chatItem.getImage_url();
+        String imageUrl = chatItem.getImageUrl();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Picasso.get()
                     .load(imageUrl)
                     .into(holder.profileImage);
         } else {
-            holder.profileImage.setImageResource(R.drawable.ic_launcher_foreground);
+            holder.profileImage.setImageResource(R.drawable.unknow_avatar);
         }
 
         holder.dotButton.setOnClickListener(v -> {
@@ -60,7 +61,10 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         });
 
         holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(v.getContext(), "Clicked on: " + chatItem.getName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, message_activity.class);
+            intent.putExtra("chatBox", chatItem);
+            intent.putExtra("userID", userID);
+            context.startActivity(intent);
         });
     }
 
@@ -90,4 +94,5 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
             dotButton = itemView.findViewById(R.id.dot_icon);
         }
     }
+
 }

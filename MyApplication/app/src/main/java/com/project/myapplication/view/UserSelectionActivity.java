@@ -7,11 +7,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
@@ -29,24 +31,46 @@ public class UserSelectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        chatBoxModel = new ChatBoxModel();
         String userID = getIntent().getStringExtra("userID");
         setContentView(R.layout.activity_user_selection);
 
         ImageButton backButton = findViewById(R.id.backButton);
         EditText searchUser = findViewById(R.id.searchUser);
+        ImageButton addButton = findViewById(R.id.add_button);
         recyclerViewUsers = findViewById(R.id.recyclerViewUsers);
 
         // Thiết lập nút quay lại
         backButton.setOnClickListener(v -> finish());
 
+        addButton.setOnClickListener(v -> {
+            User selectedUser = userAdapter.getSelectedUser();
+
+            if (selectedUser == null) {
+                // Nếu không có người dùng nào được chọn, thông báo cho người dùng
+                Toast.makeText(this, "Vui lòng chọn người dùng để trò chuyện", Toast.LENGTH_SHORT).show();
+            } else {
+                // Nếu có người dùng được chọn, tiếp tục tạo hoặc cập nhật chatbox
+                String TestuserID = "user" + userID;
+                Log.d("TESTESTTEST",selectedUser.toString());
+                String TestuserID2 = "user" + selectedUser.getUserID();
+
+                chatBoxModel.createOrUpdateChatBox(TestuserID, TestuserID2, chatBox -> {
+                    Log.d("TESTESTTEST",chatBox.toString());
+                    Intent intent = new Intent(this, message_activity.class);
+                    intent.putExtra("chatBox", chatBox);
+                    intent.putExtra("userID", userID);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+        });
+
         // Thiết lập RecyclerView
         recyclerViewUsers.setLayoutManager(new LinearLayoutManager(this));
 
-        // Khởi tạo UserAdapter và gán vào RecyclerView
-        userAdapter = new UserAdapter(userList, (user, isChecked) -> {
-            // Xử lý khi checkbox được chọn/bỏ chọn
-            Log.d("UserSelection", "User checked: " + user.getName() + ", isChecked: " + isChecked);
-        });
+        // Khởi tạo UserAdapter và gán vào RecyclerView mà không cần callback
+        userAdapter = new UserAdapter(userList);
         recyclerViewUsers.setAdapter(userAdapter);
 
         // Lấy danh sách người dùng
@@ -71,13 +95,15 @@ public class UserSelectionActivity extends AppCompatActivity {
         chatBoxModel = new ChatBoxModel();
         // Lấy danh sách người dùng mà userID đang theo dõi
         chatBoxModel.getListFollowingUser(userID, fetchedUserList -> {
-            // Sau khi có danh sách người dùng, lấy thông tin chi tiết người dùng
-            chatBoxModel.getUsersInfo(fetchedUserList, users -> {
-                // Cập nhật danh sách `userList` và thông báo adapter cập nhật giao diện
-                userList.clear();
-                userList.addAll(users);
-                userAdapter.notifyDataSetChanged();
-            });
+            if (fetchedUserList != null && !fetchedUserList.isEmpty()){
+                // Sau khi có danh sách người dùng, lấy thông tin chi tiết người dùng
+                chatBoxModel.getUsersInfo(fetchedUserList, users -> {
+                    // Cập nhật danh sách `userList` và thông báo adapter cập nhật giao diện
+                    userList.clear();
+                    userList.addAll(users);
+                    userAdapter.notifyDataSetChanged();
+                });
+            }
         });
     }
 
@@ -92,5 +118,3 @@ public class UserSelectionActivity extends AppCompatActivity {
         userAdapter.updateList(filteredList);
     }
 }
-
-

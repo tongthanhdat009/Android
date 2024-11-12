@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nameChange"
+        android:title="Đổi tên đoạn chat"
+        android:icon="@drawable/baseline_edit_24"/>
+    <item
+        android:id="@+id/avatarChange"
+        android:title="Thay đổi ảnh đại diện"
+        android:icon="@drawable/ic_image"/>
+</menu>

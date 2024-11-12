@@ -19,16 +19,10 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
     private List<User> userList;
-    private final OnUserCheckedListener onUserCheckedListener;
+    private int selectedPosition = -1; // Track the selected checkbox position
 
-    // Giao diện callback khi checkbox được chọn/bỏ chọn
-    public interface OnUserCheckedListener {
-        void onUserChecked(User user, boolean isChecked);
-    }
-
-    public UserAdapter(List<User> userList, OnUserCheckedListener onUserCheckedListener) {
+    public UserAdapter(List<User> userList) {
         this.userList = userList;
-        this.onUserCheckedListener = onUserCheckedListener;
     }
 
     @NonNull
@@ -39,9 +33,27 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserViewHolder holder, @SuppressLint("RecyclerView") int position) {
         User user = userList.get(position);
         holder.bind(user);
+
+        // Set the checkbox state based on whether this item is selected
+        holder.userCheckBox.setChecked(position == selectedPosition);
+
+        // Handle checkbox click events
+        holder.userCheckBox.setOnClickListener(v -> {
+            if (selectedPosition == position) {
+                selectedPosition = -1; // Nếu checkbox được chọn lại thì bỏ chọn
+                holder.userCheckBox.setChecked(false);
+            } else {
+                int previousSelectedPosition = selectedPosition;
+                selectedPosition = position; // Cập nhật selectedPosition
+
+                // Cập nhật lại chỉ các mục thay đổi
+                notifyItemChanged(previousSelectedPosition);
+                notifyItemChanged(selectedPosition);
+            }
+        });
     }
 
     @Override
@@ -49,11 +61,21 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         return userList.size();
     }
 
-    // Cập nhật danh sách người dùng
-    @SuppressLint("NotifyDataSetChanged")
+    public User getSelectedUser() {
+        if (selectedPosition != -1 && selectedPosition < userList.size()) {
+            return userList.get(selectedPosition);
+        }
+        return null; // Nếu không có người dùng nào được chọn
+    }
+
+    // Method to update user list and reset selection when necessary
     public void updateList(List<User> newUserList) {
         this.userList = newUserList;
-        notifyDataSetChanged(); // Cập nhật lại RecyclerView
+        // Giữ lại selectedPosition khi danh sách được cập nhật
+        if (selectedPosition >= newUserList.size()) {
+            selectedPosition = -1; // Nếu selectedPosition không hợp lệ sau khi cập nhật, đặt lại.
+        }
+        notifyDataSetChanged(); // Cập nhật RecyclerView
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
@@ -66,31 +88,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
             userName = itemView.findViewById(R.id.userName);
             userAvatar = itemView.findViewById(R.id.userAvatar);
             userCheckBox = itemView.findViewById(R.id.customCheckBox);
-
-            userCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    onUserCheckedListener.onUserChecked(userList.get(position), isChecked);
-                }
-            });
         }
 
         void bind(User user) {
-            userName.setText(user.getName());
+            userName.setText(user.getName() != null && !user.getName().isEmpty() ? user.getName() : "Tên không xác định");
 
-            // Load avatar nếu có, nếu không hiển thị hình mặc định
             if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
                 Picasso.get()
                         .load(user.getAvatar())
-                        .placeholder(R.drawable.unknow_avatar) // Ảnh mặc định nếu chưa có avatar
+                        .placeholder(R.drawable.unknow_avatar)
                         .into(userAvatar);
             } else {
                 userAvatar.setImageResource(R.drawable.unknow_avatar);
             }
-
-            // Đặt giá trị cho checkbox
-            userCheckBox.setChecked(false); // Đặt mặc định chưa chọn
         }
     }
 }
-

@@ -76,4 +76,17 @@ public class User {
     public void setBiography(String biography) {
         Biography = biography;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID='" + userID + '\'' +
+                ", Name='" + Name + '\'' +
+                ", UserName='" + UserName + '\'' +
+                ", Password='" + Password + '\'' +
+                ", Email='" + Email + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", Biography='" + Biography + '\'' +
+                '}';
+    }
 }
