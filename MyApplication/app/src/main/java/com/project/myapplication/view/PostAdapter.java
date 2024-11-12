@@ -89,24 +89,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.targetAudience.setImageResource(R.drawable.baseline_public_off_24);
 
-            // Lấy danh sách người theo dõi chỉ khi bài viết không phải là công khai
             postModel.getAllFollower(post.getUserID(), new PostModel.OnFollowerListRetrievedCallback() {
                 @Override
                 public void getAllFollower(ArrayList<Followers> followerList) {
-                    // Sử dụng Set để tối ưu hiệu suất kiểm tra
                     Set<String> IDUserFollowed = new HashSet<>();
                     for (Followers follower : followerList) {
                         IDUserFollowed.add(follower.getUserID());
                     }
 
-                    // Kiểm tra nếu userID hợp lệ cho phép xem bài viết
                     if (IDUserFollowed.contains(userID) || userID.equals(post.getUserID())) {
                         holder.itemView.setVisibility(View.VISIBLE);
                     }
                     else {
-                        // Nếu không hợp lệ, loại bỏ bài đăng khỏi danh sách
                         posts.remove(position);
-                        notifyItemRemoved(position);  // Xóa vị trí hiện tại
+                        notifyItemRemoved(position);
                     }
                 }
             });
@@ -190,7 +186,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     // Lấy ID của những người đang theo dõi
                     for (Following following : followingList) {
                         followingListID.add(following.getUserID()); // Lưu ID theo dõi
-                        Toast.makeText(context, "followingListID: " + following.getIdFollowing(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "followingListID: " + following.getIdFollowing(), Toast.LENGTH_SHORT).show();
                     }
                     if(followingListID.isEmpty()){
                         popupMenu.getMenu().getItem(0).setVisible(true); // Không theo dõi
@@ -207,7 +203,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
 
             popupMenu.setOnMenuItemClickListener(menuItem -> {
-                Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
                 if(menuItem.getItemId() == R.id.follow){
                     postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()), new PostModel.OnAddFollowingCallback(){
                         @SuppressLint("NotifyDataSetChanged")
@@ -259,7 +255,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             }
                         });
                     });
-                    Toast.makeText(context,"Đã bỏ theo dõi", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context,"Đã bỏ theo dõi", Toast.LENGTH_SHORT).show();
                     return true;
                 }
                 else if(menuItem.getItemId() == R.id.author_infor){
@@ -284,10 +280,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             String newCaption = input.getText().toString();
                             // Xử lý thông tin nhập vào
                             if(newCaption.isEmpty()){
-                                Toast.makeText(context, "Vui lòng nhập caption để sửa!", Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, "Vui lòng nhập caption để sửa!", Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(context, "Caption đã nhập: " + newCaption, Toast.LENGTH_SHORT).show();
+//                                Toast.makeText(context, "Caption đã nhập: " + newCaption, Toast.LENGTH_SHORT).show();
                                 post.setContent(newCaption);
                                 postModel.postUpdate(post);
                                 Toast.makeText(context, " Sửa caption thành công! " + newCaption, Toast.LENGTH_SHORT).show();

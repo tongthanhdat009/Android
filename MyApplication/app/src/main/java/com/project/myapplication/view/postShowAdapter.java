@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.myapplication.DTO.Comment;
+import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
 import com.project.myapplication.model.CommentModel;
@@ -21,15 +22,19 @@ import com.project.myapplication.model.PostModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class postShowAdapter extends RecyclerView.Adapter<postShowAdapter.postShowViewHolder> {
     private final Context context;
     private final ArrayList<Post> postsList;
     private final PostModel postModel;
-    public postShowAdapter(Context context, ArrayList<Post> postsList, PostModel postModel){
+    private final String userID;
+    public postShowAdapter(Context context, ArrayList<Post> postsList, PostModel postModel, String userID){
         this.context = context;
         this.postsList = postsList;
         this.postModel = postModel;
+        this.userID = userID;
     }
     @NonNull
     @Override
@@ -44,6 +49,31 @@ public class postShowAdapter extends RecyclerView.Adapter<postShowAdapter.postSh
         layoutParams.height = 350;
         layoutParams.width = 350;
         holder.itemView.setLayoutParams(layoutParams);
+
+        Post post = postsList.get(position);
+
+        if (post.getTargetAudience().equals("Công khai")) {
+            holder.itemView.setVisibility(View.VISIBLE); // Hiển thị bài viết công khai
+        } else {
+            postModel.getAllFollower(post.getUserID(), new PostModel.OnFollowerListRetrievedCallback() {
+                @Override
+                public void getAllFollower(ArrayList<Followers> followerList) {
+                    Set<String> IDUserFollowed = new HashSet<>();
+                    for (Followers follower : followerList) {
+                        IDUserFollowed.add(follower.getUserID());
+                    }
+
+                    if (IDUserFollowed.contains(userID) || userID.equals(post.getUserID())) {
+                        holder.itemView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        postsList.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                }
+            });
+        }
+
         if(!postsList.get(position).getMedia().isEmpty()){
             Picasso.get().load(postsList.get(position).getMedia().get(0)).resize(350,350).into(holder.thumbnail);
         }

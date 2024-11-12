@@ -210,7 +210,7 @@ public class authorProfileActivity extends AppCompatActivity {
         postModel.getUserPost(authorID, new PostModel.OnUserPostListRetrievedCallback() {
             @Override
             public void getUserPost(ArrayList<Post> postsList) {
-                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel);
+                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel, userID);
                 recyclerView.setLayoutManager(gridLayoutManager);
                 recyclerView.setAdapter(postShowAdapter);
             }
