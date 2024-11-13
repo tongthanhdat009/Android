@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -70,15 +71,18 @@
             <EditText
                 android:id="@+id/type_comment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:maxLength="100"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
                 android:clipToOutline="true"
                 android:hint="Nhập những gì bạn nghĩ..."
                 android:maxLines="4"
                 android:minLines="1"
                 android:inputType="textMultiLine"
-                android:textCursorDrawable="@android:color/transparent"/>
+                android:textCursorDrawable="@android:color/transparent"
+                android:background="@drawable/edit_text_background"/>
         </LinearLayout>
 
         <ImageView
