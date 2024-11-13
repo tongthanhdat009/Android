@@ -3,6 +3,9 @@ package com.project.myapplication.model;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -10,6 +13,8 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.User;
@@ -86,6 +91,21 @@ public class ChatBoxModel {
                         }
                     }
                     listener.onRetrieved(listFollowingUserIds); // Gọi callback sau khi có danh sách userID
+                });
+    }
+
+    public void getListUser( OnFollowingListRetrievedListener listener) {
+        firestore.collection("users")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<String> UserIds = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        User user = document.toObject(User.class);
+                        assert user != null;
+                        user.setUserID(document.getId());
+                        UserIds.add(user.getUserID());
+                    }
+                    listener.onRetrieved(UserIds); // Gọi callback sau khi có danh sách userID
                 });
     }
 
@@ -251,5 +271,42 @@ public class ChatBoxModel {
                 }
             }
         });
+    }
+
+    public void updateChatBoxName(String chatBoxID, String newName, OnCompleteListener<Boolean>callback) {
+        firestore.collection("chatbox").document(chatBoxID)
+                .update("name", newName)
+                .addOnCompleteListener(task -> {
+                    // Create a Task<Boolean> based on the task outcome
+                    Task<Boolean> resultTask = Tasks.forResult(task.isSuccessful());
+                    callback.onComplete(resultTask);  // Pass Task<Boolean> to callback
+                });
+    }
+
+    public void uploadChatBoxImage(Uri imageUri, String chatBoxID, UploadImageCallback callback) {
+        // Reference to Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("chatBoxImages/" + chatBoxID + ".jpg");
+
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
+                        .addOnSuccessListener(uri -> callback.onSuccess(uri.toString())))
+                .addOnFailureListener(callback::onFailure);
+    }
+
+    public void updateChatBoxImage(String chatBoxID, String imageUrl, OnCompleteListener<Void> callback) {
+        firestore.collection("chatbox").document(chatBoxID)
+                .update("image_url", imageUrl)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onComplete(task);
+                    } else {
+                        callback.onComplete(task);
+                    }
+                });
+    }
+
+    public interface UploadImageCallback {
+        void onSuccess(String imageUrl);
+        void onFailure(Exception e);
     }
 }

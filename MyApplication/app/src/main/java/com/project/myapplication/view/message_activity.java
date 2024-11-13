@@ -14,6 +14,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.graphics.Rect;
+import android.widget.Toast;
+import android.app.AlertDialog;
+
+import androidx.core.view.GravityCompat;
 
 
 import androidx.activity.result.ActivityResult;
@@ -24,6 +28,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
@@ -40,6 +47,7 @@ public class message_activity extends AppCompatActivity {
     private String userID;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     private RecyclerView recyclerView;
     private MessageAdapter adapter;
     private List<Message> messageList = new ArrayList<>();
@@ -65,6 +73,7 @@ public class message_activity extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
         chatBoxName = findViewById(R.id.user_name);
         chatBoxAvatar = findViewById(R.id.user_icon);
+        navigationView = findViewById(R.id.navigation_view);
 
         // khởi tao ActivityResultLauncher
         pickImageLauncher = registerForActivityResult(
@@ -104,6 +113,27 @@ public class message_activity extends AppCompatActivity {
         // Tải danh sách tin nhắn
         loadMessages(chatBox.getId());
 
+        if (navigationView != null) {
+            Log.d("NavigationView", "NavigationView is initialized");
+            navigationView.setNavigationItemSelectedListener(item -> {
+                Log.d("MenuItem", "Item selected: " + item.getItemId());
+                if (item.getItemId() == R.id.nameChange) {
+                    Log.d("MenuItem", "Name Change selected");
+                    showRenameChatBoxDialog(chatBox); // Handle name change
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                    return true;
+                } else if (item.getItemId() == R.id.avatarChange) {
+                    Log.d("MenuItem", "Avatar Change selected");
+                    chooseNewChatBoxImage(chatBox); // Handle avatar change
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        } else {
+            Log.e("NavigationView", "NavigationView is null");
+        }
 
         // Lắng nghe sự thay đổi kích thước của drawerLayout để phát hiện bàn phím bật/tắt
         drawerLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
@@ -207,4 +237,80 @@ public class message_activity extends AppCompatActivity {
         }
     }
 
+    private void showRenameChatBoxDialog(ChatBox chatBox) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Đổi tên ChatBox");
+
+        // Create an EditText for the user to enter the new name
+        final EditText input = new EditText(this);
+        input.setText(chatBox.getName());  // Display the current name
+        builder.setView(input);
+
+        builder.setPositiveButton("Đổi tên", (dialog, which) -> {
+            String newName = input.getText().toString().trim();
+            if (!newName.isEmpty()) {
+                // Update the chat box name in Firestore
+                ChatBoxModel chatBoxModel = new ChatBoxModel();
+                chatBoxModel.updateChatBoxName(chatBox.getId(), newName, new OnCompleteListener<Boolean>() {
+                    @Override
+                    public void onComplete(Task<Boolean> task) {
+                        if (task.isSuccessful() && task.getResult()) {
+                            chatBox.setName(newName); // Update the name in the current ChatBox
+                            chatBoxName.setText(newName); // Display the new name
+                        } else {
+                            Toast.makeText(message_activity.this, "Không thể đổi tên", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+    private void chooseNewChatBoxImage(ChatBox chatBox) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickImageLauncher.launch(intent); // Dùng ActivityResultLauncher để chọn ảnh mới
+
+        // Trong callback của pickImageLauncher
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null && data.getData() != null) {
+                            Uri newImageUri = data.getData();
+                            uploadNewChatBoxImage(chatBox.getId(), newImageUri);
+                        }
+                    }
+                });
+    }
+
+    private void uploadNewChatBoxImage(String chatBoxID, Uri imageUri) {
+        ChatBoxModel chatBoxModel = new ChatBoxModel();
+
+        // Tải lên hình ảnh lên Firebase Storage và cập nhật URL hình ảnh mới trong Firestore
+        chatBoxModel.uploadChatBoxImage(imageUri, chatBoxID, new ChatBoxModel.UploadImageCallback() {
+            @Override
+            public void onSuccess(String imageUrl) {
+                // Cập nhật hình ảnh trong Firestore và hiển thị ảnh mới
+                chatBoxModel.updateChatBoxImage(chatBoxID, imageUrl, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Picasso.get().load(imageUrl).into(chatBoxAvatar); // Hiển thị ảnh mới
+                        } else {
+                            Toast.makeText(message_activity.this, "Không thể cập nhật ảnh", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Toast.makeText(message_activity.this, "Tải ảnh thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

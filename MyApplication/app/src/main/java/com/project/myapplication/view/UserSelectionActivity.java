@@ -2,6 +2,7 @@ package com.project.myapplication.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -26,6 +27,8 @@ public class UserSelectionActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private List<User> userList = new ArrayList<>(); // Khởi tạo danh sách người dùng trống
     private ChatBoxModel chatBoxModel;
+    private Handler handler = new Handler();
+    private Runnable searchRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,28 @@ public class UserSelectionActivity extends AppCompatActivity {
         EditText searchUser = findViewById(R.id.searchUser);
         ImageButton addButton = findViewById(R.id.add_button);
         recyclerViewUsers = findViewById(R.id.recyclerViewUsers);
+
+        searchUser.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Hủy runnable trước đó nếu người dùng tiếp tục gõ
+                if (searchRunnable != null) {
+                    handler.removeCallbacks(searchRunnable);
+                }
+
+                // Tạo runnable mới với delay
+                searchRunnable = () -> filterUsers(s.toString());
+
+                // Thực thi runnable sau 500ms
+                handler.postDelayed(searchRunnable, 500);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
         // Thiết lập nút quay lại
         backButton.setOnClickListener(v -> finish());
@@ -79,7 +104,16 @@ public class UserSelectionActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterUsers(s.toString());
+                // Hủy runnable trước đó nếu người dùng tiếp tục gõ
+                if (searchRunnable != null) {
+                    handler.removeCallbacks(searchRunnable);
+                }
+
+                // Tạo runnable mới với delay
+                searchRunnable = () -> filterUsers(s.toString());
+
+                // Thực thi runnable sau 500ms
+                handler.postDelayed(searchRunnable, 500);
             }
 
             @Override
@@ -90,7 +124,7 @@ public class UserSelectionActivity extends AppCompatActivity {
     private void fetchUsers(String userID) {
         chatBoxModel = new ChatBoxModel();
         // Lấy danh sách người dùng mà userID đang theo dõi
-        chatBoxModel.getListFollowingUser(userID, fetchedUserList -> {
+        chatBoxModel.getListUser(fetchedUserList -> {
             if (fetchedUserList != null && !fetchedUserList.isEmpty()){
                 // Sau khi có danh sách người dùng, lấy thông tin chi tiết người dùng
                 chatBoxModel.getUsersInfo(fetchedUserList, users -> {
@@ -103,8 +137,8 @@ public class UserSelectionActivity extends AppCompatActivity {
         });
     }
 
+
     private void filterUsers(String query) {
-        // Lọc danh sách người dùng dựa trên chuỗi tìm kiếm
         List<User> filteredList = new ArrayList<>();
         for (User user : userList) {
             if (user.getName().toLowerCase().contains(query.toLowerCase())) {
