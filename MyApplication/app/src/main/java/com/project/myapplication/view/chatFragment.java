@@ -46,7 +46,7 @@ public class chatFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
         RecyclerView recyclerViewChat = view.findViewById(R.id.recyclerViewChat);
         recyclerViewChat.setLayoutManager(new LinearLayoutManager(getContext()));
-        String TestuserID = "user" + userID;
+        String TestuserID = userID;
         chatController = new chatController(new ArrayList<>(), TestuserID, view.getContext());
         recyclerViewChat.setAdapter(chatController);
         if (userID != null) {

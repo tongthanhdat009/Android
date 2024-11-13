@@ -159,35 +159,49 @@ public class ChatBoxModel {
     }
 
     public void createNewChatBox(String userID1, String userID2, ChatBoxCallback2 callback) {
-        Map<String, Object> chatBoxData = new HashMap<>();
-        chatBoxData.put("name", "Chat Box");
-        chatBoxData.put("lastMessage", "");
-        chatBoxData.put("lastMessageTimestamp", FieldValue.serverTimestamp());
-        chatBoxData.put("image_url", "");
+        // Lấy tên của hai người dùng
+        firestore.collection("users").document(userID1).get()
+                .addOnSuccessListener(documentSnapshot1 -> {
+                    String userName1 = documentSnapshot1.exists() ? documentSnapshot1.getString("Name") : userID1;
 
-        // Create the "showed" map with users' IDs
-        Map<String, Boolean> showedMap = new HashMap<>();
-        showedMap.put(userID1, true);
-        showedMap.put(userID2, true);
-        chatBoxData.put("showed", showedMap);
+                    firestore.collection("users").document(userID2).get()
+                            .addOnSuccessListener(documentSnapshot2 -> {
+                                String userName2 = documentSnapshot2.exists() ? documentSnapshot2.getString("Name") : userID2;
 
-        // Add a new chat box document
-        firestore.collection("chatbox")
-                .add(chatBoxData)
-                .addOnSuccessListener(documentReference -> {
-                    String chatBoxId = documentReference.getId();
+                                // Set name as "<userName1>, <userName2>"
+                                Map<String, Object> chatBoxData = new HashMap<>();
+                                chatBoxData.put("name", userName1 + ", " + userName2);
+                                chatBoxData.put("lastMessage", "");
+                                chatBoxData.put("lastMessageTimestamp", FieldValue.serverTimestamp());
+                                chatBoxData.put("image_url", "");
 
-                    // Fetch the full ChatBox object after creation
-                    firestore.collection("chatbox")
-                            .document(chatBoxId)
-                            .get()
-                            .addOnSuccessListener(documentSnapshot -> {
-                                if (documentSnapshot.exists()) {
-                                    // Create a ChatBox object from the document data
-                                    ChatBox chatBox = documentSnapshot.toObject(ChatBox.class);
-                                    chatBox.setId(chatBoxId);
-                                    callback.onChatBoxRetrieved(chatBox);  // Pass the full ChatBox object
-                                }
+                                // Create the "showed" map with users' IDs
+                                Map<String, Boolean> showedMap = new HashMap<>();
+                                showedMap.put(userID1, false);
+                                showedMap.put(userID2, false);
+                                chatBoxData.put("showed", showedMap);
+
+                                // Add a new chat box document
+                                firestore.collection("chatbox")
+                                        .add(chatBoxData)
+                                        .addOnSuccessListener(documentReference -> {
+                                            String chatBoxId = documentReference.getId();
+
+                                            // Fetch the full ChatBox object after creation
+                                            firestore.collection("chatbox")
+                                                    .document(chatBoxId)
+                                                    .get()
+                                                    .addOnSuccessListener(documentSnapshot -> {
+                                                        if (documentSnapshot.exists()) {
+                                                            // Create a ChatBox object from the document data
+                                                            ChatBox chatBox = documentSnapshot.toObject(ChatBox.class);
+                                                            if (chatBox != null) {
+                                                                chatBox.setId(chatBoxId);
+                                                                callback.onChatBoxRetrieved(chatBox);  // Pass the full ChatBox object
+                                                            }
+                                                        }
+                                                    });
+                                        });
                             });
                 });
     }
@@ -218,5 +232,24 @@ public class ChatBoxModel {
 
     public interface ChatBoxCallback2 {
         void onChatBoxRetrieved(ChatBox chatBox);
+    }
+
+    public void updateAllShowedToTrue(String chatBoxId) {
+        DocumentReference chatBoxRef = firestore.collection("chatbox").document(chatBoxId);
+
+        chatBoxRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Lấy map của trường "showed"
+                Map<String, Boolean> showedMap = (Map<String, Boolean>) documentSnapshot.get("showed");
+
+                if (showedMap != null) {
+                    // Đặt tất cả giá trị trong map thành true
+                    for (String key : showedMap.keySet()) {
+                        showedMap.put(key, true);
+                    }
+                    chatBoxRef.update("showed", showedMap);
+                }
+            }
+        });
     }
 }

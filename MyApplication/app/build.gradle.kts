@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -59,5 +60,4 @@ dependencies {
     implementation (libs.google.firebase.analytics)
     implementation (libs.firebase.messaging)
     implementation (libs.swiperefreshlayout)
-
 }

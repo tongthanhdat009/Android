@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -13,13 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class UserSelectionActivity extends AppCompatActivity {
 
@@ -51,12 +50,9 @@ public class UserSelectionActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng chọn người dùng để trò chuyện", Toast.LENGTH_SHORT).show();
             } else {
                 // Nếu có người dùng được chọn, tiếp tục tạo hoặc cập nhật chatbox
-                String TestuserID = "user" + userID;
-                Log.d("TESTESTTEST",selectedUser.toString());
-                String TestuserID2 = "user" + selectedUser.getUserID();
+                String userID2 = (String)selectedUser.getUserID();
 
-                chatBoxModel.createOrUpdateChatBox(TestuserID, TestuserID2, chatBox -> {
-                    Log.d("TESTESTTEST",chatBox.toString());
+                chatBoxModel.createOrUpdateChatBox(userID, userID2, chatBox -> {
                     Intent intent = new Intent(this, message_activity.class);
                     intent.putExtra("chatBox", chatBox);
                     intent.putExtra("userID", userID);

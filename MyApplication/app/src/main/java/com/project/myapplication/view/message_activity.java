@@ -168,6 +168,7 @@ public class message_activity extends AppCompatActivity {
                 }
             });
             chatBoxModel.updateLastMessage(chatboxID, content);
+            chatBoxModel.updateAllShowedToTrue(chatboxID);
             adapter.notifyDataSetChanged();
             recyclerView.scrollToPosition(messageList.size() - 1);
             messageInput.setText("");
