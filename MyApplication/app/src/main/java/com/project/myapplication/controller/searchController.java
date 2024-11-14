@@ -48,7 +48,7 @@ public class searchController {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String input = Objects.requireNonNull(activity.inputSearch.getText()).toString();
-                searchModel.getSearchResult(input, new SearchModel.OnUserSearchListRetrievedCallback() {
+                searchModel.getSearchResult(input, currentUserID, new SearchModel.OnUserSearchListRetrievedCallback() {
                     @Override
                     public void getSearchResult(ArrayList<User> usersList) {
                         if(!input.isEmpty()){

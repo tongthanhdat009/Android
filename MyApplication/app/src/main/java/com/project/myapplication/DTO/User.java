@@ -8,10 +8,11 @@ public class User {
     private String Email;
     private String avatar;
     private String Biography;
+    private String Logged;
     public User() {
 
     }
-    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography) {
+    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography, String Logged) {
         this.userID = userID;
         this.Name = Name;
         this.UserName = UserName;
@@ -19,6 +20,7 @@ public class User {
         this.Email = Email;
         this.avatar = avatar;
         this.Biography = Biography;
+        this.Logged = Logged;
     }
 
     public String getUserID() {
@@ -88,5 +90,13 @@ public class User {
                 ", avatar='" + avatar + '\'' +
                 ", Biography='" + Biography + '\'' +
                 '}';
+    }
+
+    public String getLogged() {
+        return Logged;
+    }
+
+    public void setLogged(String logged) {
+        this.Logged = logged;
     }
 }

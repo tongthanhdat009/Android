@@ -17,7 +17,7 @@ public class SearchModel {
         // Khởi tạo Firestore
         firestore = FirebaseFirestore.getInstance();
     }
-    public void getSearchResult(String inputSearch, OnUserSearchListRetrievedCallback callback){
+    public void getSearchResult(String inputSearch, String currentUserID, OnUserSearchListRetrievedCallback callback){
         firestore.collection("users").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 ArrayList<User> usersList = new ArrayList<>();
@@ -27,9 +27,11 @@ public class SearchModel {
                         String inputNormal = removeAccents(inputSearch).toLowerCase();
                         if(rsNormal.contains(inputNormal.trim())){
                             User userTemp = document.toObject(User.class);
-                            assert userTemp != null;
-                            userTemp.setUserID(document.getId());
-                            usersList.add(userTemp);
+                            if(!currentUserID.equals(document.getId())){
+                                assert userTemp != null;
+                                userTemp.setUserID(document.getId());
+                                usersList.add(userTemp);
+                            }
                         }
                     }
                 }

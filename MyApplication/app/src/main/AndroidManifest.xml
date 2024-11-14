@@ -20,7 +20,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/logo"
+        android:roundIcon="@color/background"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="tiramisu">
@@ -104,6 +104,67 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".view.Login_page"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".view.register_page"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".view.register_avatar"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".view.Profile"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".view.userShowFollowActivity"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

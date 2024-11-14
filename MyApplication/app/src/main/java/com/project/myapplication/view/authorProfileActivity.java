@@ -19,15 +19,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
+import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
+import com.project.myapplication.model.ChatBoxModel;
 import com.project.myapplication.model.PostModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class authorProfileActivity extends AppCompatActivity {
     private String userID;
@@ -36,6 +39,7 @@ public class authorProfileActivity extends AppCompatActivity {
     private final PostModel postModel = new PostModel();
     private Button followButton = null;
     private Button unfollowButton = null;
+    private ChatBoxModel chatBoxModel = new ChatBoxModel();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +53,23 @@ public class authorProfileActivity extends AppCompatActivity {
         LinearLayout totalFollowingContainer = findViewById(R.id.total_following_container);
         followButton = findViewById(R.id.follow_button);
         unfollowButton = findViewById(R.id.unfollow_button);
+        Button chatBTN = findViewById(R.id.chat);
+
+        chatBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chatBoxModel.createOrUpdateChatBox(userID, authorID, new ChatBoxModel.ChatBoxCallback2() {
+                    @Override
+                    public void onChatBoxRetrieved(ChatBox chatBox) {
+                        Toast.makeText(view.getContext(), "Tạo chatbox thành cong", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(authorProfileActivity.this, message_activity.class);
+                        intent.putExtra("userID", authorID);
+                        intent.putExtra("chatBox", chatBox);
+                        view.getContext().startActivity(intent);
+                    }
+                });
+            }
+        });
 
         ImageButton backBTN = findViewById(R.id.backBTN);
         backBTN.setOnClickListener(v -> finish());
@@ -196,6 +217,11 @@ public class authorProfileActivity extends AppCompatActivity {
                 if (!followingIDList.isEmpty() && followingIDList.contains(authorID)){
                     unfollowButton.setVisibility(View.VISIBLE);
                     followButton.setVisibility(View.GONE);
+                }
+                else if(Objects.equals(authorID, userID)){
+                    chatBTN.setVisibility(View.GONE);
+                    followButton.setVisibility(View.GONE);
+                    unfollowButton.setVisibility(View.GONE);
                 }
                 else{
                     unfollowButton.setVisibility(View.GONE);
