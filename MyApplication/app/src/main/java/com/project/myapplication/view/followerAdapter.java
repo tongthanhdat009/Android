@@ -62,7 +62,6 @@ public class followerAdapter extends RecyclerView.Adapter<followerAdapter.follow
                 intent.putExtra("authorID", followersList.get(position).getUserID());
                 intent.putExtra("userID", currentUserID);
                 context.startActivity(intent);
-                ((Activity) context).finish();
             }
         });
     }

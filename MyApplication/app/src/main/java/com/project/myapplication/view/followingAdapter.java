@@ -61,7 +61,6 @@ public class followingAdapter extends RecyclerView.Adapter<followingAdapter.foll
                 intent.putExtra("userID", currentUserID);
 //                Toast.makeText(context, "authorID: "+followingList.get(position).getUserID()+" currentID: "+currentUserID);
                 context.startActivity(intent);
-                ((Activity) context).finish();
             }
         });
     }

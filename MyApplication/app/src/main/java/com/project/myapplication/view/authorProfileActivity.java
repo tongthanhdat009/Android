@@ -60,7 +60,6 @@ public class authorProfileActivity extends AppCompatActivity {
                 intent.putExtra("AuthorID", authorID);
                 intent.putExtra("CurrentUser", userID);
                 startActivity(intent);
-                finish();
             }
         });
 

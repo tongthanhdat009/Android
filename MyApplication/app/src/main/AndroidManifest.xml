@@ -65,7 +65,7 @@
         <activity
             android:name=".view.authorProfileActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="standard"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -76,7 +76,7 @@
         <activity
             android:name=".view.ShowFollowActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="standard"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
