@@ -1,202 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
-    <!--TITLE-->
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/swipeRefreshLayout"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent">
     <LinearLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/profile_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/helvetica_bold"
-            android:textColor="@color/text_primary"
-            android:text="Tên người đăng"
-            android:textSize="20sp"
-            android:paddingStart="25dp"
-            android:maxLength="40"
-            android:gravity="center"
-            tools:ignore="RtlSymmetry"
-            android:layout_weight="1"/>
-        <ImageButton
-            android:id="@+id/menu"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_menu"
-            android:scaleType="fitCenter"
-            android:contentDescription="TODO"
-            android:backgroundTint="@android:color/transparent"
-            android:background="@null"
-            android:foreground="?attr/selectableItemBackground"
-            app:tint="@color/like_button_color" />
-    </LinearLayout>
-    <!--thông tin tài khoản hiện tại-->
-    <LinearLayout
-        android:id="@+id/currentUserInformation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.1"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/background">
 
+        <!--TITLE-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp">
-            <!--ảnh đại diện-->
-            <ImageView
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:id="@+id/avatar"
-                android:scaleType="centerCrop"
-                android:layout_marginStart="10dp"
-                android:background="@drawable/rounded_corners"
-                android:clipToOutline="true"
-                android:layout_gravity="center"
-                android:layout_weight="0.1"
-                tools:ignore="NestedWeights" />
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_weight="0.25"
-                android:layout_marginStart="10dp">
-                <LinearLayout
-                    android:id="@+id/total_posts_container"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.3"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/total_posts"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        tools:ignore="NestedWeights"
-                        android:textSize="20sp"
-                        android:gravity="bottom|center_horizontal"
-                        android:textColor="@color/text_primary"/>
-                    <TextView
-                        android:id="@+id/total_posts_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        tools:ignore="NestedWeights"
-                        android:text="Bài viết"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_primary"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/total_followers_container"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.3"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
-                    <TextView
-                        android:id="@+id/total_followers"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        android:textSize="20sp"
-                        android:gravity="bottom|center_horizontal"
-                        android:textColor="@color/text_primary"/>
-
-                    <TextView
-                        android:id="@+id/total_followers_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
-                        android:text="Người theo dõi"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_primary"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/total_following_container"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.3"
-                    android:orientation="vertical"
-                    android:foreground="?attr/selectableItemBackground">
-
-                    <TextView
-                        android:id="@+id/total_following"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.33"
-                        android:textSize="20sp"
-                        android:gravity="bottom|center_horizontal"
-                        android:textColor="@color/text_primary">
-                    </TextView>
-
-                    <TextView
-                        android:id="@+id/total_following_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.33"
-                        android:text="Đang theo dõi"
-                        android:textSize="16sp"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_primary"
-                        android:maxLength="200">
-                    </TextView>
-
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <!--thông tin theo dõi + số bài viết-->
+            android:orientation="horizontal">
             <TextView
-                android:id="@+id/biography"
+                android:id="@+id/profile_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:foreground="?attr/selectableItemBackground"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"
-                android:text="Tiểu sử"
-                android:textSize="16sp"
-                android:maxLines="2"
-                android:background="@null"
+                android:fontFamily="@font/helvetica_bold"
                 android:textColor="@color/text_primary"
-                android:maxLength="200" />
+                android:text="Tên người đăng"
+                android:textSize="20sp"
+                android:paddingStart="25dp"
+                android:maxLength="40"
+                android:gravity="center"
+                tools:ignore="RtlSymmetry"
+                android:layout_weight="1"/>
+            <ImageButton
+                android:id="@+id/menu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_menu"
+                android:scaleType="fitCenter"
+                android:contentDescription="TODO"
+                android:backgroundTint="@android:color/transparent"
+                android:background="@null"
+                android:foreground="?attr/selectableItemBackground"
+                app:tint="@color/like_button_color" />
+        </LinearLayout>
+        <!--thông tin tài khoản hiện tại-->
+        <LinearLayout
+            android:id="@+id/currentUserInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
+                <!--ảnh đại diện-->
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:id="@+id/avatar"
+                    android:scaleType="centerCrop"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/rounded_corners"
+                    android:clipToOutline="true"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.1"
+                    tools:ignore="NestedWeights" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_weight="0.25"
+                    android:layout_marginStart="10dp">
+                    <LinearLayout
+                        android:id="@+id/total_posts_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical"
+                        tools:ignore="NestedWeights">
+
+                        <TextView
+                            android:id="@+id/total_posts"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            tools:ignore="NestedWeights"
+                            android:textSize="20sp"
+                            android:gravity="bottom|center_horizontal"
+                            android:textColor="@color/text_primary"/>
+                        <TextView
+                            android:id="@+id/total_posts_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            tools:ignore="NestedWeights"
+                            android:text="Bài viết"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/text_primary"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/total_followers_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
+                        <TextView
+                            android:id="@+id/total_followers"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:textSize="20sp"
+                            android:gravity="bottom|center_horizontal"
+                            android:textColor="@color/text_primary"/>
+
+                        <TextView
+                            android:id="@+id/total_followers_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.5"
+                            android:text="Người theo dõi"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/text_primary"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/total_following_container"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3"
+                        android:orientation="vertical"
+                        android:foreground="?attr/selectableItemBackground">
+
+                        <TextView
+                            android:id="@+id/total_following"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.33"
+                            android:textSize="20sp"
+                            android:gravity="bottom|center_horizontal"
+                            android:textColor="@color/text_primary">
+                        </TextView>
+
+                        <TextView
+                            android:id="@+id/total_following_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.33"
+                            android:text="Đang theo dõi"
+                            android:textSize="16sp"
+                            android:textAlignment="center"
+                            android:textColor="@color/text_primary"
+                            android:maxLength="200">
+                        </TextView>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!--thông tin theo dõi + số bài viết-->
+                <TextView
+                    android:id="@+id/biography"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Tiểu sử"
+                    android:textSize="16sp"
+                    android:maxLines="2"
+                    android:background="@null"
+                    android:textColor="@color/text_primary"
+                    android:maxLength="200" />
+            </LinearLayout>
+
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Các bài viết đã đăng"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:fontFamily="@font/helvetica_bold"
-            android:textColor="@color/text_secondary"
-            tools:ignore="NestedWeights" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/post_show_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="NestedWeights" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Các bài viết đã đăng"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:fontFamily="@font/helvetica_bold"
+                android:textColor="@color/text_secondary"
+                tools:ignore="NestedWeights" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/post_show_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="NestedWeights" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

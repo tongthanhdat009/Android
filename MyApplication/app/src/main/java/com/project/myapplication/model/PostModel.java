@@ -84,6 +84,8 @@ public class PostModel {
                     if (document.exists()) {
                         // Gọi callback với userID
                         User tempUser = document.toObject(User.class);
+                        assert tempUser != null;
+                        tempUser.setUserID(document.getId());
                         callback.onUserRetrievedCallback(tempUser);
                     } else {
                         Log.d("PostModel", "No such user with ID: " + userID);

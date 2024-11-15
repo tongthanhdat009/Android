@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/edit_avatar"
+        android:title="Thay đổi ảnh đại diện"
+        android:icon="@drawable/ic_image"
+        android:iconTint="@color/text_primary"
+        android:orderInCategory="100" />
+    <item
+        android:id="@+id/edit_biography"
+        android:title="Chỉnh sửa tiểu sử"
+        android:orderInCategory="100"
+        android:icon="@drawable/baseline_edit_24"
+        android:iconTint="@color/text_primary" />
+    <item
+        android:id="@+id/logout"
+        android:title="Đăng xuất"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_logout"
+        android:iconTint="@color/text_primary" />
+</menu>

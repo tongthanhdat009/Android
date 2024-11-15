@@ -2,16 +2,24 @@ package com.project.myapplication.model;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.net.Uri;
 import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 
 import org.json.JSONException;
@@ -19,6 +27,8 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserModel {
     private final FirebaseFirestore firestore;
@@ -107,6 +117,52 @@ public class UserModel {
                         callback.loggedCheck(null);
                     }
                 });
+    }
+
+    public void userUpdate(User user) {
+        DocumentReference docUser= firestore.collection("users").document(user.getUserID());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("Logged", user.getLogged());
+        updates.put("Biography", user.getBiography());
+        updates.put("avatar", user.getAvatar());
+        docUser.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firestore", "DocumentSnapshot successfully updated!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Firestore", "Error updating document", e);
+                    }
+                });
+    }
+
+    public void uploadAvatar(Uri uri, String userId, OnUpdateAvatarCallback callback){
+        // Lấy instance của Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference avatarRef = storage.getReference().child("avatars/" + userId + ".jpg");
+        // Upload file lên Firebase Storage
+        avatarRef.putFile(uri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Có thể lấy link tải ảnh về nếu cần
+                    avatarRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                        String avatarUrl = downloadUri.toString();
+                        // Lưu avatarUrl vào Firestore hoặc Realtime Database nếu cần
+                        callback.updateAvatar(avatarUrl,"Thay đổi avatar thành công");
+
+                    });
+                })
+                .addOnFailureListener(e ->
+                        callback.updateAvatar(null,"Thay đổi avatar không thành công")
+                );
+    }
+
+    public interface OnUpdateAvatarCallback{
+        public void updateAvatar(String avatar, String noti);
     }
 
     public interface OnLoggedCheckCallback{
