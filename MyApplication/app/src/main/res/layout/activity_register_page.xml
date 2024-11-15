@@ -6,19 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".register_page">
-    <ImageView
+    tools:context=".view.register_page"
+    android:background="@color/background">
+    <TextView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="76dp"
         app:srcCompat="@drawable/instagram_logo"
+        android:text="Điện tín tức thời"
+        android:fontFamily="@font/harmoni"
+        android:textColor="@color/text_primary"
+        android:gravity="center"
+        android:textSize="50sp"
         android:layout_marginTop="100dp"/>
     <EditText
         android:id="@+id/edtconnect"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint="Email"
         android:inputType="text"
@@ -31,33 +37,57 @@
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint="Mật khẩu"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:textColorHint="#666464"
         android:paddingLeft="16dp"
         android:layout_marginTop="30dp"
         android:textSize="16sp" />
+    <LinearLayout
+        android:id="@+id/show_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="33dp"
+        tools:ignore="UseCompoundDrawables">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hiển thị mật khẩu"
+            android:fontFamily="@font/avenir_bold"
+            android:layout_marginTop="3dp"/>
+        <ImageView
+            android:id="@+id/iv_show_password"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_open_eye"
+            android:background="@android:color/transparent"
+            app:tint="@color/text_primary" />
+    </LinearLayout>
     <EditText
         android:id="@+id/edtfullname"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint="Tên đầy đủ"
         android:inputType="text"
         android:textColorHint="#666464"
         android:paddingLeft="16dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:textSize="16sp" />
     <EditText
         android:id="@+id/edtusername"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint="Tên người dùng"
         android:inputType="text"
@@ -89,12 +119,7 @@
         android:textStyle="bold"
         android:textSize="16dp"
         app:backgroundTint="@null" />
-    <TextView
-        android:layout_width="345dp"
-        android:layout_height="34dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="50px"
-        android:text="--------------------------------------------------------------------------------------"/>
+
     <LinearLayout
         android:layout_marginTop="20dp"
         android:layout_width="345dp"

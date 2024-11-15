@@ -6,13 +6,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.Login_page" >
+    tools:context=".view.Login_page"
+    android:background="@color/background">
 
-    <ImageView
+    <TextView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="76dp"
         app:srcCompat="@drawable/instagram_logo"
+        android:text="Điện tín tức thời"
+        android:fontFamily="@font/harmoni"
+        android:textColor="@color/text_primary"
+        android:gravity="center"
+        android:textSize="50sp"
         android:layout_marginTop="100dp"/>
 
     <EditText
@@ -20,7 +26,8 @@
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
+        android:textColor="@color/text_primary"
         android:ems="10"
         android:hint="Email"
         android:inputType="text"
@@ -35,13 +42,39 @@
         android:layout_height="47dp"
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
-        android:background="@drawable/custom_edt"
+        android:background="@drawable/edit_text_background"
         android:ems="10"
+        android:textColor="@color/text_primary"
         android:hint="Mật khẩu"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:paddingLeft="16dp"
         android:textColorHint="#666464"
         android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/show_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="30dp"
+        tools:ignore="UseCompoundDrawables">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hiển thị mật khẩu"
+            android:fontFamily="@font/avenir_bold"
+            android:layout_marginTop="3dp"/>
+        <ImageView
+            android:id="@+id/iv_show_password"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_open_eye"
+            android:background="@android:color/transparent"
+            app:tint="@color/text_primary" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnlogin"
@@ -54,29 +87,6 @@
         android:textSize="16dp"
         android:textStyle="bold"
         app:backgroundTint="@null" />
-
-    <TextView
-        android:layout_width="345dp"
-        android:layout_height="34dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="50px"
-        android:text="--------------------------------------------------------------------------------------"/>
-    <Button
-        android:id="@+id/btnforgetpass"
-        android:layout_width="155dp"
-        android:layout_gravity="center"
-        android:textStyle="bold"
-        android:layout_height="40dp"
-        android:text="Quên mật khẩu?"
-        android:textColor="@color/white"
-        app:backgroundTint="@null"
-        android:background="@drawable/custom_btn"/>
-    <TextView
-        android:layout_width="345dp"
-        android:layout_height="34dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="50px"
-        android:text="----------------------------------  HOẶC   --------------------------------------"/>
 
     <TextView
         android:layout_width="match_parent"

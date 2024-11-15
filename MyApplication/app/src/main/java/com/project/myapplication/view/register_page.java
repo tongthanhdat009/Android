@@ -2,11 +2,14 @@ package com.project.myapplication.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,9 +35,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class register_page extends AppCompatActivity {
-    EditText edtconnect,edtpass,edtusername,edtfullname;
-    Button btnregister,btnlogin;
-    UserModel userModel = new UserModel();
+    public EditText edtconnect,edtpass,edtusername,edtfullname;
+    public Button btnregister,btnlogin;
+    public UserModel userModel = new UserModel();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +48,31 @@ public class register_page extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         edtconnect = findViewById(R.id.edtconnect);
         edtpass = findViewById(R.id.edtpass);
         edtusername = findViewById(R.id.edtusername);
         edtfullname = findViewById(R.id.edtfullname);
         btnregister = findViewById(R.id.btnregister);
         btnlogin = findViewById(R.id.btnlogin);
+
+        LinearLayout showPassword = findViewById(R.id.show_password);
+        ImageView iconEye = findViewById(R.id.iv_show_password);
+
+        showPassword.setOnClickListener(v -> {
+            // Kiểm tra xem mật khẩu có đang ẩn hay không
+            if ((edtpass.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+                // Nếu mật khẩu đang ẩn, thay đổi để hiển thị
+                edtpass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                iconEye.setImageResource(R.drawable.ic_open_eye);  // Hình mắt mở
+            } else {
+                edtpass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                iconEye.setImageResource(R.drawable.ic_closed_eye);  // Hình mắt đóng
+            }
+            // Di chuyển con trỏ đến cuối văn bản sau khi thay đổi input type
+            edtpass.setSelection(edtpass.getText().length());
+        });
+
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +88,7 @@ public class register_page extends AppCompatActivity {
                 String pass = edtpass.getText().toString().trim();
                 String username = edtusername.getText().toString().trim();
                 String fullname = edtfullname.getText().toString().trim();
+
 
                 if(TextUtils.isEmpty(connect)){
                     edtconnect.setError("Nhập Email ");

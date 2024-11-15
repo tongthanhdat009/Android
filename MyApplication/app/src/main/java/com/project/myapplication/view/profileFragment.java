@@ -44,6 +44,7 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class profileFragment extends Fragment {
     public String userID;
@@ -130,6 +131,7 @@ public class profileFragment extends Fragment {
                                 public void onUserRetrievedCallback(User user) {
                                     user.setLogged("");
                                     userModel.userUpdate(user);
+                                    requireActivity().finish();
                                     Intent intent = new Intent(requireContext(), MainActivity.class);
                                     requireContext().startActivity(intent);
                                 }

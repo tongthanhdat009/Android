@@ -4,17 +4,22 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -33,7 +38,7 @@ import java.io.IOException;
 
 public class Login_page extends AppCompatActivity {
     EditText edtuser,edtpass;
-    Button btnlogin,btnregister,btnforgetpass;
+    Button btnlogin,btnregister;
     UserModel userModel = new UserModel();
 
     @Override
@@ -50,19 +55,32 @@ public class Login_page extends AppCompatActivity {
         edtpass = findViewById(R.id.edtpass);
         btnlogin = findViewById(R.id.btnlogin);
         btnregister = findViewById(R.id.btnregister);
-        btnforgetpass = findViewById(R.id.btnforgetpass);
+
+        EditText edtPass = findViewById(R.id.edtpass);
+        LinearLayout showPassword = findViewById(R.id.show_password);
+        ImageView iconEye = findViewById(R.id.iv_show_password);
+
+        showPassword.setOnClickListener(v -> {
+            // Kiểm tra xem mật khẩu có đang ẩn hay không
+            if ((edtPass.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+                // Nếu mật khẩu đang ẩn, thay đổi để hiển thị
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                iconEye.setImageResource(R.drawable.ic_open_eye);  // Hình mắt mở
+            } else {
+                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                iconEye.setImageResource(R.drawable.ic_closed_eye);  // Hình mắt đóng
+            }
+            // Di chuyển con trỏ đến cuối văn bản sau khi thay đổi input type
+            edtPass.setSelection(edtPass.getText().length());
+        });
+
+
         btnregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Login_page.this, register_page.class);
                 startActivity(intent);
                 finish();
-            }
-        });
-        btnforgetpass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(Login_page.this, "Chức năng này chưa được triễn khai", Toast.LENGTH_SHORT).show();
             }
         });
         btnlogin.setOnClickListener(new View.OnClickListener() {
