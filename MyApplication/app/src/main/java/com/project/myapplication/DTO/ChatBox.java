@@ -15,17 +15,17 @@ public class ChatBox implements Parcelable {
     private Map<String, Boolean> showed;
     private Timestamp lastMessageTimestamp;
     private String lastMessage;
-    private String imageUrl;
+    private String image_url;
 
     public ChatBox() {}
 
-    public ChatBox(String id, String name, Map<String, Boolean> showed, Timestamp lastMessageTimestamp, String lastMessage, String imageUrl) {
+    public ChatBox(String id, String name, Map<String, Boolean> showed, Timestamp lastMessageTimestamp, String lastMessage, String image_url) {
         Id = id;
         this.name = name;
         this.showed = showed;
         this.lastMessageTimestamp = lastMessageTimestamp;
         this.lastMessage = lastMessage;
-        this.imageUrl = imageUrl;
+        this.image_url = image_url;
     }
 
     public void setId(String id) {
@@ -37,7 +37,7 @@ public class ChatBox implements Parcelable {
     }
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+        this.image_url = imageUrl;
     }
 
     public void setShowed(Map<String, Boolean> showed) {
@@ -73,7 +73,7 @@ public class ChatBox implements Parcelable {
     }
 
     public String getImageUrl() {
-        return imageUrl;
+        return image_url;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ChatBox implements Parcelable {
         dest.writeMap(showed);
         dest.writeParcelable(lastMessageTimestamp, flags);  // Firebase Timestamp should be written as Parcelable
         dest.writeString(lastMessage);
-        dest.writeString(imageUrl);
+        dest.writeString(image_url);
     }
 
     public static final Creator<ChatBox> CREATOR = new Creator<ChatBox>() {
@@ -109,7 +109,7 @@ public class ChatBox implements Parcelable {
         showed = in.readHashMap(Map.class.getClassLoader());
         lastMessageTimestamp = in.readParcelable(Timestamp.class.getClassLoader());
         lastMessage = in.readString();
-        imageUrl = in.readString();
+        image_url = in.readString();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ChatBox implements Parcelable {
                 ", showed=" + showed +
                 ", lastMessageTimestamp=" + lastMessageTimestamp +
                 ", lastMessage='" + lastMessage + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
+                ", image_Url='" + image_url + '\'' +
                 '}';
     }
 }

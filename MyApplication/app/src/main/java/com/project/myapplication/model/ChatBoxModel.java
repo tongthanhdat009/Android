@@ -40,15 +40,13 @@ public class ChatBoxModel {
         firestore.collection("chatbox")
                 .orderBy("lastMessageTimestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
-                    if (e != null) {
-                        Log.e("ChatBoxModel", "Error getting documents: ", e);
-                        return;
-                    }
                     if (queryDocumentSnapshots != null) {
                         List<ChatBox> filteredList = new ArrayList<>();
                         for (DocumentSnapshot document : queryDocumentSnapshots) {
                             ChatBox chatBox = document.toObject(ChatBox.class);
-                            if (chatBox != null && chatBox.getShowed() != null) {
+                            assert chatBox != null;
+                            chatBox.setImageUrl(document.getString("image_url"));
+                            if (chatBox.getShowed() != null) {
                                 // Duyệt qua Map<String, Boolean> 'showed'
                                 for (Map.Entry<String, Boolean> entry : chatBox.getShowed().entrySet()) {
                                     // Kiểm tra nếu userID có giá trị true

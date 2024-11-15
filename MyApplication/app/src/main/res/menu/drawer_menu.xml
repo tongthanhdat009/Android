@@ -3,9 +3,11 @@
     <item
         android:id="@+id/nameChange"
         android:title="Đổi tên đoạn chat"
-        android:icon="@drawable/baseline_edit_24"/>
+        android:icon="@drawable/baseline_edit_24"
+        android:checkable="true"/>
     <item
         android:id="@+id/avatarChange"
         android:title="Thay đổi ảnh đại diện"
-        android:icon="@drawable/ic_image"/>
+        android:icon="@drawable/ic_image"
+        android:checkable="true"/>
 </menu>

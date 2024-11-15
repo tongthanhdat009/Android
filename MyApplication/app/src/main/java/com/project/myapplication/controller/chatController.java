@@ -3,6 +3,7 @@ package com.project.myapplication.controller;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
         ChatBox chatItem = chatBoxList.get(position);
+        Log.d("chatController", "onBindViewHolder: " + chatItem);
         holder.message.setText(chatItem.getLastMessage()!= null? chatItem.getLastMessage():"Không có tin nhắn");
         holder.username.setText(chatItem.getName() != null ? chatItem.getName():"Tên không có");
         String imageUrl = chatItem.getImageUrl();
