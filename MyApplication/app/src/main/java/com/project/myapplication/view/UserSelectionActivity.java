@@ -124,8 +124,8 @@ public class UserSelectionActivity extends AppCompatActivity {
     private void fetchUsers(String userID) {
         chatBoxModel = new ChatBoxModel();
         // Lấy danh sách người dùng mà userID đang theo dõi
-        chatBoxModel.getListUser(fetchedUserList -> {
-            if (fetchedUserList != null && !fetchedUserList.isEmpty()){
+        chatBoxModel.getListFollowingUser(userID, fetchedUserList -> {
+            if (fetchedUserList != null && !fetchedUserList.isEmpty()) {
                 // Sau khi có danh sách người dùng, lấy thông tin chi tiết người dùng
                 chatBoxModel.getUsersInfo(fetchedUserList, users -> {
                     // Cập nhật danh sách `userList` và thông báo adapter cập nhật giao diện
@@ -136,7 +136,6 @@ public class UserSelectionActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void filterUsers(String query) {
         List<User> filteredList = new ArrayList<>();
