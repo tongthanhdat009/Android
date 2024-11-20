@@ -103,7 +103,7 @@ public class ChatBoxModel {
                         user.setUserID(document.getId());
                         UserIds.add(user.getUserID());
                     }
-                    listener.onRetrieved(UserIds); // Gọi callback sau khi có danh sách userID
+                    listener.onRetrieved(UserIds);
                 });
     }
 

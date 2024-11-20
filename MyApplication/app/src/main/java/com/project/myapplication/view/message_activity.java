@@ -78,6 +78,20 @@ public class message_activity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigation_view);
         drawerLayout = findViewById(R.id.drawer_layout);
 
+        // Lắng nghe sự thay đổi kích thước của drawerLayout để phát hiện bàn phím bật/tắt
+        drawerLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            drawerLayout.getWindowVisibleDisplayFrame(r);
+            int screenHeight = drawerLayout.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            // Nếu bàn phím bật (khoảng cách lớn hơn 100)
+            if (keypadHeight > 100) {
+                // Cuộn xuống cuối cùng của RecyclerView
+                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+            }
+        });
+
         // Khởi tạo ActivityResultLauncher để chọn ảnh
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -266,6 +280,7 @@ public class message_activity extends AppCompatActivity {
                         messageModel.uploadImageToFirebase(selectedImageUri, new MessageModel.UploadImageCallback() {
                             @Override
                             public void onSuccess(String imageUrl) {
+                                recyclerView.scrollToPosition(messageList.size() - 1);
                                 // Send the image message
                                 messageModel.saveNewMessageWithImageUrl(chatBoxID, userID, imageUrl);
                                 chatBoxModel.updateLastMessage(chatBoxID, "Một hình ảnh được gửi"); // Update the last message text

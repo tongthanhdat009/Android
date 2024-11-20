@@ -56,21 +56,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="5dp"
         tools:ignore="UseCompoundDrawables">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hiển thị mật khẩu"
             android:fontFamily="@font/avenir_bold"
-            android:layout_marginTop="3dp"/>
+            android:layout_marginTop="4dp"
+            android:paddingStart="10dp"
+            tools:ignore="RtlSymmetry" />
         <ImageView
             android:id="@+id/iv_show_password"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="end"
             android:layout_marginStart="15dp"
-            android:layout_marginTop="10dp"
             android:src="@drawable/ic_open_eye"
             android:background="@android:color/transparent"
             app:tint="@color/text_primary" />
@@ -81,7 +83,7 @@
         android:layout_width="345dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginTop="40px"
+        android:layout_marginTop="20px"
         android:background="@drawable/custom_btn"
         android:text="Đăng nhập"
         android:textSize="16dp"
