@@ -35,6 +35,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Login_page extends AppCompatActivity {
     EditText edtuser,edtpass;
@@ -94,8 +96,12 @@ public class Login_page extends AppCompatActivity {
                     return;
                 }
 
-                if(!name.contains("@")){
-                    edtuser.setError("Vui lòng nhập email hợp lệ");
+                String regex_email = "^[a-zA-Z0-9_+&*-]+(?:\\\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+.)+[a-zA-Z]{2,7}$";
+                Pattern p_email = Pattern.compile(regex_email);
+                Matcher m_email = p_email.matcher(name);
+                if (!m_email.matches()) {
+                    edtuser.setError("Sai định dạng email");
+                    return;
                 }
 
                 if (TextUtils.isEmpty(pass)) {

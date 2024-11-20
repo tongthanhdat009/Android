@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -19,16 +18,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserModel {
     private final FirebaseFirestore firestore;
@@ -39,14 +34,24 @@ public class UserModel {
 
     public void addUser(User user, OnUserRegisterCallback callback){
         CollectionReference userRef = firestore.collection("users");
-        userRef.add(user).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+        // Tạo map chứa thông tin
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("Biography", user.getBiography());
+        userData.put("Email", user.getEmail());
+        userData.put("Logged", "");
+        userData.put("Name", user.getName());
+        userData.put("Password", user.getPassword());
+        userData.put("UserName", user.getUserName());
+        userData.put("avatar", "https://firebasestorage.googleapis.com/v0/b/insta-clone-2e405.appspot.com/o/avatars%2Funknow_avatar.jpg?alt=media&token=e28a3dcc-6925-4abc-b4ef-9998c32ec364");
+
+        userRef.add(userData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
             @Override
             public void onComplete(@NonNull Task<DocumentReference> task) {
                 if (task.isSuccessful()) {
                     String userId = task.getResult().getId();
+                    userData.put("UserID",userId);
                     user.setUserID(userId);
-
-                    userRef.document(userId).set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    userRef.document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
@@ -161,8 +166,76 @@ public class UserModel {
                 );
     }
 
+    public void emailCheck(String email, OnCheckEmailCallBack callBack){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("Email", email) // Tìm tài liệu có trường email khớp
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if(task.getResult().isEmpty()){
+                            String regex_email = "^[a-zA-Z0-9_+&*-]+(?:\\\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+.)+[a-zA-Z]{2,7}$";
+                            Pattern p_email = Pattern.compile(regex_email);
+                            Matcher m_email = p_email.matcher(email);
+                            if (!(email.length() <= 345)) {
+                                callBack.emailCheck("Email phải dài dưới 345 và không để trống!");
+                                return;
+                            }
+                            else if (!m_email.matches()) {
+                                callBack.emailCheck( "Sai định dạng email");
+                                return;
+                            }
+                            else{
+                                callBack.emailCheck( "Email hợp lệ!");
+                            };
+                        }
+                        else{
+                            callBack.emailCheck( "Email đã được sử dụng!");
+                        }
+                    }
+                    else {
+                        System.err.println("Lỗi khi truy vấn Firestore: " + task.getException());
+                    }
+                });
+    }
+
+    public void existUsernameCheck(String userName, OnCheckUserNameCallBack callBack){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereEqualTo("UserName", userName) // Tìm tài liệu có trường email khớp
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if(task.getResult().isEmpty()){
+                            String regex_account = "^[a-zA-Z0-9]{5,20}$";
+                            Pattern p_account = Pattern.compile(regex_account);
+                            Matcher m_account = p_account.matcher(userName);
+                            if(!m_account.matches()) {
+                                callBack.usernameCheck("Tài khoản không được chứa kí tự đặc biệt và phải dài từ 5 đến 20 kí tự!");
+                            }
+                            else{
+                                callBack.usernameCheck("Tài khoản hợp lệ");
+                            }
+                        }
+                        else{
+                            callBack.usernameCheck("Tài khoản đã được sử dụng!");
+                        }
+                    } else {
+                        System.err.println("Lỗi khi truy vấn Firestore: " + task.getException());
+                    }
+                });
+    }
+
+    public interface OnCheckEmailCallBack{
+        void emailCheck(String status);
+    }
+
+    public interface OnCheckUserNameCallBack{
+        void usernameCheck(String status);
+    }
+
     public interface OnUpdateAvatarCallback{
-        public void updateAvatar(String avatar, String noti);
+        void updateAvatar(String avatar, String noti);
     }
 
     public interface OnLoggedCheckCallback{

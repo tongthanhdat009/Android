@@ -6,7 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".register_avatar">
+    tools:context=".view.register_page">
+
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -22,19 +24,33 @@
         android:textSize="30dp"
         android:textStyle="bold"
         android:textColor="@color/gray"/>
-    <ImageView
-        android:id="@+id/imgAvatar"
-        android:layout_marginTop="30dp"
-        android:layout_width="170dp"
-        android:layout_height="200dp"
-        android:src="@drawable/unknow_avatar"
-        android:layout_gravity="center"/>
-    <ImageView
-        android:id="@+id/imgCamera"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:src="@drawable/camera_icon"
-        android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            tools:ignore="ObsoleteLayoutParam"
+            android:visibility="gone"/>
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_marginTop="30dp"
+            android:layout_width="170dp"
+            android:layout_height="200dp"
+            android:src="@drawable/unknow_avatar"
+            android:layout_gravity="center"/>
+        <ImageView
+            android:id="@+id/imgCamera"
+            android:layout_width="100dp"
+            android:layout_height="60dp"
+            android:src="@drawable/camera_icon"
+            android:layout_gravity="center"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

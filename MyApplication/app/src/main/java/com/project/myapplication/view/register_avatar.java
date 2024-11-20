@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,14 +17,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 //import com.project.myapplication.view.Profile;
 import com.project.myapplication.R;
-import com.project.myapplication.view.homeFragment;
 
 public class register_avatar extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -31,6 +29,7 @@ public class register_avatar extends AppCompatActivity {
     private String userID;
     private FirebaseFirestore db;
     private StorageReference storageRef;
+    private ProgressBar progressBar;
 
     ImageView imgAvatar, imgCamera;
     Button btnFinish, btnSkip;
@@ -48,6 +47,7 @@ public class register_avatar extends AppCompatActivity {
         imgCamera = findViewById(R.id.imgCamera);
         btnFinish = findViewById(R.id.btn_finish);
         btnSkip = findViewById(R.id.btn_skip);
+        progressBar = findViewById(R.id.progressBar);
 
         userID = getIntent().getStringExtra("userID");
         db = FirebaseFirestore.getInstance();
@@ -65,8 +65,10 @@ public class register_avatar extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (imageUri != null) {
+                    progressBar.setVisibility(View.VISIBLE);
                     uploadAvatar(imageUri);
                 } else {
+                    progressBar.setVisibility(View.VISIBLE);
                     saveDefaultAvatar();
                 }
             }
@@ -94,6 +96,7 @@ public class register_avatar extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
+                                    progressBar.setVisibility(View.GONE);
                                     Toast.makeText(register_avatar.this, "Avatar đã lưu thành công", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(register_avatar.this, Login_page.class);
                                     startActivity(intent);
@@ -108,10 +111,11 @@ public class register_avatar extends AppCompatActivity {
     }
 
     private void saveDefaultAvatar() {
-        String defaultAvatarUrl = "gs://insta-clone-2e405.appspot.com/avatars/unknow_avatar.jpg";  // Điền URL của avatar mặc định từ Firebase
-        db.collection("users").document(userID).update("avatarUrl", defaultAvatarUrl)
+        String defaultAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/insta-clone-2e405.appspot.com/o/avatars%2Funknow_avatar.jpg?alt=media&token=e28a3dcc-6925-4abc-b4ef-9998c32ec364";  // Điền URL của avatar mặc định từ Firebase
+        db.collection("users").document(userID).update("avatar", defaultAvatarUrl)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Đã lưu avatar mặc định", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
                     Intent intent = new Intent(register_avatar.this, Login_page.class);
                     startActivity(intent);
                     finish();

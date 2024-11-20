@@ -27,7 +27,7 @@
         android:background="@drawable/edit_text_background"
         android:ems="10"
         android:hint="Email"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         android:textColorHint="#666464"
         android:paddingLeft="16dp"
         android:layout_marginTop="50dp"
