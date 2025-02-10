@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.R;
-import com.project.myapplication.view.BottomSheetFragment;
-import com.project.myapplication.view.message_activity;
+import com.project.myapplication.view.fragment.BottomSheetFragment;
+import com.project.myapplication.view.activity.message_activity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

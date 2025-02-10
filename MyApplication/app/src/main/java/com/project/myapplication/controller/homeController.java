@@ -5,15 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.project.myapplication.DTO.Followers;
-import com.project.myapplication.DTO.Post;
 import com.project.myapplication.R;
-import com.project.myapplication.view.PostAdapter;
+import com.project.myapplication.view.adapter.PostAdapter;
 import com.project.myapplication.model.PostModel;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class homeController {
     private final View view;

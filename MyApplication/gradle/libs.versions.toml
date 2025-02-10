@@ -2,10 +2,12 @@
 agp = "8.5.0"
 firebaseAdmin = "9.1.1"
 firebaseAnalytics = "22.1.2"
+firebaseAuth = "23.2.0"
 firebaseBom = "33.4.0"
 firebaseBomVersion = "32.2.0"
 firebaseFirestoreVersion = "24.9.0"
 firebaseMessaging = "24.0.3"
+firebaseMessagingVersion = "23.3.1"
 firebaseStorage = "21.0.1"
 firebaseStorageVersion = "20.1.0"
 googleAuthLibraryOauth2Http = "1.16.0"
@@ -26,6 +28,7 @@ navigationFragment = "2.8.1"
 navigationUi = "2.8.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
+photoview = "2.3.0"
 picasso = "2.71828"
 recyclerviewVersion = "1.2.1"
 swiperefreshlayout = "1.1.0"
@@ -40,10 +43,12 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-bom-v3220 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebase-firestore-v2490 = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestoreVersion" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-messaging-v2331 = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 firebase-storage-v2010 = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorageVersion" }
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
+google-firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 google-services-v4315 = { module = "com.google.gms:google-services", version.ref = "googleServicesVersion" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
@@ -60,6 +65,7 @@ material-v190 = { module = "com.google.android.material:material", version.ref =
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+photoview = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoview" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 recyclerview-v121 = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }

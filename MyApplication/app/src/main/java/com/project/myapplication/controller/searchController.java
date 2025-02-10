@@ -5,21 +5,16 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
 import com.project.myapplication.model.SearchModel;
-import com.project.myapplication.view.postShowAdapter;
-import com.project.myapplication.view.searchResultAdapter;
-
-import org.w3c.dom.Text;
+import com.project.myapplication.view.adapter.searchResultAdapter;
 
 import java.util.ArrayList;
 import java.util.Objects;

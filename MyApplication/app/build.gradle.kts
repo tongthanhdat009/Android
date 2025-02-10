@@ -60,4 +60,8 @@ dependencies {
     implementation (libs.google.firebase.analytics)
     implementation (libs.firebase.messaging)
     implementation (libs.swiperefreshlayout)
+    implementation (libs.photoview)
+    implementation (libs.firebase.messaging.v2331)
+    implementation (libs.google.firebase.auth)
+
 }

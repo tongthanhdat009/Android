@@ -2,7 +2,6 @@ package com.project.myapplication.controller;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,14 +24,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
-import com.project.myapplication.view.PostAdapter;
-import com.project.myapplication.view.homeFragment;
-import com.project.myapplication.view.postImageAdapter;
+import com.project.myapplication.view.adapter.postImageAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

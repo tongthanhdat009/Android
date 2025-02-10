@@ -9,6 +9,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.project.myapplication.R;
 import com.project.myapplication.databinding.ActivityNavControllerBinding;
+import com.project.myapplication.view.fragment.chatFragment;
+import com.project.myapplication.view.fragment.homeFragment;
+import com.project.myapplication.view.fragment.postFragment;
+import com.project.myapplication.view.fragment.profileFragment;
+import com.project.myapplication.view.fragment.searchFragment;
 
 import java.util.HashMap;
 import java.util.Map;

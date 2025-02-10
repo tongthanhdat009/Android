@@ -2,9 +2,6 @@ package com.project.myapplication.controller;
 
 import android.annotation.SuppressLint;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,8 +10,7 @@ import com.google.firebase.Timestamp;
 import com.project.myapplication.DTO.Comment;
 import com.project.myapplication.R;
 import com.project.myapplication.model.CommentModel;
-import com.project.myapplication.model.PostModel;
-import com.project.myapplication.view.commentAdapter;
+import com.project.myapplication.view.adapter.commentAdapter;
 
 import java.util.ArrayList;
 

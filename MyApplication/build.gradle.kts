@@ -4,12 +4,16 @@ buildscript {
         classpath(libs.gradle)
         classpath(libs.google.services)
     }
+    repositories{
+        maven("https://www.jitpack.io")
+    }
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://www.jitpack.io")
     }
 }
 

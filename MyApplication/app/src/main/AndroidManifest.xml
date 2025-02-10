@@ -12,6 +12,7 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -25,7 +26,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".view.message_activity"
+            android:name=".view.activity.message_activity"
             android:exported="false"
             android:launchMode="singleInstance"
             tools:ignore="ExtraText" />
@@ -42,7 +43,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.FullscreenImageActivity"
+            android:name=".view.activity.FullscreenImageActivity"
             android:exported="true"
             android:launchMode="singleInstance">
             <intent-filter>
@@ -52,7 +53,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.commentActivity"
+            android:name=".view.activity.commentActivity"
             android:exported="true"
             android:launchMode="singleInstance"
             tools:ignore="Instantiatable">
@@ -63,7 +64,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.authorProfileActivity"
+            android:name=".view.activity.authorProfileActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -74,7 +75,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.ShowFollowActivity"
+            android:name=".view.activity.ShowFollowActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -84,7 +85,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.UserSelectionActivity"
+        <activity android:name=".view.activity.UserSelectionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -94,7 +95,7 @@
         </activity>
 
         <activity
-            android:name=".view.postShowFullScreenActivity"
+            android:name=".view.activity.postShowFullScreenActivity"
             android:exported="true"
             android:launchMode="singleInstance"
             tools:ignore="Instantiatable">
@@ -106,7 +107,7 @@
         </activity>
 
         <activity
-            android:name=".view.Login_page"
+            android:name=".view.activity.loginActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -118,7 +119,7 @@
         </activity>
 
         <activity
-            android:name=".view.register_page"
+            android:name=".view.activity.registerActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -130,7 +131,7 @@
         </activity>
 
         <activity
-            android:name=".view.register_avatar"
+            android:name=".view.activity.registerAvatarActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -142,7 +143,7 @@
         </activity>
 
         <activity
-            android:name=".view.Profile"
+            android:name=".view.activity.userShowFollowActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -154,7 +155,7 @@
         </activity>
 
         <activity
-            android:name=".view.userShowFollowActivity"
+            android:name=".view.activity.resetPasswordActivity"
             android:exported="true"
             android:launchMode="standard"
             tools:ignore="Instantiatable">
@@ -164,11 +165,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_key" />
+        <service
+            android:name=".firebase.MyFirebaseMessagingService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
