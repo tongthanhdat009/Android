@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">My Application</string>
-    <string name="new_game">New Game</string>
-    <string name="continue_game">Continue game</string>
-    <string name="help_game">Help game</string>
-    <string name="quick_game">Quick game</string>
-</resources>
