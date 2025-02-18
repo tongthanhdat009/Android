@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class loginActivity extends AppCompatActivity {
-    EditText edtuser,edtpass;
+    EditText emailInput,passwordInput;
     Button btnlogin,btnregister;
     UserModel userModel = new UserModel();
     TextView textResetPassword;
@@ -45,8 +45,8 @@ public class loginActivity extends AppCompatActivity {
             return insets;
         });
 
-        edtuser = findViewById(R.id.edtuser);
-        edtpass = findViewById(R.id.edtpass);
+        emailInput = findViewById(R.id.email_input);
+        passwordInput = findViewById(R.id.password_input);
         btnlogin = findViewById(R.id.btnlogin);
         btnregister = findViewById(R.id.btnregister);
         textResetPassword = findViewById(R.id.resetPasswordText);
@@ -83,14 +83,16 @@ public class loginActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = edtuser.getText().toString().trim();
-                String pass = edtpass.getText().toString().trim();
+                String name = emailInput.getText().toString().trim();
+                String pass = passwordInput.getText().toString().trim();
+
 
                 if (TextUtils.isEmpty(name)) {
-                    edtuser.setError("Không được để trống Email!");
+                    emailInput.setError("Không được để trống Email!");
                     return;
                 }
 
@@ -98,12 +100,12 @@ public class loginActivity extends AppCompatActivity {
                 Pattern p_email = Pattern.compile(regex_email);
                 Matcher m_email = p_email.matcher(name);
                 if (!m_email.matches()) {
-                    edtuser.setError("Sai định dạng email");
+                    emailInput.setError("Sai định dạng email");
                     return;
                 }
 
                 if (TextUtils.isEmpty(pass)) {
-                    edtpass.setError("Không được để trống mật khẩu!");
+                    passwordInput.setError("Không được để trống mật khẩu!");
                     return;
                 }
 
