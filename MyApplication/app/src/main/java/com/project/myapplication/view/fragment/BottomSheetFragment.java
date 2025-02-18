@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,10 +22,12 @@ import java.util.Objects;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
     private final ChatBox chatBox;
+    private final String userName;
     private final String userID;
 
-    public BottomSheetFragment(ChatBox chatBox, String userID) {
+    public BottomSheetFragment(ChatBox chatBox, String userName, String userID) {
         this.chatBox = chatBox;
+        this.userName = userName;
         this.userID = userID;
     }
     @Nullable
@@ -32,10 +35,12 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetStyle);
         View view = inflater.inflate(R.layout.bottomsheet, container, false);
+        TextView textView = view.findViewById(R.id.name);
+        textView.setText(userName);
         view.findViewById(R.id.deleteButton).setOnClickListener(v -> {
             ChatBoxModel chatBoxModel = new ChatBoxModel();
             chatBoxModel.hideChatBox(chatBox.getId(), userID);
-            Toast.makeText(getContext(), "Đã xóa hộp thoại " + chatBox.getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Đã xóa hộp thoại " + userName, Toast.LENGTH_SHORT).show();
             dismiss();
         });
 

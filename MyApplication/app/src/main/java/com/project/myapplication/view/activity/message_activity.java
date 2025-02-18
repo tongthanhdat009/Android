@@ -41,7 +41,9 @@ import com.project.myapplication.view.adapter.MessageAdapter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class message_activity extends AppCompatActivity {
@@ -112,11 +114,32 @@ public class message_activity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Cập nhật tên và avatar của chatbox
-        chatBoxName.setText(chatBox.getName());
+// Lấy danh sách user trong chat trừ userID hiện tại
+        String displayName = "Tên không có";
+        String displayImageUrl = null;
 
-        if (chatBox.getImageUrl() != null && !chatBox.getImageUrl().isEmpty()) {
-            Picasso.get().load(chatBox.getImageUrl()).into(chatBoxAvatar);
+        if (chatBox.getName() != null) {
+            for (Map.Entry<String, String> entry : chatBox.getName().entrySet()) {
+                if (!entry.getKey().equals(userID)) {  // Tìm user khác userID
+                    displayName = entry.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (chatBox.getImageUrl() != null) {
+            for (Map.Entry<String, String> entry : chatBox.getImageUrl().entrySet()) {
+                if (!entry.getKey().equals(userID)) {  // Tìm avatar của user khác userID
+                    displayImageUrl = entry.getValue();
+                    break;
+                }
+            }
+        }
+// Cập nhật tên và avatar
+        chatBoxName.setText(displayName);
+
+        if (displayImageUrl != null && !displayImageUrl.isEmpty()) {
+            Picasso.get().load(displayImageUrl).into(chatBoxAvatar);
         } else {
             chatBoxAvatar.setImageResource(R.drawable.unknow_avatar);
         }
@@ -255,7 +278,7 @@ public class message_activity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String imageUrl) {
                                 // Update the avatar URL in Firestore
-                                chatBoxModel.updateChatBoxImage(chatBoxID, imageUrl, new OnCompleteListener<Void>() {
+                                chatBoxModel.updateChatBoxImage(chatBoxID, userID,imageUrl, new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
@@ -308,19 +331,26 @@ public class message_activity extends AppCompatActivity {
         builder.setTitle("Đổi tên ChatBox");
 
         final EditText input = new EditText(this);
-        input.setText(chatBox.getName());
+        input.setText(chatBoxName.getText());
         builder.setView(input);
 
         builder.setPositiveButton("Đổi tên", (dialog, which) -> {
             String newName = input.getText().toString().trim();
             if (!newName.isEmpty()) {
+                Map<String, String> updatedNames = new HashMap<>(chatBox.getName()); // Sao chép Map hiện tại
+
+                for (String key : updatedNames.keySet()) {
+                    if (key.equals(userID)) continue; // Bỏ qua key của user hiện tại
+                    updatedNames.put(key, newName); // Gán tên mới cho tất cả key (tất cả user)
+                }
+
                 ChatBoxModel chatBoxModel = new ChatBoxModel();
-                chatBoxModel.updateChatBoxName(chatBox.getId(), newName, new OnCompleteListener<Boolean>() {
+                chatBoxModel.updateChatBoxName(chatBox.getId(), updatedNames, new OnCompleteListener<Boolean>() {
                     @Override
                     public void onComplete(Task<Boolean> task) {
                         if (task.isSuccessful() && task.getResult()) {
-                            chatBox.setName(newName);
-                            chatBoxName.setText(newName);
+                            chatBox.setName(updatedNames); // Cập nhật Map trong ChatBox
+                            chatBoxName.setText(newName); // Hiển thị tên mới
                         } else {
                             Toast.makeText(message_activity.this, "Không thể đổi tên", Toast.LENGTH_SHORT).show();
                         }

@@ -22,6 +22,7 @@ import com.project.myapplication.view.activity.message_activity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Map;
 
 public class chatController extends RecyclerView.Adapter<chatController.ChatViewHolder> {
 
@@ -47,18 +48,39 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         ChatBox chatItem = chatBoxList.get(position);
         Log.d("chatController", "onBindViewHolder: " + chatItem);
         holder.message.setText(chatItem.getLastMessage()!= null? chatItem.getLastMessage():"Không có tin nhắn");
-        holder.username.setText(chatItem.getName() != null ? chatItem.getName():"Tên không có");
-        String imageUrl = chatItem.getImageUrl();
+        // Lấy tên theo userID người khác, nếu không thì gán "Tên không có"
+        String username = "Tên không có";
+        if (chatItem.getName() != null) {
+            for (Map.Entry<String, String> entry : chatItem.getName().entrySet()) {
+                if (!entry.getKey().equals(userID)) { // Tìm user khác userID
+                    username = entry.getValue();
+                    break; // Tìm thấy user đầu tiên thì thoát vòng lặp
+                }
+            }
+        }
+        holder.username.setText(username);
+
+        // Lấy ảnh theo userID người khác, nếu không thì để ảnh mặc định
+        String imageUrl = null;
+
+        if (chatItem.getImageUrl() != null) {
+            for (Map.Entry<String, String> entry : chatItem.getImageUrl().entrySet()) {
+                if (!entry.getKey().equals(userID)) { // Tìm ảnh của user khác
+                    imageUrl = entry.getValue();
+                    break;
+                }
+            }
+        }
+
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            Picasso.get()
-                    .load(imageUrl)
-                    .into(holder.profileImage);
+            Picasso.get().load(imageUrl).into(holder.profileImage);
         } else {
             holder.profileImage.setImageResource(R.drawable.unknow_avatar);
         }
 
+        String finalUsername = username;
         holder.dotButton.setOnClickListener(v -> {
-            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(chatItem,userID);
+            BottomSheetFragment bottomSheetFragment = new BottomSheetFragment(chatItem, finalUsername,userID);
             bottomSheetFragment.show(((AppCompatActivity) v.getContext()).getSupportFragmentManager(), bottomSheetFragment.getTag());
         });
 

@@ -61,9 +61,8 @@ public class authorProfileActivity extends AppCompatActivity {
                 chatBoxModel.createOrUpdateChatBox(userID, authorID, new ChatBoxModel.ChatBoxCallback2() {
                     @Override
                     public void onChatBoxRetrieved(ChatBox chatBox) {
-                        Toast.makeText(view.getContext(), "Tạo chatbox thành cong", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(authorProfileActivity.this, message_activity.class);
-                        intent.putExtra("userID", authorID);
+                        intent.putExtra("userID", userID);
                         intent.putExtra("chatBox", chatBox);
                         view.getContext().startActivity(intent);
                     }

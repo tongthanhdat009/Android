@@ -7,19 +7,20 @@ import androidx.annotation.NonNull;
 
 import com.google.firebase.Timestamp;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ChatBox implements Parcelable {
     private String Id;
-    private String name;
+    private Map<String, String> name;
     private Map<String, Boolean> showed;
     private Timestamp lastMessageTimestamp;
     private String lastMessage;
-    private String image_url;
+    private Map<String, String> image_url;
 
     public ChatBox() {}
 
-    public ChatBox(String id, String name, Map<String, Boolean> showed, Timestamp lastMessageTimestamp, String lastMessage, String image_url) {
+    public ChatBox(String id, Map<String, String> name, Map<String, Boolean> showed, Timestamp lastMessageTimestamp, String lastMessage, Map<String, String> image_url) {
         Id = id;
         this.name = name;
         this.showed = showed;
@@ -32,11 +33,11 @@ public class ChatBox implements Parcelable {
         Id = id;
     }
 
-    public void setName(String name) {
+    public void setName(Map<String, String> name) {
         this.name = name;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(Map<String, String> imageUrl) {
         this.image_url = imageUrl;
     }
 
@@ -56,7 +57,7 @@ public class ChatBox implements Parcelable {
         return Id;
     }
 
-    public String getName() {
+    public Map<String, String> getName() {
         return name;
     }
 
@@ -72,7 +73,7 @@ public class ChatBox implements Parcelable {
         return lastMessageTimestamp;
     }
 
-    public String getImageUrl() {
+    public Map<String, String> getImageUrl() {
         return image_url;
     }
 
@@ -84,11 +85,20 @@ public class ChatBox implements Parcelable {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(Id);
-        dest.writeString(name);
-        dest.writeMap(showed);
-        dest.writeParcelable(lastMessageTimestamp, flags);  // Firebase Timestamp should be written as Parcelable
+        dest.writeSerializable((HashMap<String, String>) name);
+        dest.writeSerializable((HashMap<String, Boolean>) showed);
+
+        // Ghi Timestamp thành 2 giá trị
+        if (lastMessageTimestamp != null) {
+            dest.writeLong(lastMessageTimestamp.getSeconds());
+            dest.writeInt(lastMessageTimestamp.getNanoseconds());
+        } else {
+            dest.writeLong(0);
+            dest.writeInt(0);
+        }
+
         dest.writeString(lastMessage);
-        dest.writeString(image_url);
+        dest.writeSerializable((HashMap<String, String>) image_url);
     }
 
     public static final Creator<ChatBox> CREATOR = new Creator<ChatBox>() {
@@ -105,22 +115,28 @@ public class ChatBox implements Parcelable {
 
     protected ChatBox(Parcel in) {
         Id = in.readString();
-        name = in.readString();
-        showed = in.readHashMap(Map.class.getClassLoader());
-        lastMessageTimestamp = in.readParcelable(Timestamp.class.getClassLoader());
+        name = (HashMap<String, String>) in.readSerializable();
+        showed = (HashMap<String, Boolean>) in.readSerializable();
+
+        // Đọc Timestamp từ 2 giá trị
+        long seconds = in.readLong();
+        int nanoseconds = in.readInt();
+        lastMessageTimestamp = new Timestamp(seconds, nanoseconds);
+
         lastMessage = in.readString();
-        image_url = in.readString();
+        image_url = (HashMap<String, String>) in.readSerializable();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ChatBox{" +
                 "Id='" + Id + '\'' +
-                ", name='" + name + '\'' +
+                ", name=" + name +
                 ", showed=" + showed +
                 ", lastMessageTimestamp=" + lastMessageTimestamp +
                 ", lastMessage='" + lastMessage + '\'' +
-                ", image_Url='" + image_url + '\'' +
+                ", image_url=" + image_url +
                 '}';
     }
 }

@@ -44,16 +44,33 @@ public class ChatBoxModel {
                         List<ChatBox> filteredList = new ArrayList<>();
                         for (DocumentSnapshot document : queryDocumentSnapshots) {
                             ChatBox chatBox = document.toObject(ChatBox.class);
+                            Log.d("test", document.toString());
+                            Map<String, Object> rawImageUrls = (Map<String, Object>) document.get("image_url");
+                            Map<String, String> imageUrls = new HashMap<>();
+
+                            if (rawImageUrls != null) {
+                                for (Map.Entry<String, Object> entry : rawImageUrls.entrySet()) {
+                                    imageUrls.put(entry.getKey(), entry.getValue().toString()); // Chuyển value về String
+                                }
+                            }
+                            chatBox.setImageUrl(imageUrls);
                             assert chatBox != null;
-                            chatBox.setImageUrl(document.getString("image_url"));
+
+                            if (chatBox.getImageUrl() != null) {
+                                for (Map.Entry<String, String> entry : chatBox.getImageUrl().entrySet()) {
+                                    Log.d("image_url", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                }
+                            } else {
+                                Log.d("image_url", "image_url is null");
+                            }
+
                             if (chatBox.getShowed() != null) {
-                                // Duyệt qua Map<String, Boolean> 'showed'
                                 for (Map.Entry<String, Boolean> entry : chatBox.getShowed().entrySet()) {
-                                    // Kiểm tra nếu userID có giá trị true
                                     if (entry.getKey().equals(userID) && entry.getValue()) {
                                         chatBox.setId(document.getId());
                                         filteredList.add(chatBox);
-                                        break; // Thoát khỏi vòng lặp khi đã tìm thấy
+                                        Log.d("anh", filteredList.toString());
+                                        break;
                                     }
                                 }
                             }
@@ -89,21 +106,6 @@ public class ChatBoxModel {
                         }
                     }
                     listener.onRetrieved(listFollowingUserIds); // Gọi callback sau khi có danh sách userID
-                });
-    }
-
-    public void getListUser( OnFollowingListRetrievedListener listener) {
-        firestore.collection("users")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<String> UserIds = new ArrayList<>();
-                    for (DocumentSnapshot document : queryDocumentSnapshots) {
-                        User user = document.toObject(User.class);
-                        assert user != null;
-                        user.setUserID(document.getId());
-                        UserIds.add(user.getUserID());
-                    }
-                    listener.onRetrieved(UserIds);
                 });
     }
 
@@ -181,17 +183,30 @@ public class ChatBoxModel {
         firestore.collection("users").document(userID1).get()
                 .addOnSuccessListener(documentSnapshot1 -> {
                     String userName1 = documentSnapshot1.exists() ? documentSnapshot1.getString("Name") : userID1;
+                    String avatar1 = documentSnapshot1.exists() ? documentSnapshot1.getString("avatar") : null;
 
                     firestore.collection("users").document(userID2).get()
                             .addOnSuccessListener(documentSnapshot2 -> {
                                 String userName2 = documentSnapshot2.exists() ? documentSnapshot2.getString("Name") : userID2;
+                                String avatar2 = documentSnapshot2.exists() ? documentSnapshot2.getString("avatar") : null;
 
-                                // Set name as "<userName1>, <userName2>"
                                 Map<String, Object> chatBoxData = new HashMap<>();
-                                chatBoxData.put("name", userName1 + ", " + userName2);
+//                                chatBoxData.put("name", userName1 + ", " + userName2);
                                 chatBoxData.put("lastMessage", "");
                                 chatBoxData.put("lastMessageTimestamp", FieldValue.serverTimestamp());
                                 chatBoxData.put("image_url", "");
+
+                                // Create the "iamge" map with users' IDs
+                                Map<String, String> imageMap = new HashMap<>();
+                                imageMap.put(userID1, avatar1);
+                                imageMap.put(userID2, avatar2);
+                                chatBoxData.put("image_url", imageMap);
+
+                                // Create the "name" map with users' IDs
+                                Map<String, String> nameMap = new HashMap<>();
+                                nameMap.put(userID1, userName1);
+                                nameMap.put(userID2, userName2);
+                                chatBoxData.put("name", nameMap);
 
                                 // Create the "showed" map with users' IDs
                                 Map<String, Boolean> showedMap = new HashMap<>();
@@ -212,8 +227,10 @@ public class ChatBoxModel {
                                                     .addOnSuccessListener(documentSnapshot -> {
                                                         if (documentSnapshot.exists()) {
                                                             // Create a ChatBox object from the document data
+                                                            Map<String,String> imageUrls = (Map<String, String>) documentSnapshot.get("image_url");
                                                             ChatBox chatBox = documentSnapshot.toObject(ChatBox.class);
                                                             if (chatBox != null) {
+                                                                chatBox.setImageUrl(imageUrls);
                                                                 chatBox.setId(chatBoxId);
                                                                 callback.onChatBoxRetrieved(chatBox);  // Pass the full ChatBox object
                                                             }
@@ -240,7 +257,10 @@ public class ChatBoxModel {
                             .get()
                             .addOnSuccessListener(documentSnapshot -> {
                                 if (documentSnapshot.exists()) {
+                                    Map<String,String> imageUrls = (Map<String, String>) documentSnapshot.get("image_url");
                                     ChatBox chatBox = documentSnapshot.toObject(ChatBox.class);
+                                    assert chatBox != null;
+                                    chatBox.setImageUrl(imageUrls);
                                     chatBox.setId(chatBoxId);
                                     callback.onChatBoxRetrieved(chatBox);  // Pass the updated ChatBox object
                                 }
@@ -271,13 +291,13 @@ public class ChatBoxModel {
         });
     }
 
-    public void updateChatBoxName(String chatBoxID, String newName, OnCompleteListener<Boolean>callback) {
+    public void updateChatBoxName(String chatBoxID, Map<String, String> newNames, OnCompleteListener<Boolean> callback) {
         firestore.collection("chatbox").document(chatBoxID)
-                .update("name", newName)
+                .update("name", newNames)  // Cập nhật toàn bộ Map<String, String>
                 .addOnCompleteListener(task -> {
-                    // Create a Task<Boolean> based on the task outcome
+                    // Tạo Task<Boolean> dựa trên kết quả của Firestore update
                     Task<Boolean> resultTask = Tasks.forResult(task.isSuccessful());
-                    callback.onComplete(resultTask);  // Pass Task<Boolean> to callback
+                    callback.onComplete(resultTask);  // Gọi callback với Task<Boolean>
                 });
     }
 
@@ -291,17 +311,26 @@ public class ChatBoxModel {
                 .addOnFailureListener(callback::onFailure);
     }
 
-    public void updateChatBoxImage(String chatBoxID, String imageUrl, OnCompleteListener<Void> callback) {
-        firestore.collection("chatbox").document(chatBoxID)
-                .update("image_url", imageUrl)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onComplete(task);
-                    } else {
-                        callback.onComplete(task);
-                    }
-                });
+    public void updateChatBoxImage(String chatBoxID, String userID, String imageUrl, OnCompleteListener<Void> callback) {
+        DocumentReference chatBoxRef = firestore.collection("chatbox").document(chatBoxID);
+
+        chatBoxRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Map<String, String> imageMap = (Map<String, String>) documentSnapshot.get("image_url");
+
+                if (imageMap == null) {
+                    imageMap = new HashMap<>();
+                }
+
+                // Chỉ cập nhật nếu URL mới khác với URL cũ của userID
+                if (!imageUrl.equals(imageMap.get(userID))) {
+                    imageMap.put(userID, imageUrl);
+                    chatBoxRef.update("image_url", imageMap).addOnCompleteListener(callback);
+                }
+            }
+        });
     }
+
 
     public interface UploadImageCallback {
         void onSuccess(String imageUrl);
