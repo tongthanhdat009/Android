@@ -13,6 +13,8 @@
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
 
     <application
         android:allowBackup="true"
@@ -155,6 +157,18 @@
         </activity>
 
         <activity
+            android:name=".view.activity.verifyEmailActivity"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".view.activity.resetPasswordActivity"
             android:exported="true"
             android:launchMode="standard"
@@ -166,6 +180,30 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".view.activity.accountCenterActivity"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.activity.deleteAccountActivity"
+            android:exported="true"
+            android:launchMode="standard"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_key" />
@@ -176,6 +214,10 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
+        <service
+            android:name=".service.CountDownService"
+            android:foregroundServiceType="shortService"
+            android:exported="false"/>
     </application>
 
 </manifest>

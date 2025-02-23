@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/background">
+    <ImageButton
+        android:id="@+id/backBTN"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/back"
+        android:scaleType="fitCenter"
+        android:contentDescription="TODO"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@null"
+        android:foreground="?attr/selectableItemBackground"
+        app:tint="@color/like_button_color"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/harmoni"
+            android:gravity="center"
+            android:text="Điện tín tức thời"
+            android:textColor="@color/text_primary"
+            android:textSize="50sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Nhấn vào nút để nhận mã xác nhận"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/getCodeBTN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/custom_btn"
+            android:text="Nhận mã"
+            android:textColor="@color/button_color" />
+    </LinearLayout>
+
+</LinearLayout>

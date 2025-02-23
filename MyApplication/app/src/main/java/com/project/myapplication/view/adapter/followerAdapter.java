@@ -24,7 +24,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class followerAdapter extends RecyclerView.Adapter<followerAdapter.followerViewHolder> {
-    private Context context;
+    private final Context context;
     private String authorID;
     private PostModel postModel;
     private ArrayList<Followers> followersList;

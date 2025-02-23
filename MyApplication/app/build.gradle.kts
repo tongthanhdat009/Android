@@ -63,5 +63,5 @@ dependencies {
     implementation (libs.photoview)
     implementation (libs.firebase.messaging.v2331)
     implementation (libs.google.firebase.auth)
-
+    implementation (libs.libphonenumber)
 }

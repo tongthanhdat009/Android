@@ -51,7 +51,6 @@ public class loginActivity extends AppCompatActivity {
         btnregister = findViewById(R.id.btnregister);
         textResetPassword = findViewById(R.id.resetPasswordText);
 
-        EditText edtPass = findViewById(R.id.edtpass);
         LinearLayout showPassword = findViewById(R.id.show_password);
         ImageView iconEye = findViewById(R.id.iv_show_password);
 
@@ -62,16 +61,16 @@ public class loginActivity extends AppCompatActivity {
 
         showPassword.setOnClickListener(v -> {
             // Kiểm tra xem mật khẩu có đang ẩn hay không
-            if ((edtPass.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+            if ((passwordInput.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
                 // Nếu mật khẩu đang ẩn, thay đổi để hiển thị
-                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                 iconEye.setImageResource(R.drawable.ic_open_eye);  // Hình mắt mở
             } else {
-                edtPass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 iconEye.setImageResource(R.drawable.ic_closed_eye);  // Hình mắt đóng
             }
             // Di chuyển con trỏ đến cuối văn bản sau khi thay đổi input type
-            edtPass.setSelection(edtPass.getText().length());
+            passwordInput.setSelection(passwordInput.getText().length());
         });
 
 

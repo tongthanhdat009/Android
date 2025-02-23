@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/layout_border"
+    android:layout_marginTop="5dp">
+
+    <ImageView
+        android:id="@+id/icon_option"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/delete_img_button"
+        android:layout_weight="0.15"
+        app:tint="@color/text_primary" />
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.85"
+        android:text="title"
+        android:paddingStart="20dp"
+        android:textSize="20sp"
+        tools:ignore="RtlSymmetry"
+        android:textColor="@color/text_primary"/>
+</LinearLayout>

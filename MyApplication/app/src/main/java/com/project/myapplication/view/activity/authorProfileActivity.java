@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +38,7 @@ public class authorProfileActivity extends AppCompatActivity {
     private final PostModel postModel = new PostModel();
     private Button followButton = null;
     private Button unfollowButton = null;
-    private ChatBoxModel chatBoxModel = new ChatBoxModel();
+    private final ChatBoxModel chatBoxModel = new ChatBoxModel();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

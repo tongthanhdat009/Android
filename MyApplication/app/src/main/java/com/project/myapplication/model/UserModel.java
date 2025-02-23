@@ -12,6 +12,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,6 +38,7 @@ public class UserModel {
         CollectionReference userRef = firestore.collection("users");
         // Tạo map chứa thông tin
         Map<String, Object> userData = new HashMap<>();
+        userData.put("UserID",user.getUserID());
         userData.put("Biography", user.getBiography());
         userData.put("Email", user.getEmail());
         userData.put("Logged", "");
@@ -43,68 +46,72 @@ public class UserModel {
         userData.put("Password", user.getPassword());
         userData.put("UserName", user.getUserName());
         userData.put("avatar", "https://firebasestorage.googleapis.com/v0/b/insta-clone-2e405.appspot.com/o/avatars%2Funknow_avatar.jpg?alt=media&token=e28a3dcc-6925-4abc-b4ef-9998c32ec364");
+        userData.put("PhoneNumber","");
 
-        userRef.add(userData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+        userRef.document(user.getUserID()).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentReference> task) {
+            public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    String userId = task.getResult().getId();
-                    userData.put("UserID",userId);
-                    user.setUserID(userId);
-                    userRef.document(userId).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                callback.register(user,task.isSuccessful());
-                            } else {
-                                callback.register(user,task.isSuccessful());
-                            }
-                        }
-                    });
+                    callback.register(user,task.isSuccessful());
                 } else {
-                    System.err.println("Error adding post: " + task.getException());
+                    callback.register(user,task.isSuccessful());
                 }
             }
         });
     }
 
     public void loginCheck(String email, String pass, Context context, OnUserLoginCallBack callback) {
-        CollectionReference userRef = firestore.collection("users");
-        userRef.whereEqualTo("Email", email)
-                .whereEqualTo("Password", pass)
-                .get()
+        // Dùng FirebaseAuth để xác thực đăng nhập
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        auth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        // Đăng nhập thành công, trả về thông tin người dùng
-                        DocumentSnapshot userDoc = task.getResult().getDocuments().get(0);
-                        User user = userDoc.toObject(User.class);
+                    if (task.isSuccessful()) {
+                        // Đăng nhập thành công, lấy thông tin người dùng từ FirebaseAuth
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            // Lấy thông tin người dùng từ Firestore dựa trên userID (có thể lưu userID vào FirebaseAuth trong lần đăng ký)
+                            String userID = firebaseUser.getUid();
 
-                        if (user != null) {
-                            // Lấy Android ID của thiết bị
-                            if(user.getLogged().isEmpty()){
-                                String deviceId = getDeviceId(context);
+                            // Truy vấn Firestore để lấy thông tin người dùng
+                            CollectionReference userRef = firestore.collection("users");
+                            userRef.document(userID).get().addOnCompleteListener(userTask -> {
+                                if (userTask.isSuccessful()) {
+                                    DocumentSnapshot userDoc = userTask.getResult();
+                                    User user = userDoc.toObject(User.class);
 
-                                // Lưu mã thiết bị vào Firestore
-                                userRef.document(userDoc.getId()).update("Logged", deviceId)
-                                        .addOnCompleteListener(deviceTask -> {
-                                            if (deviceTask.isSuccessful()) {
-                                                callback.loginCheck(user, true, "Đăng nhập thành công!");
-                                            } else {
-                                                callback.loginCheck(null, false, "Không thể lưu mã thiết bị.");
-                                            }
-                                        });
-                            }
-                            else{
-                                callback.loginCheck(null, false, "Tài khoản đã được đăng nhập ở một thiết bị khác");
-                            }
-                        } else {
-                            callback.loginCheck(null, false, "User không tồn tại");
+                                    if (user != null) {
+                                        // Kiểm tra nếu người dùng chưa đăng nhập từ thiết bị khác
+                                        if (user.getLogged().isEmpty()) {
+                                            String deviceId = getDeviceId(context);
+
+                                            // Lưu mã thiết bị vào Firestore
+                                            userRef.document(userID).update("Logged", deviceId)
+                                                    .addOnCompleteListener(deviceTask -> {
+                                                        if (deviceTask.isSuccessful()) {
+                                                            callback.loginCheck(user, true, "Đăng nhập thành công!");
+                                                        } else {
+                                                            callback.loginCheck(null, false, "Không thể lưu mã thiết bị.");
+                                                        }
+                                                    });
+                                        } else {
+                                            callback.loginCheck(null, false, "Tài khoản đã được đăng nhập ở một thiết bị khác");
+                                        }
+                                    } else {
+                                        callback.loginCheck(null, false, "User không tồn tại");
+                                    }
+                                } else {
+                                    callback.loginCheck(null, false, "Không thể lấy thông tin người dùng");
+                                }
+                            });
                         }
                     } else {
-                        callback.loginCheck(null, false, "Email hoặc mật khẩu không tồn tại");
+                        // Đăng nhập thất bại
+                        callback.loginCheck(null, false, "Email hoặc mật khẩu không đúng");
                     }
                 });
     }
+
 
     public void loggedCheck(String deviceID, OnLoggedCheckCallback callback){
         CollectionReference userRef = firestore.collection("users");
@@ -226,8 +233,39 @@ public class UserModel {
                 });
     }
 
+    public void getUserInfor(String userID,OnGetUserInfor callback){
+        // Tham chiếu đến collection "users"
+        CollectionReference usersRef = firestore.collection("users");
+
+        // Lấy document dựa trên userID
+        usersRef.document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Gọi callback với userID
+                        User tempUser = document.toObject(User.class);
+                        assert tempUser != null;
+                        tempUser.setUserID(document.getId());
+                        callback.getInfor(tempUser);
+                    } else {
+                        Log.d("PostModel", "No such user with ID: " + userID);
+                    }
+                } else {
+                    Log.e("PostModel", "Error getting document: " + task.getException());
+                }
+            }
+        });
+    }
+
+
     public interface OnCheckEmailCallBack{
         void emailCheck(String status);
+    }
+
+    public interface OnGetUserInfor{
+        void getInfor(User user);
     }
 
     public interface OnCheckUserNameCallBack{

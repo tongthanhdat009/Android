@@ -9,10 +9,8 @@ public class User {
     private String avatar;
     private String Biography;
     private String Logged;
-    public User() {
-
-    }
-    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography, String Logged) {
+    private String PhoneNumber;
+    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography, String Logged, String PhoneNumber) {
         this.userID = userID;
         this.Name = Name;
         this.UserName = UserName;
@@ -21,6 +19,16 @@ public class User {
         this.avatar = avatar;
         this.Biography = Biography;
         this.Logged = Logged;
+        this.PhoneNumber = PhoneNumber;
+    }
+    public User(){
+
+    }
+    public String getPhoneNumber(){
+        return PhoneNumber;
+    }
+    public void setPhoneNumber(String PhoneNumber){
+        this.PhoneNumber = PhoneNumber;
     }
 
     public String getUserID() {

@@ -9,7 +9,7 @@
     tools:context=".view.activity.registerActivity"
     android:background="@color/background">
     <TextView
-        android:id="@+id/imageView"
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="76dp"
         app:srcCompat="@drawable/instagram_logo"
@@ -18,9 +18,10 @@
         android:textColor="@color/text_primary"
         android:gravity="center"
         android:textSize="50sp"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="50dp"/>
+
     <EditText
-        android:id="@+id/edtconnect"
+        android:id="@+id/inputEmail"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
@@ -28,12 +29,27 @@
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
+        android:paddingStart="16dp"
         android:textColorHint="#666464"
-        android:paddingLeft="16dp"
-        android:layout_marginTop="50dp"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
+
     <EditText
-        android:id="@+id/edtpass"
+        android:id="@+id/inputFullName"
+        android:layout_width="345dp"
+        android:layout_height="47dp"
+        android:layout_gravity="center"
+        android:background="@drawable/edit_text_background"
+        android:ems="10"
+        android:hint="Họ và tên"
+        android:inputType="text"
+        android:textColorHint="#666464"
+        android:paddingStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
+    <EditText
+        android:id="@+id/inputPassword"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
@@ -42,15 +58,17 @@
         android:hint="Mật khẩu"
         android:inputType="textPassword"
         android:textColorHint="#666464"
-        android:paddingLeft="16dp"
-        android:layout_marginTop="30dp"
-        android:textSize="16sp" />
+        android:paddingStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
     <LinearLayout
         android:id="@+id/show_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginStart="33dp"
+        android:layout_marginTop="5dp"
         tools:ignore="UseCompoundDrawables">
         <TextView
             android:layout_width="wrap_content"
@@ -69,21 +87,9 @@
             android:background="@android:color/transparent"
             app:tint="@color/text_primary" />
     </LinearLayout>
+
     <EditText
-        android:id="@+id/edtfullname"
-        android:layout_width="345dp"
-        android:layout_height="47dp"
-        android:layout_gravity="center"
-        android:background="@drawable/edit_text_background"
-        android:ems="10"
-        android:hint="Tên đầy đủ"
-        android:inputType="text"
-        android:textColorHint="#666464"
-        android:paddingLeft="16dp"
-        android:layout_marginTop="15dp"
-        android:textSize="16sp" />
-    <EditText
-        android:id="@+id/edtusername"
+        android:id="@+id/inputUsername"
         android:layout_width="345dp"
         android:layout_height="47dp"
         android:layout_gravity="center"
@@ -92,9 +98,10 @@
         android:hint="Tên người dùng"
         android:inputType="text"
         android:textColorHint="#666464"
-        android:paddingLeft="16dp"
-        android:layout_marginTop="30dp"
-        android:textSize="16sp" />
+        android:paddingStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/textView"
@@ -109,15 +116,15 @@
 
 
     <Button
-        android:id="@+id/btnregister"
+        android:id="@+id/acceptRegisterBTN"
         android:layout_width="345dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginTop="40px"
+        android:layout_marginTop="40dp"
         android:background="@drawable/custom_btn"
         android:text="Đăng ký"
         android:textStyle="bold"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:backgroundTint="@null" />
 
     <LinearLayout
@@ -134,10 +141,10 @@
             android:text="Bạn có tài khoản?"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="bold" />
         <Button
-            android:id="@+id/btnlogin"
+            android:id="@+id/loginBTN"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

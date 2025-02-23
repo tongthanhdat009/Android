@@ -14,6 +14,12 @@
         android:icon="@drawable/baseline_edit_24"
         android:iconTint="@color/text_primary" />
     <item
+        android:id="@+id/account_management"
+        android:title="Quản lý tài khoản"
+        android:orderInCategory="100"
+        android:icon="@drawable/baseline_admin_panel_settings_24"
+        android:iconTint="@color/text_primary" />
+    <item
         android:id="@+id/logout"
         android:title="Đăng xuất"
         android:orderInCategory="100"

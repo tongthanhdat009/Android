@@ -40,6 +40,7 @@ import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
 import com.project.myapplication.model.UserModel;
 import com.project.myapplication.view.activity.FullscreenImageActivity;
+import com.project.myapplication.view.activity.accountCenterActivity;
 import com.project.myapplication.view.activity.userShowFollowActivity;
 import com.project.myapplication.view.adapter.userPostShowAdapter;
 import com.squareup.picasso.Picasso;
@@ -138,6 +139,11 @@ public class profileFragment extends Fragment {
                                 }
                             });
                             return true;
+                        }
+                        else if(menuItem.getItemId() == R.id.account_management){
+                            Intent intent = new Intent(view.getContext(), accountCenterActivity.class);
+                            intent.putExtra("userID",userID);
+                            startActivity(intent);
                         }
                         else if(menuItem.getItemId() == R.id.edit_avatar){
                             Toast.makeText(view.getContext(),"Chọn sửa ảnh đại diện",Toast.LENGTH_SHORT).show();

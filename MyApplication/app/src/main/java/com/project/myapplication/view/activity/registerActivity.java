@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
@@ -28,21 +29,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class registerActivity extends AppCompatActivity {
-    public EditText edtconnect,edtpass,edtusername,edtfullname;
-    public Button btnregister,btnlogin;
+    public EditText inputEmail,inputPassword,inputUsername,inputFullName;
+    public Button registerBTN, loginBTN;
     public UserModel userModel = new UserModel();
     FirebaseAuth auth = FirebaseAuth.getInstance();
-    private boolean usernameExist, emailExist;
-    public void signUp(String email, String password) {
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("FirebaseAuth", "Đăng ký thành công!");
-                    } else {
-                        Log.e("FirebaseAuth", "Lỗi: " + task.getException().getMessage());
-                    }
-                });
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,31 +44,32 @@ public class registerActivity extends AppCompatActivity {
             return insets;
         });
 
-        edtconnect = findViewById(R.id.edtconnect);
-        edtpass = findViewById(R.id.edtpass);
-        edtusername = findViewById(R.id.edtusername);
-        edtfullname = findViewById(R.id.edtfullname);
-        btnregister = findViewById(R.id.btnregister);
-        btnlogin = findViewById(R.id.btnlogin);
+        inputEmail = findViewById(R.id.inputEmail);
+        inputPassword = findViewById(R.id.inputPassword);
+        inputUsername = findViewById(R.id.inputUsername);
+        inputFullName = findViewById(R.id.inputFullName);
+        registerBTN = findViewById(R.id.acceptRegisterBTN);
+        loginBTN = findViewById(R.id.loginBTN);
+
 
         LinearLayout showPassword = findViewById(R.id.show_password);
         ImageView iconEye = findViewById(R.id.iv_show_password);
 
         showPassword.setOnClickListener(v -> {
             // Kiểm tra xem mật khẩu có đang ẩn hay không
-            if ((edtpass.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
+            if ((inputPassword.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
                 // Nếu mật khẩu đang ẩn, thay đổi để hiển thị
-                edtpass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                 iconEye.setImageResource(R.drawable.ic_open_eye);  // Hình mắt mở
             } else {
-                edtpass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 iconEye.setImageResource(R.drawable.ic_closed_eye);  // Hình mắt đóng
             }
             // Di chuyển con trỏ đến cuối văn bản sau khi thay đổi input type
-            edtpass.setSelection(edtpass.getText().length());
+            inputPassword.setSelection(inputPassword.getText().length());
         });
 
-        btnlogin.setOnClickListener(new View.OnClickListener() {
+        loginBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(registerActivity.this, loginActivity.class);
@@ -86,42 +77,40 @@ public class registerActivity extends AppCompatActivity {
                 finish();
             }
         });
-        btnregister.setOnClickListener(new View.OnClickListener() {
+        registerBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                usernameExist = false;
-                emailExist = false;
-                String connect = edtconnect.getText().toString().trim();
-                String pass = edtpass.getText().toString().trim();
-                String username = edtusername.getText().toString().trim();
-                String fullname = edtfullname.getText().toString().trim();
+                String email = inputEmail.getText().toString().trim();
+                String password = inputPassword.getText().toString().trim();
+                String username = inputUsername.getText().toString().trim();
+                String fullname = inputFullName.getText().toString().trim();
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("Đăng ký");
                 AlertDialog alertDialog = builder.create();
 
                 // kiểm tra thông tin để trống
-                if(TextUtils.isEmpty(connect)){
-                    edtconnect.setError("Không để trống Email!");
+                if(TextUtils.isEmpty(email)){
+                    inputEmail.setError("Không để trống Email!");
                     return;
                 }
 
-                if(TextUtils.isEmpty(pass)){
-                    edtpass.setError("Không để trống mật khẩu");
+                if(TextUtils.isEmpty(password)){
+                    inputPassword.setError("Không để trống mật khẩu");
                     return;
                 }
 
                 if(TextUtils.isEmpty(fullname)){
-                    edtfullname.setError("Không để trống họ và tên!");
+                    inputFullName.setError("Không để trống họ và tên!");
                     return;
                 }
 
                 if(TextUtils.isEmpty(username)){
-                    edtusername.setError("Không để trống tên người dùng");
-                    alertDialog.show();
+                    inputUsername.setError("Không để trống tên người dùng");
                     return;
                 }
 
-                userModel.emailCheck(connect, new UserModel.OnCheckEmailCallBack() {
+                userModel.emailCheck(email, new UserModel.OnCheckEmailCallBack() {
                     @Override
                     public void emailCheck(String status) {
                         switch (status) {
@@ -138,19 +127,8 @@ public class registerActivity extends AppCompatActivity {
                                 alertDialog.show();
                                 break;
                             case "Email hợp lệ!":
-                                //kiểm tra mật khẩu
-                                String regex_pass = "^(?=.*[0-9])(?=.*[a-zA-Z]).{6,20}$";
-                                Pattern p_pass = Pattern.compile(regex_pass);
-                                Matcher m_pass = p_pass.matcher(pass);
-
-                                if(!m_pass.matches()) {
-                                    alertDialog.setMessage("Mật khẩu phải từ 6 kí tự và bao gồm chữ và số !");
-                                    alertDialog.show();
-                                    return;
-                                }
-
-
-                                String regex_userName = "^[\\p{L}\\p{M}']+(?:[\\s][\\p{L}\\p{M}']+)*$";
+                                //Kiểm tra họ và tên đầy đủ
+                                String regex_userName = "^[\\p{L}\\p{M}']+(?:\\s[\\p{L}\\p{M}']+)*$";
                                 Pattern p_userName = Pattern.compile(regex_userName);
                                 Matcher m_userName = p_userName.matcher(fullname);
                                 if(!(fullname.length()<=50)) {
@@ -164,7 +142,18 @@ public class registerActivity extends AppCompatActivity {
                                     return;
                                 }
 
+                                //kiểm tra mật khẩu
+                                String regex_pass = "^(?=.*[0-9])(?=.*[a-zA-Z]).{6,20}$";
+                                Pattern p_pass = Pattern.compile(regex_pass);
+                                Matcher m_pass = p_pass.matcher(password);
 
+                                if(!m_pass.matches()) {
+                                    alertDialog.setMessage("Mật khẩu phải từ 6 kí tự và bao gồm chữ và số !");
+                                    alertDialog.show();
+                                    return;
+                                }
+
+                                //Kiểm tra username đã tồn tại chưa
                                 userModel.existUsernameCheck(username, new UserModel.OnCheckUserNameCallBack() {
                                     @Override
                                     public void usernameCheck(String status) {
@@ -178,24 +167,35 @@ public class registerActivity extends AppCompatActivity {
                                                 alertDialog.show();
                                                 break;
                                             case "Tài khoản hợp lệ":
-                                                User tempUser = new User("", fullname, username, pass, connect, "", "","");
-
-                                                userModel.addUser(tempUser, new UserModel.OnUserRegisterCallback() {
+                                                signUp(email, password, new OnSignUpCallback() {
                                                     @Override
-                                                    public void register(User registedUser,Boolean success) {
-                                                        if(success){
-                                                            signUp(tempUser.getEmail(),tempUser.getPassword());
-                                                            Toast.makeText(registerActivity.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(registerActivity.this, registerAvatarActivity.class);
-                                                            intent.putExtra("userID", registedUser.getUserID());
-                                                            startActivity(intent);
-                                                            finish();
-                                                        }
-                                                        else {
-                                                            Toast.makeText(registerActivity.this, "Đăng ký thất bại.", Toast.LENGTH_SHORT).show();
-                                                        }
+                                                    public void onSuccess(String userID) {
+                                                        User tempUser = new User(userID, fullname, username, password, email, "", "","","");
+
+                                                        userModel.addUser(tempUser, new UserModel.OnUserRegisterCallback() {
+                                                            @Override
+                                                            public void register(User registedUser,Boolean success) {
+                                                                if(success){
+                                                                    Toast.makeText(registerActivity.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent = new Intent(registerActivity.this, registerAvatarActivity.class);
+                                                                    intent.putExtra("userID", registedUser.getUserID());
+                                                                    startActivity(intent);
+                                                                    finish();
+                                                                }
+                                                                else {
+                                                                    Toast.makeText(registerActivity.this, "Đăng ký thất bại.", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(String errorMessage) {
+                                                        alertDialog.setMessage(errorMessage);
+                                                        alertDialog.show();
                                                     }
                                                 });
+
                                                 break;
                                         }
                                     }
@@ -204,52 +204,31 @@ public class registerActivity extends AppCompatActivity {
                         }
                     }
                 });
-
-
-
-//                fire.createUserWithEmailAndPassword(connect, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            FirebaseUser user = fire.getCurrentUser();
-//                            if (user != null) {
-//                                String userId = user.getUid();
-//
-//                                Map<String, Object> usermap = new HashMap<>();
-//                                usermap.put("Biography", "");
-//                                usermap.put("Email", connect);
-//                                usermap.put("Logged",false);
-//                                usermap.put("Name", fullname);
-//                                usermap.put("UserName", username);
-//                                usermap.put("Password", pass);
-//                                usermap.put("avatar", "");
-//
-//                                db.collection("users").document(userId).set(usermap)
-//                                        .addOnFailureListener(new OnFailureListener() {
-//                                            @Override
-//                                            public void onFailure(@NonNull Exception e) {
-//                                                Toast.makeText(register_page.this, "Đăng ký thất bại: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        })
-//                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                            @Override
-//                                            public void onSuccess(Void unused) {
-//                                                Toast.makeText(register_page.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
-//                                                Intent intent = new Intent(register_page.this, register_avatar.class);
-//                                                startActivity(intent);
-//                                                finish();
-//                                    }
-//                                });
-//                            } else {
-//                                Log.e("RegisterError", "User null after successful registration");
-//                                Toast.makeText(register_page.this, "Lỗi: Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
-//                            }
-//                        } else {
-//                            Toast.makeText(register_page.this, "Đăng ký thất bại: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                });
             }
         });
+    }
+    public void signUp(String email, String password, final OnSignUpCallback callback) {
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            String userID = user.getUid();  // Lấy userID (UID của người dùng)
+                            Log.d("FirebaseAuth", "Đăng ký thành công! User ID: " + userID);
+
+                            // Gọi callback với userID trả về
+                            callback.onSuccess(userID);
+                        }
+                    } else {
+                        Log.e("FirebaseAuth", "Lỗi: " + task.getException().getMessage());
+                        callback.onFailure(task.getException().getMessage());
+                    }
+                });
+    }
+
+    // Callback interface
+    public interface OnSignUpCallback {
+        void onSuccess(String userID);
+        void onFailure(String errorMessage);
     }
 }

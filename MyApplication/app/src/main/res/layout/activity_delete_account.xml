@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/backBTN"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:contentDescription="TODO"
+            android:backgroundTint="@android:color/transparent"
+            android:background="@null"
+            android:foreground="?attr/selectableItemBackground"
+            app:tint="@color/like_button_color" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/helvetica_bold"
+            android:gravity="center"
+            android:text="Xoá tài khoản"
+            android:textSize="20sp"
+            android:paddingEnd="25dp"
+            tools:ignore="RtlSymmetry"
+            android:textColor="@color/text_primary"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" />
+    <Button
+        android:id="@+id/accept_delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚠️Xác nhận"
+        android:background="@drawable/post_button_border"
+        android:textColor="@color/button_text"
+        android:layout_margin="20dp"
+        />
+</LinearLayout>
