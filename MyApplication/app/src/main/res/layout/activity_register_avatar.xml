@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".view.activity.registerActivity">
+    tools:context=".view.activity.registerActivity"
+    android:background="@color/background">
 
 
     <ImageView
@@ -15,7 +16,8 @@
         android:layout_height="76dp"
         app:srcCompat="@drawable/instagram_logo"
         android:layout_marginBottom="30dp"
-        android:layout_marginTop="100dp"/>
+        android:layout_marginTop="100dp"
+        app:tint="@color/text_primary" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +25,7 @@
         android:gravity="center"
         android:textSize="30dp"
         android:textStyle="bold"
-        android:textColor="@color/gray"/>
+        android:textColor="@color/text_primary"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,24 +60,36 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:orientation="horizontal">
-        <Button
-            android:id="@+id/btn_skip"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:text="Bỏ quả"
-            app:backgroundTint="@null"
-            android:layout_weight="1"
-            android:textSize="15dp"
-            android:layout_gravity="center"/>
-        <Button
-            android:id="@+id/btn_finish"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:text="Hoàn thành"
-            app:backgroundTint="@null"
-            android:layout_weight="1"
-            android:textSize="15dp"
-            android:background="@drawable/custom_btn"
-            android:layout_gravity="center"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_skip"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:text="Bỏ qua"
+                app:backgroundTint="@null"
+                android:layout_weight="0.5"
+                android:textSize="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/custom_btn"
+                android:textColor="@color/button_text"
+                android:backgroundTint="@color/button_color"
+                android:layout_margin="10dp"/>
+
+            <Button
+                android:id="@+id/btn_finish"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:text="Hoàn thành"
+                android:layout_weight="0.5"
+                app:backgroundTint="@null"
+                android:textSize="15dp"
+                android:background="@drawable/custom_btn"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

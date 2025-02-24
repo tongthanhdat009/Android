@@ -29,6 +29,7 @@ import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.PostModel;
 import com.project.myapplication.view.adapter.postImageAdapter;
+import com.project.myapplication.view.components.CustomProgressDialog;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,13 +40,14 @@ import java.util.Objects;
 public class postController {
     private final View view;
     private final PostModel postModel;
-    private final PostActitvityController postActitvityController;
-
+    private final CustomProgressDialog progressDialog;
+    public final PostActitvityController postActitvityController;
     // Constructor để nhận Activity và Spinner
-    public postController(View view) {
+    public postController(View view, CustomProgressDialog progressDialog) {
 
         this.view = view;
         postActitvityController = new PostActitvityController(view);
+        this.progressDialog = progressDialog;
         postModel = new PostModel();
     }
 
@@ -88,6 +90,7 @@ public class postController {
         postActitvityController.postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.show();
                 String content = Objects.requireNonNull(postActitvityController.text.getText()).toString();
                 if(!content.isEmpty()){
                     ArrayList<String>likedBy=new ArrayList<>();
@@ -119,6 +122,7 @@ public class postController {
                                 @Override
                                 public void addPost(boolean success) {
                                     if(success){
+                                        progressDialog.dismiss();
                                         Toast.makeText(
                                                 view.getContext(),
                                                 "Thêm bài viết thành công",
@@ -139,11 +143,13 @@ public class postController {
                         }
                         @Override
                         public void onUploadFailure(String errorMessage) {
+                            progressDialog.dismiss();
                             Toast.makeText(view.getContext(), "Vui lòng chọn ít nhất 1 ảnh.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
                 else{
+                    progressDialog.dismiss();
                     Toast.makeText(
                             view.getContext(),
                             "Vui lòng nhập nội dung.",

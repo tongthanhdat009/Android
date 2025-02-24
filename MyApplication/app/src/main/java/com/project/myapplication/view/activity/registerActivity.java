@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
+import com.project.myapplication.view.components.CustomProgressDialog;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,7 @@ public class registerActivity extends AppCompatActivity {
     public Button registerBTN, loginBTN;
     public UserModel userModel = new UserModel();
     FirebaseAuth auth = FirebaseAuth.getInstance();
+    CustomProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +82,9 @@ public class registerActivity extends AppCompatActivity {
         registerBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new CustomProgressDialog(view.getContext());
+                progressDialog.show();
+
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String username = inputUsername.getText().toString().trim();
@@ -106,7 +111,7 @@ public class registerActivity extends AppCompatActivity {
                 }
 
                 if(TextUtils.isEmpty(username)){
-                    inputUsername.setError("Không để trống tên người dùng");
+                    inputUsername.setError("Không để trống tên tài khoản");
                     return;
                 }
 
@@ -115,14 +120,17 @@ public class registerActivity extends AppCompatActivity {
                     public void emailCheck(String status) {
                         switch (status) {
                             case "Email đã được sử dụng!":
+                                progressDialog.dismiss();
                                 alertDialog.setMessage("Email đã được sử dụng");
                                 alertDialog.show();
                                 break;
                             case "Sai định dạng email":
+                                progressDialog.dismiss();
                                 alertDialog.setMessage("Sai định dạng email");
                                 alertDialog.show();
                                 break;
                             case "Email phải dài dưới 345 và không để trống!":
+                                progressDialog.dismiss();
                                 alertDialog.setMessage("Email phải dài dưới 345 và không để trống!");
                                 alertDialog.show();
                                 break;
@@ -132,11 +140,13 @@ public class registerActivity extends AppCompatActivity {
                                 Pattern p_userName = Pattern.compile(regex_userName);
                                 Matcher m_userName = p_userName.matcher(fullname);
                                 if(!(fullname.length()<=50)) {
+                                    progressDialog.dismiss();
                                     alertDialog.setMessage("Họ tên phải dài từ 1 đến 50 kí tự");
                                     alertDialog.show();
                                     return;
                                 }
                                 if(!m_userName.matches()) {
+                                    progressDialog.dismiss();
                                     alertDialog.setMessage("Họ và tên không được chứa kí tự đặc biệt và số");
                                     alertDialog.show();
                                     return;
@@ -148,6 +158,7 @@ public class registerActivity extends AppCompatActivity {
                                 Matcher m_pass = p_pass.matcher(password);
 
                                 if(!m_pass.matches()) {
+                                    progressDialog.dismiss();
                                     alertDialog.setMessage("Mật khẩu phải từ 6 kí tự và bao gồm chữ và số !");
                                     alertDialog.show();
                                     return;
@@ -159,10 +170,12 @@ public class registerActivity extends AppCompatActivity {
                                     public void usernameCheck(String status) {
                                         switch (status){
                                             case "Tài khoản không được chứa kí tự đặc biệt và phải dài từ 5 đến 20 kí tự!":
+                                                progressDialog.dismiss();
                                                 alertDialog.setMessage(status);
                                                 alertDialog.show();
                                                 break;
                                             case "Tài khoản đã được sử dụng!":
+                                                progressDialog.dismiss();
                                                 alertDialog.setMessage(status);
                                                 alertDialog.show();
                                                 break;
@@ -176,6 +189,7 @@ public class registerActivity extends AppCompatActivity {
                                                             @Override
                                                             public void register(User registedUser,Boolean success) {
                                                                 if(success){
+                                                                    progressDialog.dismiss();
                                                                     Toast.makeText(registerActivity.this, "Đăng kí thành công", Toast.LENGTH_SHORT).show();
                                                                     Intent intent = new Intent(registerActivity.this, registerAvatarActivity.class);
                                                                     intent.putExtra("userID", registedUser.getUserID());
@@ -183,6 +197,7 @@ public class registerActivity extends AppCompatActivity {
                                                                     finish();
                                                                 }
                                                                 else {
+                                                                    progressDialog.dismiss();
                                                                     Toast.makeText(registerActivity.this, "Đăng ký thất bại.", Toast.LENGTH_SHORT).show();
                                                                 }
                                                             }
@@ -191,6 +206,7 @@ public class registerActivity extends AppCompatActivity {
 
                                                     @Override
                                                     public void onFailure(String errorMessage) {
+                                                        progressDialog.dismiss();
                                                         alertDialog.setMessage(errorMessage);
                                                         alertDialog.show();
                                                     }

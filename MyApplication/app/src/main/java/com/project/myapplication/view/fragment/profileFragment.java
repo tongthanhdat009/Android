@@ -31,6 +31,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
@@ -127,6 +128,7 @@ public class profileFragment extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         if(menuItem.getItemId() == R.id.logout){
+                            FirebaseAuth.getInstance().signOut();
                             Toast.makeText(view.getContext(),"Đăng xuất",Toast.LENGTH_SHORT).show();
                             postModel.getUserInfor(userID, new PostModel.OnUserRetrievedCallback() {
                                 @Override

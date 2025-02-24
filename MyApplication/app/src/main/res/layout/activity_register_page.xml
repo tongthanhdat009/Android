@@ -48,6 +48,22 @@
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         tools:ignore="RtlSymmetry" />
+
+    <EditText
+        android:id="@+id/inputUsername"
+        android:layout_width="345dp"
+        android:layout_height="47dp"
+        android:layout_gravity="center"
+        android:background="@drawable/edit_text_background"
+        android:ems="10"
+        android:hint="Tên người dùng"
+        android:inputType="text"
+        android:textColorHint="#666464"
+        android:paddingStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry" />
+
     <EditText
         android:id="@+id/inputPassword"
         android:layout_width="345dp"
@@ -62,6 +78,7 @@
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         tools:ignore="RtlSymmetry" />
+
     <LinearLayout
         android:id="@+id/show_password"
         android:layout_width="wrap_content"
@@ -88,20 +105,7 @@
             app:tint="@color/text_primary" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/inputUsername"
-        android:layout_width="345dp"
-        android:layout_height="47dp"
-        android:layout_gravity="center"
-        android:background="@drawable/edit_text_background"
-        android:ems="10"
-        android:hint="Tên người dùng"
-        android:inputType="text"
-        android:textColorHint="#666464"
-        android:paddingStart="16dp"
-        android:layout_marginTop="20dp"
-        android:textSize="16sp"
-        tools:ignore="RtlSymmetry" />
+
 
     <TextView
         android:id="@+id/textView"
@@ -125,7 +129,8 @@
         android:text="Đăng ký"
         android:textStyle="bold"
         android:textSize="16sp"
-        app:backgroundTint="@null" />
+        app:backgroundTint="@null"
+        android:textColor="@color/white"/>
 
     <LinearLayout
         android:layout_marginTop="20dp"
@@ -152,6 +157,7 @@
             android:gravity="center"
             android:background="@drawable/custom_btn"
             android:layout_marginStart="10dp"
-            android:text="Đăng nhập"/>
+            android:text="Đăng nhập"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </LinearLayout>

@@ -12,6 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.project.myapplication.R;
 import com.project.myapplication.view.activity.deleteAccountActivity;
 import com.project.myapplication.view.activity.resetPasswordActivity;
@@ -50,7 +53,6 @@ public class accountCenterAdapter extends RecyclerView.Adapter<accountCenterAdap
     @Override
     public void onBindViewHolder(@NonNull AccountCenterHolder holder, int position) {
         Map.Entry<Integer, String> item = itemList.get(position);
-
         holder.iconView.setImageResource(item.getKey());
         holder.textView.setText(item.getValue());
         holder.itemView.setOnClickListener(v->{
@@ -62,7 +64,6 @@ public class accountCenterAdapter extends RecyclerView.Adapter<accountCenterAdap
                     break;
                 case "Đổi mật khẩu":
                     Intent intent1 = new Intent(context, resetPasswordActivity.class);
-                    Toast.makeText(context,"Hello",Toast.LENGTH_SHORT).show();
                     intent1.putExtra("userID",userID);
                     context.startActivity(intent1);
                     break;

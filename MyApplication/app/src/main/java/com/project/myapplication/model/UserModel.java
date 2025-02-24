@@ -259,6 +259,19 @@ public class UserModel {
         });
     }
 
+    public void deleteUser(String userID, OnDeleteUserCallBack callBack) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document(userID)
+                .delete()
+                .addOnSuccessListener(aVoid -> callBack.onSuccess("Xóa thành công"))
+                .addOnFailureListener(e -> callBack.onFailure("Lỗi khi xóa: " + e.getMessage()));
+    }
+
+    public interface OnDeleteUserCallBack{
+        void onSuccess(String message);
+        void onFailure(String errorMessage);
+    }
 
     public interface OnCheckEmailCallBack{
         void emailCheck(String status);

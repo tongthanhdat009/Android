@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -26,6 +27,7 @@ import org.checkerframework.checker.interning.qual.CompareToMethod;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PostModel {
@@ -140,6 +142,8 @@ public class PostModel {
             callback.onPostDeleted(false);
         });
     }
+
+
 
     public void postUpdate(Post post) {
         DocumentReference docPost = firestore.collection("post").document(post.getPostID());
@@ -372,8 +376,46 @@ public class PostModel {
         });
     }
 
-    // Định nghĩa interface callback
-    // Lấy tất cả bài đăng của 1 người dùng
+    public void deletePostByUserID(String userID, OnPostDeleteByUserCallback callback) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // Truy vấn tất cả các bài đăng có userID
+        firestore.collection("post")
+                .whereEqualTo("userID", userID)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // Nếu không có bài đăng nào, coi như xóa thành công
+                        callback.onSuccess("Không có bài đăng nào để xóa.");
+                        return;
+                    }
+
+                    // Danh sách các Task xóa bài viết
+                    List<Task<Void>> deleteTasks = new ArrayList<>();
+
+                    // Xóa từng bài đăng và thêm vào danh sách Task
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        Task<Void> deleteTask = firestore.collection("post").document(document.getId()).delete();
+                        deleteTasks.add(deleteTask);
+                    }
+
+                    // Chờ tất cả bài viết được xóa trước khi báo thành công
+                    Tasks.whenAllSuccess(deleteTasks)
+                            .addOnSuccessListener(aVoid -> callback.onSuccess("Đã xóa tất cả bài đăng của người dùng " + userID))
+                            .addOnFailureListener(e -> callback.onFailure("Lỗi khi xóa bài đăng: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure("Lỗi khi truy vấn bài đăng: " + e.getMessage());
+                });
+    }
+
+
+    public interface OnPostDeleteByUserCallback {
+        void onSuccess(String message);
+        void onFailure(String errorMessage);
+    }
+
+    // Lấy tất cả post của 1 user
     public interface  OnUserPostListRetrievedCallback {
         void getUserPost(ArrayList<Post> postsList);
     }

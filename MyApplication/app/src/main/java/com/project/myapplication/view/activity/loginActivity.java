@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,9 @@ import com.project.myapplication.DTO.User;
 import com.project.myapplication.MainActivity;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
+import com.project.myapplication.view.components.CustomProgressDialog;
+
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +38,7 @@ public class loginActivity extends AppCompatActivity {
     Button btnlogin,btnregister;
     UserModel userModel = new UserModel();
     TextView textResetPassword;
+    CustomProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,11 +91,15 @@ public class loginActivity extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog = new CustomProgressDialog(view.getContext());
+                progressDialog.show();
+
                 String name = emailInput.getText().toString().trim();
                 String pass = passwordInput.getText().toString().trim();
 
 
                 if (TextUtils.isEmpty(name)) {
+                    progressDialog.dismiss();
                     emailInput.setError("Không được để trống Email!");
                     return;
                 }
@@ -99,11 +108,13 @@ public class loginActivity extends AppCompatActivity {
                 Pattern p_email = Pattern.compile(regex_email);
                 Matcher m_email = p_email.matcher(name);
                 if (!m_email.matches()) {
+                    progressDialog.dismiss();
                     emailInput.setError("Sai định dạng email");
                     return;
                 }
 
                 if (TextUtils.isEmpty(pass)) {
+                    progressDialog.dismiss();
                     passwordInput.setError("Không được để trống mật khẩu!");
                     return;
                 }
@@ -112,12 +123,14 @@ public class loginActivity extends AppCompatActivity {
                     @Override
                     public void loginCheck(User user, Boolean success, String noti) {
                         if(noti.equals("Đăng nhập thành công!")){
+                            progressDialog.dismiss();
                             Intent intent = new Intent(loginActivity.this, MainActivity.class);
                             intent.putExtra("userID", user.getUserID());
                             loginActivity.this.startActivity(intent);
                             finish();
                         }
                         else{
+                            progressDialog.dismiss();
                             Toast.makeText(view.getContext(),noti,Toast.LENGTH_SHORT).show();
                         }
                     }

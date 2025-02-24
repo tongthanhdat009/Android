@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.project.myapplication.R;
 import com.project.myapplication.controller.postController;
+import com.project.myapplication.view.components.CustomProgressDialog;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ public class postFragment extends Fragment {
     private String userID;
     private ArrayList<Uri> imagesUriList;
     private ActivityResultLauncher<Intent> pickImageLauncher;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,12 +34,12 @@ public class postFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
-
+        CustomProgressDialog progressDialog = new CustomProgressDialog(view.getContext());
         // Khởi tạo danh sách URI
         imagesUriList = new ArrayList<>();
 
         // Lựa chọn đối tượng được xem bài viết
-        postController controller = new postController(view);
+        postController controller = new postController(view, progressDialog);
         controller.addItemTargetSpinner();
 
         // Đăng ký ActivityResultLauncher để xử lý kết quả trả về từ việc chọn ảnh
