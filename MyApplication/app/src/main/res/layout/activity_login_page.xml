@@ -81,14 +81,14 @@
         </LinearLayout>
         <Button
             android:id="@+id/btnlogin"
-            android:layout_width="345dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_gravity="center"
-            android:layout_margin="25dp"
             android:background="@drawable/custom_btn"
             android:text="Đăng nhập"
+            android:layout_margin="25dp"
             android:textColor="@color/button_color"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@null" />
         <TextView

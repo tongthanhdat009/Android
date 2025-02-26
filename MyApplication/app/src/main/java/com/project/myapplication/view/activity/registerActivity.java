@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -31,8 +32,9 @@ import java.util.regex.Pattern;
 
 public class registerActivity extends AppCompatActivity {
     public EditText inputEmail,inputPassword,inputUsername,inputFullName;
-    public Button registerBTN, loginBTN;
+    public Button registerBTN;
     public UserModel userModel = new UserModel();
+    public ImageButton backBTN;
     FirebaseAuth auth = FirebaseAuth.getInstance();
     CustomProgressDialog progressDialog;
     @Override
@@ -51,8 +53,7 @@ public class registerActivity extends AppCompatActivity {
         inputUsername = findViewById(R.id.inputUsername);
         inputFullName = findViewById(R.id.inputFullName);
         registerBTN = findViewById(R.id.acceptRegisterBTN);
-        loginBTN = findViewById(R.id.loginBTN);
-
+        backBTN = findViewById(R.id.backBTN);
 
         LinearLayout showPassword = findViewById(R.id.show_password);
         ImageView iconEye = findViewById(R.id.iv_show_password);
@@ -71,19 +72,14 @@ public class registerActivity extends AppCompatActivity {
             inputPassword.setSelection(inputPassword.getText().length());
         });
 
-        loginBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(registerActivity.this, loginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        backBTN.setOnClickListener(v->{
+            finish();
         });
+
         registerBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressDialog = new CustomProgressDialog(view.getContext());
-                progressDialog.show();
 
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
@@ -100,11 +96,6 @@ public class registerActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(TextUtils.isEmpty(password)){
-                    inputPassword.setError("Không để trống mật khẩu");
-                    return;
-                }
-
                 if(TextUtils.isEmpty(fullname)){
                     inputFullName.setError("Không để trống họ và tên!");
                     return;
@@ -114,6 +105,13 @@ public class registerActivity extends AppCompatActivity {
                     inputUsername.setError("Không để trống tên tài khoản");
                     return;
                 }
+
+                if(TextUtils.isEmpty(password)){
+                    inputPassword.setError("Không để trống mật khẩu");
+                    return;
+                }
+
+
 
                 userModel.emailCheck(email, new UserModel.OnCheckEmailCallBack() {
                     @Override
