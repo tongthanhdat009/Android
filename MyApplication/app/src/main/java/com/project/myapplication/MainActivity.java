@@ -1,8 +1,11 @@
 package com.project.myapplication;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.firebase.MyFirebaseMessagingService;
 import com.project.myapplication.model.UserModel;
+import com.project.myapplication.network.NetworkChangeReceiver;
 import com.project.myapplication.view.navController;
 import com.project.myapplication.view.activity.loginActivity;
 
@@ -21,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String userID = getIntent().getStringExtra("userID");
+        View rootview = findViewById(android.R.id.content);
         if(userID == null){
             //Mã thiết bị: 5ddada8a6ed6004d
 
@@ -51,4 +56,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
     }
+
+
 }

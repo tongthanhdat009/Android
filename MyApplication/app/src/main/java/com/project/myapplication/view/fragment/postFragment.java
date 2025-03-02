@@ -1,27 +1,22 @@
 package com.project.myapplication.view.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.project.myapplication.R;
-import com.project.myapplication.controller.postController;
-import com.project.myapplication.view.components.CustomProgressDialog;
+import com.project.myapplication.view.adapter.PostViewPagerAdapter;
 
 import java.util.ArrayList;
 
 public class postFragment extends Fragment {
     private String userID;
-    private ArrayList<Uri> imagesUriList;
-    private ActivityResultLauncher<Intent> pickImageLauncher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,49 +29,41 @@ public class postFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
-        CustomProgressDialog progressDialog = new CustomProgressDialog(view.getContext());
-        // Khởi tạo danh sách URI
-        imagesUriList = new ArrayList<>();
+        ViewPager2 viewPager = view.findViewById(R.id.viewPager);
 
-        // Lựa chọn đối tượng được xem bài viết
-        postController controller = new postController(view, progressDialog);
-        controller.addItemTargetSpinner();
+        viewPager.setUserInputEnabled(false);
 
-        // Đăng ký ActivityResultLauncher để xử lý kết quả trả về từ việc chọn ảnh
-        pickImageLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Intent data = result.getData();
+        TabLayout tabLayout = view.findViewById(R.id.tabLayout);
 
-                    if (data.getClipData() != null) { // Khi người dùng chọn nhiều ảnh
-                        int count = data.getClipData().getItemCount(); // Lấy số lượng ảnh đã chọn
-                        for (int i = 0; i < count; i++) {
-                            Uri imageUri = data.getClipData().getItemAt(i).getUri(); // Lấy URI của từng ảnh
-                            imagesUriList.add(imageUri); // Thêm vào danh sách URI
-                        }
-                    } else if (data.getData() != null) { // Khi người dùng chọn một ảnh
-                        Uri imageUri = data.getData();
-                        imagesUriList.add(imageUri); // Thêm URI vào danh sách
-                    }
-                    controller.displayImageChosen(imagesUriList);
-                }
-            }
-        );
-        //gán thông tin người dùng đang sử dụng trong phần post
-        controller.setUserInfor(userID);
+        ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
+        fragmentList.add(new postImageFragment());
+        fragmentList.add(new postVideoFragment());
+        PostViewPagerAdapter viewPagerAdapter = new PostViewPagerAdapter(requireActivity(), fragmentList);
+        viewPager.setAdapter(viewPagerAdapter);
 
-        // Kích hoạt chức năng chọn ảnh khi nhấn nút chọn ảnh trong postController
-        controller.chooseImgBTNAction(pickImageLauncher);
+        String[] tabTitles = new String[]{"Ảnh", "Video"};
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            tab.setText(tabTitles[position]);
+        }).attach();
 
-        // Gọi hàm xử lý xóa ảnh
-        controller.deleteImgBTNAction(imagesUriList);
+//
+//        // Lựa chọn đối tượng được xem bài viết
+//        postController controller = new postController(view, progressDialog);
+//        controller.addItemTargetSpinner();
+//
 
-        // Gọi hàm xác nhận đăng post
-        controller.postBTNAction(imagesUriList, userID);
+//        //gán thông tin người dùng đang sử dụng trong phần post
+//        controller.setUserInfor(userID);
+//
 
-        // Gọi hàm đếm sso ký tự
-        controller.wordCounter();
+//
+
+//
+//        // Gọi hàm xác nhận đăng post
+//        controller.postBTNAction(imagesUriList, userID);
+//
+//        // Gọi hàm đếm sso ký tự
+//        controller.wordCounter();
         return view; // Trả về view đã inflate
     }
 }

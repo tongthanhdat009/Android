@@ -26,4 +26,10 @@
     <color name="like_button_color">#FFFFFF</color>
     <!--picture counter backgrond-->
     <color name="picture_counter_bg">#000000</color>
+    <!-- tab background -->
+    <color name="tab_bg">#000000</color>
+    <!--tab text -->
+    <color name="tab_text">#FFFFFF</color>
+    <!--tab background-->
+    <color name="tab_indicator">#808080</color>
 </resources>

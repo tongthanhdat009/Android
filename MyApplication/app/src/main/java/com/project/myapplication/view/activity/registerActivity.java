@@ -1,6 +1,8 @@
 package com.project.myapplication.view.activity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -25,6 +27,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
+import com.project.myapplication.network.NetworkChangeReceiver;
+import com.project.myapplication.network.NetworkUtil;
 import com.project.myapplication.view.components.CustomProgressDialog;
 
 import java.util.regex.Matcher;
@@ -34,7 +38,11 @@ public class registerActivity extends AppCompatActivity {
     public EditText inputEmail,inputPassword,inputUsername,inputFullName;
     public Button registerBTN;
     public UserModel userModel = new UserModel();
+
     public ImageButton backBTN;
+
+    private NetworkChangeReceiver networkChangeReceiver;
+
     FirebaseAuth auth = FirebaseAuth.getInstance();
     CustomProgressDialog progressDialog;
     @Override
@@ -47,6 +55,9 @@ public class registerActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        View rootview = findViewById(android.R.id.content);
+        networkChangeReceiver = new NetworkChangeReceiver(rootview);
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
@@ -80,7 +91,10 @@ public class registerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 progressDialog = new CustomProgressDialog(view.getContext());
-
+                if(!NetworkUtil.isNetworkAvailable(getApplicationContext())){
+                    Toast.makeText(getApplicationContext(),"Không có kết nối mạng",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
                 String username = inputUsername.getText().toString().trim();
@@ -244,5 +258,16 @@ public class registerActivity extends AppCompatActivity {
     public interface OnSignUpCallback {
         void onSuccess(String userID);
         void onFailure(String errorMessage);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkChangeReceiver);
     }
 }

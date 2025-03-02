@@ -2,6 +2,9 @@ package com.project.myapplication.view.activity;
 
 import android.content.Intent;
 import androidx.annotation.Nullable;
+
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 //import com.project.myapplication.view.Profile;
 import com.project.myapplication.R;
+import com.project.myapplication.network.NetworkChangeReceiver;
 
 public class registerAvatarActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -30,6 +34,8 @@ public class registerAvatarActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private ProgressBar progressBar;
+
+    private NetworkChangeReceiver networkChangeReceiver;
 
     ImageView imgAvatar, imgCamera;
     Button btnFinish, btnSkip;
@@ -48,6 +54,9 @@ public class registerAvatarActivity extends AppCompatActivity {
         btnFinish = findViewById(R.id.btn_finish);
         btnSkip = findViewById(R.id.btn_skip);
         progressBar = findViewById(R.id.progressBar);
+
+        View rootview = findViewById(android.R.id.content);
+        networkChangeReceiver = new NetworkChangeReceiver(rootview);
 
         userID = getIntent().getStringExtra("userID");
         db = FirebaseFirestore.getInstance();
@@ -124,4 +133,15 @@ public class registerAvatarActivity extends AppCompatActivity {
                         Toast.makeText(this, "Lỗi khi lưu avatar mặc định: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkChangeReceiver);
+    }
 }

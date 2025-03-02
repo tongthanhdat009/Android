@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,6 +21,7 @@ import com.project.myapplication.view.fragment.followerFragment;
 import com.project.myapplication.view.fragment.followingFragment;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ShowFollowActivity extends AppCompatActivity {
     @Override
@@ -59,5 +61,32 @@ public class ShowFollowActivity extends AppCompatActivity {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             tab.setText(tabTitles[position]);
         }).attach();
+
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                // Đặt lại màu nền cho tất cả các tab về mặc định
+//                for (int i = 0; i < tabLayout.getTabCount(); i++) {
+//                    View tabView = Objects.requireNonNull(tabLayout.getTabAt(i)).view;
+//                    if(Objects.requireNonNull(tabLayout.getTabAt(i)).isSelected()){
+//                        tabView.setBackgroundColor(ContextCompat.getColor(ShowFollowActivity.this, R.color.button_text)); // Màu mặc định
+//                    }
+//                    else{
+//                        tabView.setBackgroundColor(ContextCompat.getColor(ShowFollowActivity.this, R.color.background)); // Màu mặc định
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//                // Không cần làm gì vì tab đã được đặt lại màu trong onTabSelected
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//                // Không cần xử lý gì thêm
+//            }
+//        });
+
     }
 }

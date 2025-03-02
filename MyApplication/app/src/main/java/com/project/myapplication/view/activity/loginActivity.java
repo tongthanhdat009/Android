@@ -3,6 +3,8 @@ package com.project.myapplication.view.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -22,10 +24,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.MainActivity;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
+import com.project.myapplication.network.NetworkChangeReceiver;
+import com.project.myapplication.network.NetworkUtil;
 import com.project.myapplication.view.components.CustomProgressDialog;
 
 import org.checkerframework.checker.units.qual.C;
@@ -39,6 +44,10 @@ public class loginActivity extends AppCompatActivity {
     UserModel userModel = new UserModel();
     TextView textResetPassword;
     CustomProgressDialog progressDialog;
+
+    View rootview;
+    private NetworkChangeReceiver networkChangeReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,22 +68,22 @@ public class loginActivity extends AppCompatActivity {
         LinearLayout showPassword = findViewById(R.id.show_password);
         ImageView iconEye = findViewById(R.id.iv_show_password);
 
+        rootview = findViewById(android.R.id.content);
+        networkChangeReceiver = new NetworkChangeReceiver(rootview);
+
         textResetPassword.setOnClickListener(v->{
             Intent intent = new Intent(loginActivity.this, resetPasswordActivity.class);
             startActivity(intent);
         });
 
         showPassword.setOnClickListener(v -> {
-            // Kiểm tra xem mật khẩu có đang ẩn hay không
             if ((passwordInput.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
-                // Nếu mật khẩu đang ẩn, thay đổi để hiển thị
                 passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                 iconEye.setImageResource(R.drawable.ic_open_eye);  // Hình mắt mở
             } else {
                 passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 iconEye.setImageResource(R.drawable.ic_closed_eye);  // Hình mắt đóng
             }
-            // Di chuyển con trỏ đến cuối văn bản sau khi thay đổi input type
             passwordInput.setSelection(passwordInput.getText().length());
         });
 
@@ -95,6 +104,7 @@ public class loginActivity extends AppCompatActivity {
 
                 String name = emailInput.getText().toString().trim();
                 String pass = passwordInput.getText().toString().trim();
+
 
 
                 if (TextUtils.isEmpty(name)) {
@@ -128,6 +138,10 @@ public class loginActivity extends AppCompatActivity {
                             loginActivity.this.startActivity(intent);
                             finish();
                         }
+                        else if (noti.equals("Không có kết nối mạng")){
+                            progressDialog.dismiss();
+                            Toast.makeText(view.getContext(),noti,Toast.LENGTH_SHORT).show();
+                        }
                         else{
                             progressDialog.dismiss();
                             Toast.makeText(view.getContext(),noti,Toast.LENGTH_SHORT).show();
@@ -140,5 +154,17 @@ public class loginActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkChangeReceiver);
     }
 }

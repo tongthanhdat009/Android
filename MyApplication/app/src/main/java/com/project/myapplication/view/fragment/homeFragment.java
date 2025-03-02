@@ -1,5 +1,9 @@
 package com.project.myapplication.view.fragment;
 
+import static androidx.core.content.ContextCompat.registerReceiver;
+
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
@@ -11,13 +15,15 @@ import android.view.ViewGroup;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.R;
 import com.project.myapplication.controller.homeController;
+import com.project.myapplication.network.NetworkChangeReceiver;
 
 public class homeFragment extends Fragment {
     private String userID;
-
+    private NetworkChangeReceiver networkChangeReceiver;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        networkChangeReceiver = new NetworkChangeReceiver(getView());
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {

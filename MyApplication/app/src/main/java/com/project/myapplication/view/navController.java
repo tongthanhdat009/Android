@@ -1,6 +1,9 @@
 package com.project.myapplication.view;
 
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.project.myapplication.R;
 import com.project.myapplication.databinding.ActivityNavControllerBinding;
+import com.project.myapplication.network.NetworkChangeReceiver;
 import com.project.myapplication.view.fragment.chatFragment;
 import com.project.myapplication.view.fragment.homeFragment;
 import com.project.myapplication.view.fragment.postFragment;
@@ -20,6 +24,9 @@ import java.util.Map;
 
 public class navController extends AppCompatActivity {
     ActivityNavControllerBinding binding;
+
+    private NetworkChangeReceiver networkChangeReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +34,9 @@ public class navController extends AppCompatActivity {
         String userID = getIntent().getStringExtra("userID");
         binding = ActivityNavControllerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        View rootview = findViewById(android.R.id.content);
+        networkChangeReceiver = new NetworkChangeReceiver(rootview);
 
         Map<Integer, Fragment> fragmentMap = new HashMap<>();
         fragmentMap.put(R.id.home, createFragmentWithUserID(new homeFragment(), userID));
@@ -75,5 +85,17 @@ public class navController extends AppCompatActivity {
         binding.bottomNavigationView.getMenu().findItem(R.id.post).setIcon(selectedItemId == R.id.post ? R.drawable.post_selected : R.drawable.post);
         binding.bottomNavigationView.getMenu().findItem(R.id.chat).setIcon(selectedItemId == R.id.chat ? R.drawable.chat_selected : R.drawable.chat);
         binding.bottomNavigationView.getMenu().findItem(R.id.profile).setIcon(selectedItemId == R.id.profile ? R.drawable.profile_selected : R.drawable.profile);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(networkChangeReceiver);
     }
 }

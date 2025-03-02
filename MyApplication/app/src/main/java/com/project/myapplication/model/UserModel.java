@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.project.myapplication.DTO.User;
+import com.project.myapplication.network.NetworkUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +63,10 @@ public class UserModel {
     }
 
     public void loginCheck(String email, String pass, Context context, OnUserLoginCallBack callback) {
+        if(!NetworkUtil.isNetworkAvailable(context)){
+            callback.loginCheck(null,false,"Không có kết nối mạng");
+            return;
+        }
         // Dùng FirebaseAuth để xác thực đăng nhập
         FirebaseAuth auth = FirebaseAuth.getInstance();
 

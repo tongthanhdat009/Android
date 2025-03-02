@@ -18,164 +18,117 @@
         android:padding="8dp"
         android:text="Post"
         android:textSize="20sp"
-        android:gravity="center"
-        />
+        android:gravity="center"/>
+
     <!--thông tin tài khoản hiện tại-->
-    <LinearLayout
-        android:id="@+id/currentUserInformation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/currentUserInformation"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal">-->
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/avatar"
-            android:scaleType="centerCrop"
-            android:layout_marginStart="10dp"
-            android:background="@drawable/rounded_corners"
-            android:clipToOutline="true"
-            android:layout_gravity="center"/>
-
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text=""
-            android:textSize="16sp"
-            android:background="@null"
-            android:layout_weight="8"
-            tools:ignore="InefficientWeight" />
-
-        <!--nút xác nhận đăng bài-->
-        <Button
-            android:id="@+id/post_button"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:background="@drawable/post_button_border"
-            android:gravity="center"
-            android:text="Đăng"
-            android:textSize="18sp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
+<!--        &lt;!&ndash;nút xác nhận đăng bài&ndash;&gt;-->
+<!--        <Button-->
+<!--            android:id="@+id/postBTN"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:background="@drawable/post_button_border"-->
+<!--            android:gravity="center"-->
+<!--            android:text="Đăng"-->
+<!--            android:textSize="18sp"-->
+<!--            android:layout_marginEnd="10dp"-->
+<!--            android:layout_weight="1"/>-->
+<!--    </LinearLayout>-->
 
     <!--tùy chỉnh bài viết-->
-    <LinearLayout
-        android:id="@+id/edit_post_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <Spinner
-            android:id="@+id/spinner_target"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="70dp"
-            android:spinnerMode="dropdown" />
-        <CheckBox
-            android:id="@+id/allow_comment_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cho phép bình luận"
-            android:layout_marginStart="70dp"
-            android:checked="true"
-            android:textSize="16sp"
-            android:textColor="@color/text_primary" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/edit_post_container"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical">-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_target"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="70dp"-->
+<!--            android:spinnerMode="dropdown" />-->
+<!--        <CheckBox-->
+<!--            android:id="@+id/allow_comment_checkbox"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Cho phép bình luận"-->
+<!--            android:layout_marginStart="70dp"-->
+<!--            android:checked="true"-->
+<!--            android:textSize="16sp"-->
+<!--            android:textColor="@color/text_primary" />-->
+<!--    </LinearLayout>-->
 
     <!--Nhập nội dung bài viết-->
-    <LinearLayout
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical">-->
+<!--        <TextView-->
+<!--            android:id="@+id/word_counter"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textColor="@color/text_primary"-->
+<!--            android:textSize="16dp"-->
+<!--            android:text="0 / 500"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:layout_marginEnd="10dp"/>-->
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/text_container"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="Bạn đang nghĩ gì?">-->
+<!--            &lt;!&ndash;nhập nội dung&ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/content_input"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:maxLines="3"-->
+<!--                android:maxLength="500"-->
+<!--                />-->
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+<!--    </LinearLayout>-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="end">-->
+
+
+<!--    </LinearLayout>-->
+
+
+    <!-- CardView chứa TabLayout -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/word_counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_primary"
-            android:textSize="16dp"
-            android:text="0 / 500"
-            android:layout_gravity="end"
-            android:layout_marginEnd="10dp"/>
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        android:layout_margin="8dp"
+        android:background="@color/white">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_container"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Bạn đang nghĩ gì?">
-            <!--nhập nội dung-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/content_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLines="3"
-                android:maxLength="500"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:gravity="end">
-
-        <Button
-            android:id="@+id/delete_img_button"
-            android:layout_width="70dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center|end"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/delete_img_button"
-            android:gravity="center"
-            android:text="Xóa ảnh"
-            android:textSize="16sp"
-            android:visibility="gone" />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!--vùng hiển thị ảnh đã chọn-->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-        <!-- FrameLayout chứa ImageButton và TextView -->
-        <FrameLayout
-            android:id="@+id/choose_Image_Button_container"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/viewPager"
-            android:layout_marginTop="10dp">
-
-            <!-- Nút chọn ảnh -->
-            <ImageButton
-                android:id="@+id/choose_image_Button"
-                android:layout_width="300dp"
-                android:layout_height="match_parent"
-                android:contentDescription="Chọn ảnh và video"
-                android:background="@drawable/button_border"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:padding="0dp"/>
-
-            <!-- Văn bản nằm trên nút -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn ảnh muốn đăng"
-                android:textSize="16sp"
-                android:layout_gravity="center"
-                android:textColor="@color/button_text"
-                android:gravity="center"
-                android:background="@null"/>
-        </FrameLayout>
-    </RelativeLayout>
+            app:tabMode="fixed"
+            android:elevation="10dp"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/tab_indicator"
+            app:tabSelectedTextColor="@color/tab_text"
+            app:tabIndicatorHeight="100dp"
+            app:tabRippleColor="@null" />
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

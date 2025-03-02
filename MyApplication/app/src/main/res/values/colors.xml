@@ -30,4 +30,10 @@
     <color name="touch_like_button">#FF0000</color>
     <!--picture counter backgrond-->
     <color name="picture_counter_bg">#FFFFFF</color>
+    <!--tab background-->
+    <color name="tab_bg">#FFFFFF</color>
+    <!--tab text -->
+    <color name="tab_text">#FFFFFF</color>
+    <!--tab background-->
+    <color name="tab_indicator">#4E85FF</color>
 </resources>

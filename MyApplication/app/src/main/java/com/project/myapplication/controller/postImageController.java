@@ -10,17 +10,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.cardview.widget.CardView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
-
 import com.google.firebase.Timestamp;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -37,18 +37,44 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class postController {
+public class postImageController {
     private final View view;
     private final PostModel postModel;
     private final CustomProgressDialog progressDialog;
-    public final PostActitvityController postActitvityController;
-    // Constructor để nhận Activity và Spinner
-    public postController(View view, CustomProgressDialog progressDialog) {
+    private final ViewPager2 viewPager;
+    private final Button chooseImageBTN;
+    private final LinearLayout imageInputPlaceholder;
+    private final CardView cardView;
+    private final TextView imageCountText;
+    private final Button deleteImageBTN;
+    private final Spinner spinner;
+    private ViewPager2.OnPageChangeCallback callback;
+    private final ImageView avatar;
+    private final TextView userName;
+
+    private final TextInputEditText caption;
+
+    private final Button postButton;
+    private final CheckBox allowComment;
+    private final TextView wordCounter;
+    public postImageController(View view, CustomProgressDialog progressDialog) {
 
         this.view = view;
-        postActitvityController = new PostActitvityController(view);
         this.progressDialog = progressDialog;
         postModel = new PostModel();
+        viewPager = view.findViewById(R.id.viewPager);
+        chooseImageBTN = view.findViewById(R.id.choose_image_Button);
+        imageInputPlaceholder = view.findViewById(R.id.image_input_placeholder);
+        cardView = view.findViewById(R.id.cardViewImageCount);
+        deleteImageBTN = view.findViewById(R.id.delete_img_button);
+        imageCountText = view.findViewById(R.id.imageCountText);
+        spinner = view.findViewById(R.id.spinner);
+        userName = view.findViewById(R.id.username);
+        avatar = view.findViewById(R.id.avatar);
+        caption = view.findViewById(R.id.content_input);
+        postButton = view.findViewById(R.id.postBTN);
+        allowComment = view.findViewById(R.id.allow_comment_checkbox);
+        wordCounter = view.findViewById(R.id.word_counter);
     }
 
     // thêm mục vào spinner
@@ -63,7 +89,7 @@ public class postController {
         adapter.setDropDownViewResource(android.R.layout.select_dialog_item);
 
         // Gán adapter cho Spinner
-        postActitvityController.spinner.setAdapter(adapter);
+        spinner.setAdapter(adapter);
     }
 
     public void setUserInfor(String userID){
@@ -71,10 +97,10 @@ public class postController {
             @Override
             public void onUserRetrievedCallback(User user) {
                 if (user != null) {
-                    postActitvityController.userName.setText(user.getName());
+                    userName.setText(user.getName());
                     String avatarUrl = user.getAvatar();
                     if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                        Picasso.get().load(avatarUrl).into(postActitvityController.avatar);
+                        Picasso.get().load(avatarUrl).into(avatar);
                     } else {
                         Log.d("setUserInfor", "Avatar URL is null or empty for user ID: " + userID);
                     }
@@ -87,11 +113,11 @@ public class postController {
 
     // Xử lý sự kiện của nút đăng
     public void postBTNAction(ArrayList<Uri> imagesUriList, String userID) {
-        postActitvityController.postButton.setOnClickListener(new View.OnClickListener() {
+        postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 progressDialog.show();
-                String content = Objects.requireNonNull(postActitvityController.text.getText()).toString();
+                String content = Objects.requireNonNull(caption.getText()).toString();
                 if(!content.isEmpty()){
                     ArrayList<String>likedBy=new ArrayList<>();
                     Timestamp currentTime = Timestamp.now();
@@ -108,14 +134,14 @@ public class postController {
                             Post newPost = new Post(
                                     "",
                                     userID, // userID
-                                    postActitvityController.text.getText().toString(), // content
+                                    content, // content
                                     0, // commentsCount ban đầu
                                     0, // likesCount ban đầu
                                     likedBy, // chưa có người like ban đầu
                                     imageString, // chưa có media ban đầu
                                     currentTime, // thời gian hiện tại
-                                    postActitvityController.spinner.getSelectedItem().toString(), // targetAudience
-                                    postActitvityController.allowComment.isChecked() // mở chế độ comment
+                                    spinner.getSelectedItem().toString(), // targetAudience
+                                    allowComment.isChecked() // mở chế độ comment
                             );
 
                             postModel.addPost(newPost, new PostModel.OnAddPostSuccess() {
@@ -129,10 +155,10 @@ public class postController {
                                                 Toast.LENGTH_SHORT
                                         ).show();
 
-                                        postActitvityController.text.setText("");
-                                        postActitvityController.deleteImageBTN.setVisibility(View.GONE);
+                                        caption.setText("");
+                                        deleteImageBTN.setVisibility(View.GONE);
                                         imagesUriList.clear();
-                                        postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
+                                        postImageAdapter adapter = (postImageAdapter) viewPager.getAdapter();
                                         if(adapter != null){
                                             adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
                                         }
@@ -199,7 +225,7 @@ public class postController {
 
     //Xử lý sự kiện nút chọn ảnh
     public void chooseImgBTNAction(ActivityResultLauncher<Intent> pickImageLauncher) {
-        postActitvityController.chooseImageBTN.setOnClickListener(new View.OnClickListener() {
+        chooseImageBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Tạo Intent để mở thư viện ảnh
@@ -209,37 +235,33 @@ public class postController {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 // Khởi chạy ActivityResultLauncher
                 pickImageLauncher.launch(intent);
-
             }
         });
     }
 
     public void deleteImgBTNAction(ArrayList<Uri> imagesUriList) {
-        postActitvityController.deleteImageBTN.setOnClickListener(new View.OnClickListener() {
+        deleteImageBTN.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(View view) {
-                // Lấy vị trí hiện tại của ảnh trong ViewPager
-                int imagePos = postActitvityController.viewPager.getCurrentItem();
+                int imagePos = viewPager.getCurrentItem();
 
-                // Kiểm tra danh sách ảnh không rỗng và vị trí hợp lệ
                 if (!imagesUriList.isEmpty() && imagePos >= 0 && imagePos < imagesUriList.size()) {
-                    // Xóa ảnh từ danh sách
                     imagesUriList.remove(imagePos);
 
-                    // Cập nhật lại adapter của ViewPager sau khi xóa ảnh
-                    postImageAdapter adapter = (postImageAdapter) postActitvityController.viewPager.getAdapter();
-                    if(adapter != null){
-                        adapter.notifyDataSetChanged();  // Báo cho adapter biết dữ liệu đã thay đổi
+                    postImageAdapter adapter = (postImageAdapter) viewPager.getAdapter();
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
+                        displayImageCounter(imagesUriList); // Cập nhật lại số lượng ảnh
                     }
 
-                    // Hiển thị thông báo ảnh đã được xóa
                     Toast.makeText(view.getContext(), "Đã xóa ảnh", Toast.LENGTH_SHORT).show();
 
-                    // Kiểm tra nếu danh sách rỗng, ẩn nút xóa và ViewPager
                     if (imagesUriList.isEmpty()) {
-                        postActitvityController.deleteImageBTN.setVisibility(View.GONE);
-                        postActitvityController.viewPager.setVisibility(View.GONE); // Ẩn ViewPager nếu không còn ảnh
+                        deleteImageBTN.setVisibility(View.GONE);
+                        viewPager.setVisibility(View.GONE);
+                        imageInputPlaceholder.setVisibility(View.VISIBLE);
+                        cardView.setVisibility(View.GONE); // Ẩn bộ đếm ảnh khi không có ảnh
                     }
                 }
             }
@@ -247,26 +269,58 @@ public class postController {
     }
 
 
-    // hiển thị ảnh được chọn
+
     @SuppressLint("NotifyDataSetChanged")
-    public void displayImageChosen(ArrayList<Uri> images){
-        if (images != null && !images.isEmpty()) {
-            // Nếu danh sách ảnh không rỗng, hiển thị ViewPager và nút xóa
+    public void displayImageChosen(ArrayList<Uri> images) {
+        boolean hasImages = images != null && !images.isEmpty();
+        viewPager.setVisibility(hasImages ? View.VISIBLE : View.GONE);
+        imageInputPlaceholder.setVisibility(hasImages ? View.GONE : View.VISIBLE);
+        deleteImageBTN.setVisibility(hasImages ? View.VISIBLE : View.GONE);
+        cardView.setVisibility(hasImages ? View.VISIBLE : View.GONE);
+
+        if (hasImages) {
+            initViewPager(images);
             postImageAdapter adapter = new postImageAdapter(view.getContext(), images);
-            postActitvityController.viewPager.setVisibility(View.VISIBLE);  // Hiển thị ViewPager
-            postActitvityController.viewPager.setAdapter(adapter);  // Cập nhật adapter cho ViewPager
-            adapter.notifyDataSetChanged();  // Thông báo adapter cập nhật dữ liệu
-            // Hiển thị nút xóa
-            postActitvityController.deleteImageBTN.setVisibility(View.VISIBLE);
+            viewPager.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            displayImageCounter(images);
         } else {
-            // Nếu không có ảnh nào, ẩn ViewPager và nút xóa
-            postActitvityController.viewPager.setVisibility(View.GONE);
-            postActitvityController.deleteImageBTN.setVisibility(View.GONE);
+            release();
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void displayImageCounter(ArrayList<Uri> images) {
+        if (images.isEmpty()) {
+            cardView.setVisibility(View.GONE);
+            return;
+        }
+        int currentItem = viewPager.getCurrentItem() + 1;
+        imageCountText.setText(currentItem + "/" + images.size());
+    }
+
+    public void initViewPager(ArrayList<Uri> images) {
+        if (callback == null) {
+            callback = new ViewPager2.OnPageChangeCallback() {
+                @Override
+                public void onPageSelected(int position) {
+                    super.onPageSelected(position);
+                    displayImageCounter(images);
+                }
+            };
+            viewPager.registerOnPageChangeCallback(callback);
+        }
+    }
+
+    public void release() {
+        if (callback != null) {
+            viewPager.unregisterOnPageChangeCallback(callback);
+            callback = null;
         }
     }
 
     public void wordCounter (){
-        postActitvityController.text.addTextChangedListener(new TextWatcher() {
+        caption.addTextChangedListener(new TextWatcher() {
             @SuppressLint("DefaultLocale")
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -278,7 +332,7 @@ public class postController {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 // Đếm số ký tự khi văn bản thay đổi
                 int characterCount = charSequence.length();
-                postActitvityController.wordCounter.setText(String.format("%d / %d", characterCount, 500));
+                wordCounter.setText(String.format("%d / %d", characterCount, 500));
             }
 
             @Override
@@ -286,30 +340,5 @@ public class postController {
 
             }
         });
-    }
-
-    // Hoạt động trong giao diện post
-    public static class PostActitvityController {
-        ImageButton chooseImageBTN;
-        Button postButton;
-        TextView userName, wordCounter;
-        Button deleteImageBTN;
-        Spinner spinner;
-        TextInputEditText text;
-        ViewPager2 viewPager;
-        ImageView avatar;
-        CheckBox allowComment;
-        public PostActitvityController(View view){
-            allowComment = view.findViewById(R.id.allow_comment_checkbox);
-            avatar = view.findViewById(R.id.avatar);
-            userName = view.findViewById(R.id.username);
-            deleteImageBTN = view.findViewById(R.id.delete_img_button);
-            chooseImageBTN = view.findViewById(R.id.choose_image_Button);
-            postButton = view.findViewById(R.id.post_button);
-            spinner = view.findViewById(R.id.spinner_target);
-            viewPager = view.findViewById(R.id.viewPager);
-            text = view.findViewById(R.id.content_input);
-            wordCounter = view.findViewById(R.id.word_counter);
-        }
     }
 }
