@@ -5,12 +5,13 @@ plugins {
 
 android {
     namespace = "com.project.myapplication"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.project.myapplication"
         minSdk = 24
-        targetSdk = 34
+        //noinspection EditedTargetSdkVersion
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -64,4 +65,6 @@ dependencies {
     implementation (libs.firebase.messaging.v2331)
     implementation (libs.google.firebase.auth)
     implementation (libs.libphonenumber)
+    implementation (libs.media3.exoplayer)
+    implementation (libs.media3.ui)
 }

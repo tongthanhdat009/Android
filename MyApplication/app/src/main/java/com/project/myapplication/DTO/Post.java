@@ -17,8 +17,10 @@ public class Post {
     private Timestamp time; //thời gian đăng
     private String targetAudience; //đối tượng xem bài viết
     private boolean commentMode; // chế độ comment true = mở chế độ comment, false = đóng chế độ comment
+    private String type;
+    private Float score;
 
-    public Post(String postID, String userID, String content, int commentsCount, int likesCount, ArrayList<String> likedBy, ArrayList<String> media, Timestamp time, String targetAudience, boolean commentMode){
+    public Post(String postID, String userID, String content, int commentsCount, int likesCount, ArrayList<String> likedBy, ArrayList<String> media, Timestamp time, String targetAudience, boolean commentMode, String type, Float score){
         setPostID(postID);
         setUserID(userID);
         setContent(content);
@@ -29,6 +31,8 @@ public class Post {
         setTime(time);
         setTargetAudience(targetAudience);
         setCommentMode(commentMode);
+        setType(type);
+        setScore(score);
     }
 
     public Post(){
@@ -42,6 +46,8 @@ public class Post {
         this.postID = "";
         this.targetAudience = "";
         this.commentMode = true;
+        this.type = "";
+        this.score = 0f;
     }
 
     public int getCommentsCount() {
@@ -122,5 +128,21 @@ public class Post {
 
     public void setCommentMode(boolean commentMode) {
         this.commentMode = commentMode;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
     }
 }

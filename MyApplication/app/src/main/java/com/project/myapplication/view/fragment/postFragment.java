@@ -40,30 +40,27 @@ public class postFragment extends Fragment {
         fragmentList.add(new postVideoFragment());
         PostViewPagerAdapter viewPagerAdapter = new PostViewPagerAdapter(requireActivity(), fragmentList);
         viewPager.setAdapter(viewPagerAdapter);
+        viewPager.setOffscreenPageLimit(1);
 
         String[] tabTitles = new String[]{"Ảnh", "Video"};
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             tab.setText(tabTitles[position]);
         }).attach();
 
-//
-//        // Lựa chọn đối tượng được xem bài viết
-//        postController controller = new postController(view, progressDialog);
-//        controller.addItemTargetSpinner();
-//
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                Fragment fragment = viewPagerAdapter.createFragment(position);
+                if (fragment instanceof postImageFragment) {
+                    ((postImageFragment) fragment).resetData();
+                } else if (fragment instanceof postVideoFragment) {
+                    ((postVideoFragment) fragment).resetData();
+                }
+            }
+        });
 
-//        //gán thông tin người dùng đang sử dụng trong phần post
-//        controller.setUserInfor(userID);
-//
-
-//
-
-//
-//        // Gọi hàm xác nhận đăng post
-//        controller.postBTNAction(imagesUriList, userID);
-//
-//        // Gọi hàm đếm sso ký tự
-//        controller.wordCounter();
-        return view; // Trả về view đã inflate
+        return view;
     }
+
 }

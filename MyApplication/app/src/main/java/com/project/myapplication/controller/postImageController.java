@@ -141,7 +141,9 @@ public class postImageController {
                                     imageString, // chưa có media ban đầu
                                     currentTime, // thời gian hiện tại
                                     spinner.getSelectedItem().toString(), // targetAudience
-                                    allowComment.isChecked() // mở chế độ comment
+                                    allowComment.isChecked(), // mở chế độ comment
+                                    "Ảnh",
+                                    0f
                             );
 
                             postModel.addPost(newPost, new PostModel.OnAddPostSuccess() {
@@ -157,6 +159,7 @@ public class postImageController {
 
                                         caption.setText("");
                                         deleteImageBTN.setVisibility(View.GONE);
+                                        imageInputPlaceholder.setVisibility(View.VISIBLE);
                                         imagesUriList.clear();
                                         postImageAdapter adapter = (postImageAdapter) viewPager.getAdapter();
                                         if(adapter != null){
@@ -185,6 +188,8 @@ public class postImageController {
             }
         });
     }
+
+
 
     // Interface để xử lý callback khi ảnh đã được upload
     interface UploadCallback {
@@ -340,5 +345,15 @@ public class postImageController {
 
             }
         });
+    }
+
+    public void resetData() {
+        caption.setText("");
+        allowComment.setChecked(true);
+        deleteImageBTN.setVisibility(View.GONE);
+        viewPager.setVisibility(View.GONE);
+        imageInputPlaceholder.setVisibility(View.VISIBLE);
+        spinner.setSelection(0);
+        imageCountText.setVisibility(View.GONE);
     }
 }

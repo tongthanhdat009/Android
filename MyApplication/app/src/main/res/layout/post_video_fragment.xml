@@ -37,7 +37,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/postBTN"
+                android:id="@+id/postVideoBTN"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -49,7 +49,7 @@
         </LinearLayout>
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/target_audience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -101,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="25dp"
+            android:layout_margin="5dp"
             android:background="@drawable/button_border"
             android:gravity="center"
             android:padding="0dp"
@@ -109,7 +109,7 @@
             android:textColor="@color/button_text" />
 
         <Button
-            android:id="@+id/delete_img_button"
+            android:id="@+id/delete_video_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|end"
@@ -118,10 +118,11 @@
             android:padding="10dp"
             android:text="Bỏ chọn video"
             android:textColor="@color/button_text"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone"/>
 
         <LinearLayout
-            android:id="@+id/image_input_placeholder"
+            android:id="@+id/video_input_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -150,9 +151,11 @@
                 app:tint="@color/text_secondary" />
         </LinearLayout>
 
-        <VideoView
-            android:id="@+id/videoView"
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/playerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="250dp"
+            android:visibility="gone"
+            app:use_controller="false"/>
     </LinearLayout>
 </ScrollView>

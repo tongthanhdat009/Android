@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -12,12 +13,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -124,30 +131,85 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
-        ArrayList<Uri> mediaList = new ArrayList<>();
-        for (String media : post.getMedia()) {
-            mediaList.add(Uri.parse(media));
-        }
 
         //thêm ảnh vào post
-        holder.imageViewPager.setAdapter(new postImageAdapter(context, mediaList));
-
-        //thêm phần đếm ảnh
-        if(mediaList.size() > 1){
-            holder.picture_counter.setVisibility(View.VISIBLE);
-        }
-        else{
-            holder.picture_counter.setVisibility(View.GONE);
-        }
-        holder.imageViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                if(mediaList.size() > 1){
-                    holder.picture_counter.setText(String.format("%d/%d", position + 1, mediaList.size()));
+        switch (post.getType()){
+            case "Ảnh":
+                holder.image_container.setVisibility(View.VISIBLE);
+                ArrayList<Uri> mediaList = new ArrayList<>();
+                for (String media : post.getMedia()) {
+                    mediaList.add(Uri.parse(media));
                 }
-            }
-        });
+                holder.imageViewPager.setAdapter(new postImageAdapter(context, mediaList));
+
+                //thêm phần đếm ảnh
+                if(mediaList.size() > 1){
+                    holder.picture_counter.setVisibility(View.VISIBLE);
+                }
+                else{
+                    holder.picture_counter.setVisibility(View.GONE);
+                }
+                holder.imageViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        super.onPageSelected(position);
+                        if(mediaList.size() > 1){
+                            holder.picture_counter.setText(String.format("%d/%d", position + 1, mediaList.size()));
+                        }
+                    }
+                });
+                break;
+            case "Video":
+                ExoPlayer player = new ExoPlayer.Builder(context).build();
+                holder.playerView.setVisibility(View.VISIBLE);
+                holder.progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar khi bắt đầu tải video
+                holder.playerView.setOnClickListener(v -> {
+                    if (player.isPlaying()) {
+                        player.pause();
+                    } else {
+                        player.play();
+                    }
+                });
+                holder.itemView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    Rect rect = new Rect();
+                    holder.itemView.getGlobalVisibleRect(rect);
+                    int height = holder.itemView.getHeight();
+                    int visibleHeight = rect.bottom - rect.top;
+
+                    if (visibleHeight > height / 2) {
+                        // Bắt đầu phát video nếu hơn 50% video hiển thị
+                        player.setPlayWhenReady(true);
+                    } else {
+                        // Dừng video nếu ít hơn 50% video hiển thị
+                        player.setPlayWhenReady(false);
+                    }
+                });
+
+                holder.playerView.setPlayer(player);
+
+                MediaItem mediaItem = MediaItem.fromUri(Uri.parse(post.getMedia().get(0)));
+                player.setMediaItem(mediaItem);
+
+                player.addListener(new Player.Listener() {
+                    @Override
+                    public void onPlaybackStateChanged(int playbackState) {
+                        if (playbackState == Player.STATE_READY) {
+                            holder.progressBar.setVisibility(View.GONE); // Ẩn ProgressBar khi video sẵn sàng
+                        } else if (playbackState == Player.STATE_BUFFERING) {
+                            holder.progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar khi video đang buffer
+                        } else if (playbackState == Player.STATE_ENDED) {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+                player.prepare();
+                player.setPlayWhenReady(true);
+                player.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL); // Lặp lại video
+                holder.playerView.setUseController(false); // Ẩn thanh điều khiển
+                break;
+        }
+
 
         //thêm thời gian bài đăng
         long timestamp = post.getTime().getSeconds() * 1000;
@@ -421,6 +483,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     @Override
+    public void onViewDetachedFromWindow(@NonNull PostViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        if (holder.playerView.getPlayer() != null) {
+            holder.playerView.getPlayer().release();
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull PostViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        if (holder.playerView.getPlayer() != null) {
+            holder.playerView.getPlayer().setPlayWhenReady(true);
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return posts.size();
     }
@@ -429,7 +507,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         ImageView avatar, more_option, like, comment, targetAudience;
         TextView username, caption, likes_count, commentsCount, time_post, picture_counter;
         ViewPager2 imageViewPager;
-
+        FrameLayout image_container;
+        PlayerView playerView;
+        ExoPlayer exoPlayer;
+        ProgressBar progressBar;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             targetAudience = itemView.findViewById(R.id.target_audience);
@@ -444,6 +525,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             time_post = itemView.findViewById(R.id.time_post);
             picture_counter = itemView.findViewById(R.id.picture_counter);
             commentsCount = itemView.findViewById(R.id.cmts_count);
+            image_container = itemView.findViewById(R.id.image_container);
+            progressBar = itemView.findViewById(R.id.progressBar);
+            
+            playerView = itemView.findViewById(R.id.playerView);
+            exoPlayer = new ExoPlayer.Builder(itemView.getContext()).build();
+            playerView.setPlayer(exoPlayer);
+            exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
+        }
+
+        public void releasePlayer() {
+            if (exoPlayer != null) {
+                exoPlayer.release();
+                exoPlayer = null;
+            }
         }
     }
 }

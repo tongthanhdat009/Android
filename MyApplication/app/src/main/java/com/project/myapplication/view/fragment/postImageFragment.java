@@ -81,4 +81,8 @@ public class postImageFragment extends Fragment {
         super.onDestroy();
         controller.release();
     }
+
+    public void resetData() {
+        controller.resetData();
+    }
 }
