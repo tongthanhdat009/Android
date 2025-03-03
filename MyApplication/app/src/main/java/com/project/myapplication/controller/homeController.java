@@ -1,5 +1,6 @@
 package com.project.myapplication.controller;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +43,25 @@ public class homeController {
         postModel.getAllPost(postsList -> {
             postAdapter = new PostAdapter(view.getContext(), postsList, userID, postModel);
             postRecyclerView.setAdapter(postAdapter);
+        });
+        //Dừng video khi lướt qua 30% chiều cao của video
+        postRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null) {
+                    int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+
+                    for (int i = firstVisibleItem; i <= lastVisibleItem; i++) {
+                        PostAdapter.PostViewHolder holder = (PostAdapter.PostViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+                        if (holder != null) {
+                            postAdapter.stopVideoIfNotVisible(holder);
+                        }
+                    }
+                }
+            }
         });
     }
 

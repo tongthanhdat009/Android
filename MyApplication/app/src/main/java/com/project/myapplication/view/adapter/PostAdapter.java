@@ -53,6 +53,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final String userID; // ID người dùng hiện tại
     private final PostModel postModel;
     private final CommentModel commentModel;
+    private ExoPlayer player;
+
     public PostAdapter(Context context, ArrayList<Post> posts, String userID, PostModel postModel) {
         this.context = context;
         this.posts = posts;
@@ -160,47 +162,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 });
                 break;
             case "Video":
-                ExoPlayer player = new ExoPlayer.Builder(context).build();
+                holder.videoUrl = post.getMedia().get(0);
+                holder.progressBar.setVisibility(View.VISIBLE);
                 holder.playerView.setVisibility(View.VISIBLE);
-                holder.progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar khi bắt đầu tải video
-
-                holder.itemView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-                    Rect rect = new Rect();
-                    holder.itemView.getGlobalVisibleRect(rect);
-                    int height = holder.itemView.getHeight();
-                    int visibleHeight = rect.bottom - rect.top;
-
-                    if (visibleHeight > height / 2) {
-                        // Bắt đầu phát video nếu hơn 50% video hiển thị
-                        player.setPlayWhenReady(true);
-                    } else {
-                        // Dừng video nếu ít hơn 50% video hiển thị
-                        player.setPlayWhenReady(false);
-                    }
-                });
-
-                holder.playerView.setPlayer(player);
-
-                MediaItem mediaItem = MediaItem.fromUri(Uri.parse(post.getMedia().get(0)));
-                player.setMediaItem(mediaItem);
-
-                player.addListener(new Player.Listener() {
-                    @Override
-                    public void onPlaybackStateChanged(int playbackState) {
-                        if (playbackState == Player.STATE_READY) {
-                            holder.progressBar.setVisibility(View.GONE); // Ẩn ProgressBar khi video sẵn sàng
-                        } else if (playbackState == Player.STATE_BUFFERING) {
-                            holder.progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar khi video đang buffer
-                        } else if (playbackState == Player.STATE_ENDED) {
-                            holder.progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                });
-
-                player.prepare();
-                player.setPlayWhenReady(true);
-                player.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL); // Lặp lại video
-                holder.playerView.setUseController(false); // Ẩn thanh điều khiển
                 break;
         }
 
@@ -479,17 +443,59 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onViewDetachedFromWindow(@NonNull PostViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-        if (holder.playerView.getPlayer() != null) {
-            holder.playerView.getPlayer().release();
-            holder.playerView.setPlayer(null); // Giải phóng player
+        if (holder.player != null) {
+            holder.player.setPlayWhenReady(false);
+            holder.player.release();
+            holder.player = null; // Giải phóng bộ nhớ
         }
     }
 
     @Override
     public void onViewAttachedToWindow(@NonNull PostViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        if (holder.playerView.getPlayer() != null) {
-            holder.playerView.getPlayer().setPlayWhenReady(true);
+
+        if (holder.videoUrl != null) {
+            ExoPlayer player = new ExoPlayer.Builder(context).build();
+            holder.playerView.setPlayer(player);
+
+            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(holder.videoUrl));
+            player.setMediaItem(mediaItem);
+            player.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
+            holder.playerView.setUseController(false);
+
+            player.addListener(new Player.Listener() {
+                @Override
+                public void onPlaybackStateChanged(int playbackState) {
+                    if (playbackState == Player.STATE_READY) {
+                        holder.progressBar.setVisibility(View.GONE);
+                    } else if (playbackState == Player.STATE_BUFFERING) {
+                        holder.progressBar.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            player.prepare();
+            holder.player = player; // Lưu lại player để dừng sau này
+        }
+    }
+
+    public void stopVideoIfNotVisible(PostViewHolder holder) {
+        Rect rect = new Rect();
+        holder.itemView.getGlobalVisibleRect(rect);
+
+        int visibleHeight = rect.height();
+        int itemHeight = holder.itemView.getHeight();
+
+        float visiblePercent = (float) visibleHeight / itemHeight * 100;
+
+        if (visiblePercent < 70) {
+            if (holder.player != null && holder.player.isPlaying()) {
+                holder.player.setPlayWhenReady(false);
+            }
+        } else {
+            if (holder.player != null && !holder.player.isPlaying()) {
+                holder.player.setPlayWhenReady(true);
+            }
         }
     }
 
@@ -497,6 +503,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public int getItemCount() {
         return posts.size();
     }
+
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar, more_option, like, comment, targetAudience;
@@ -506,6 +513,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         PlayerView playerView;
         ExoPlayer exoPlayer;
         ProgressBar progressBar;
+        String videoUrl;
+        ExoPlayer player;
+
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             targetAudience = itemView.findViewById(R.id.target_audience);
@@ -528,6 +538,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             playerView.setPlayer(exoPlayer);
             exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
         }
+
 
         public void releasePlayer() {
             if (exoPlayer != null) {
