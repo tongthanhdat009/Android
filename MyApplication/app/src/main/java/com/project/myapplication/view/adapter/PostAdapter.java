@@ -163,13 +163,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 ExoPlayer player = new ExoPlayer.Builder(context).build();
                 holder.playerView.setVisibility(View.VISIBLE);
                 holder.progressBar.setVisibility(View.VISIBLE); // Hiển thị ProgressBar khi bắt đầu tải video
-                holder.playerView.setOnClickListener(v -> {
-                    if (player.isPlaying()) {
-                        player.pause();
-                    } else {
-                        player.play();
-                    }
-                });
+
                 holder.itemView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
                     Rect rect = new Rect();
                     holder.itemView.getGlobalVisibleRect(rect);
@@ -487,6 +481,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         super.onViewDetachedFromWindow(holder);
         if (holder.playerView.getPlayer() != null) {
             holder.playerView.getPlayer().release();
+            holder.playerView.setPlayer(null); // Giải phóng player
         }
     }
 
