@@ -730,6 +730,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
+        // Kiểm tra và phát video nếu view đủ hiển thị
+        Rect rect = new Rect();
+        boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
+        int height = holder.itemView.getHeight();
+        int visibleHeight = rect.bottom - rect.top;
+
+        if (isVisible && visibleHeight >= height * 0.85) {
+            if (holder.playerView.getPlayer() != null) {
+                holder.playerView.getPlayer().setPlayWhenReady(true);
+            }
+        }
+    }
+
     public void releaseAllPlayers() {
         // Lấy snapshot của tất cả entries trong cache
         Map<Integer, ExoPlayer> snapshot = playerCache.snapshot();
