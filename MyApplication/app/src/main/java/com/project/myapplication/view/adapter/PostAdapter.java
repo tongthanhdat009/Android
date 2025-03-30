@@ -204,6 +204,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 // Ẩn các view không cần thiết
                 holder.image_container.setVisibility(View.GONE);
                 holder.playerView.setVisibility(View.VISIBLE);
+                // Ẩn các view không cần thiết
+                holder.image_container.setVisibility(View.GONE);
+                holder.playerView.setVisibility(View.VISIBLE);
 //                holder.progressBar.setVisibility(View.VISIBLE);
 
                 // Lấy player từ cache hoặc tạo mới
@@ -688,6 +691,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             if (holder.player != null && !holder.player.isPlaying()) {
                 holder.player.setPlayWhenReady(true);
+        // Kiểm tra và phát video nếu view đủ hiển thị
+        Rect rect = new Rect();
+        boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
+        int height = holder.itemView.getHeight();
+        int visibleHeight = rect.bottom - rect.top;
+
+        if (isVisible && visibleHeight >= height * 0.85) {
+            if (holder.playerView.getPlayer() != null) {
+                holder.playerView.getPlayer().setPlayWhenReady(true);
+            }
+        }
+    }
+
         // Kiểm tra và phát video nếu view đủ hiển thị
         Rect rect = new Rect();
         boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
