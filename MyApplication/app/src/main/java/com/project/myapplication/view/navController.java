@@ -1,18 +1,16 @@
 package com.project.myapplication.view;
 
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.view.View;
 
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.media3.common.util.UnstableApi;
 
 import com.project.myapplication.R;
 import com.project.myapplication.databinding.ActivityNavControllerBinding;
-import com.project.myapplication.network.NetworkChangeReceiver;
 import com.project.myapplication.view.fragment.chatFragment;
 import com.project.myapplication.view.fragment.homeFragment;
 import com.project.myapplication.view.fragment.postFragment;
@@ -25,12 +23,14 @@ import java.util.Map;
 public class navController extends AppCompatActivity {
     ActivityNavControllerBinding binding;
 
+    private String userID;
 
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav_controller);
-        String userID = getIntent().getStringExtra("userID");
+        userID = getIntent().getStringExtra("userID");
         binding = ActivityNavControllerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -61,11 +61,15 @@ public class navController extends AppCompatActivity {
         return fragment;
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void showFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         for (Fragment frag : fragmentManager.getFragments()) {
             transaction.hide(frag);
+            if (frag instanceof homeFragment){
+                ((homeFragment) frag).getController().postDisplay(userID);
+            }
         }
         if (fragment.isAdded()) {
             transaction.show(fragment);

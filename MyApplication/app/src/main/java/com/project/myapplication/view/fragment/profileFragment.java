@@ -317,9 +317,8 @@ public class profileFragment extends Fragment {
         float minItemWidthDp = getResources().getDimension(R.dimen.grid_item_min_size) / displayMetrics.density;
 
         // Tính toán số cột tối ưu
-        int spanCount = Math.max(3, (int) (screenWidthDp / minItemWidthDp));
 
-        return spanCount;
+        return Math.max(3, (int) (screenWidthDp / minItemWidthDp));
     }
 
     public void openImagePicker() {

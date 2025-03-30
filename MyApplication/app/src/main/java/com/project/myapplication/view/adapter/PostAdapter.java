@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
-import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DefaultDataSource;
@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+@UnstableApi
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     private final Context context;
@@ -76,6 +77,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final CommentModel commentModel;
     private ExoPlayer player;
     private int currentPlayingPosition = -1; // Vị trí video đang phát
+    public SimpleCache simpleCache;
     public final LruCache<Integer, ExoPlayer> playerCache = new LruCache<Integer, ExoPlayer>(3) {
         @Override
         protected void entryRemoved(boolean evicted, Integer key, ExoPlayer oldValue, ExoPlayer newValue) {
@@ -86,6 +88,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     };
     private RecyclerView recyclerView;
     private boolean hasAddedScrollListener = false;
+
     public PostAdapter(Context context, ArrayList<Post> posts, String userID, PostModel postModel) {
         this.context = context;
         this.posts = posts;
@@ -112,10 +115,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.targetAudience.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(post.getTargetAudience().equals("Công khai")){
+                if (post.getTargetAudience().equals("Công khai")) {
                     Toast.makeText(context, "Trạng thái bài viết là công khai", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     Toast.makeText(context, "Trạng thái bài viết là: Chỉ cho người theo dõi", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -136,8 +138,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     if (IDUserFollowed.contains(userID) || userID.equals(post.getUserID())) {
                         holder.itemView.setVisibility(View.VISIBLE);
-                    }
-                    else {
+                    } else {
                         posts.remove(position);
                         notifyItemRemoved(position);
                     }
@@ -154,7 +155,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.caption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(holder.caption.getEllipsize() != null) {
+                if (holder.caption.getEllipsize() != null) {
                     holder.caption.setEllipsize(null);
                     holder.caption.setMaxLines(Integer.MAX_VALUE);
                     holder.caption.setText(post.getContent());
@@ -168,7 +169,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
 
         //thêm ảnh vào post
-        switch (post.getType()){
+        switch (post.getType()) {
             case "Ảnh":
                 holder.image_container.setVisibility(View.VISIBLE);
                 ArrayList<Uri> mediaList = new ArrayList<>();
@@ -178,17 +179,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.imageViewPager.setAdapter(new postImageAdapter(context, mediaList));
 
                 //thêm phần đếm ảnh
-                if(mediaList.size() > 1){
+                if (mediaList.size() > 1) {
                     holder.picture_counter.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     holder.picture_counter.setVisibility(View.GONE);
                 }
                 holder.imageViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
                     @Override
                     public void onPageSelected(int position) {
                         super.onPageSelected(position);
-                        if(mediaList.size() > 1){
+                        if (mediaList.size() > 1) {
                             holder.picture_counter.setText(String.format("%d/%d", position + 1, mediaList.size()));
                         }
                     }
@@ -196,7 +196,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 break;
             case "Video":
                 holder.videoUrl = post.getMedia().get(0);
-                holder.progressBar.setVisibility(View.VISIBLE);
+//                holder.progressBar.setVisibility(View.VISIBLE);
                 holder.playerView.setVisibility(View.VISIBLE);
                 // Ẩn các view không cần thiết
                 holder.image_container.setVisibility(View.GONE);
@@ -221,8 +221,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     DefaultTrackSelector trackSelector = new DefaultTrackSelector(context);
                     trackSelector.setParameters(
                             trackSelector.buildUponParameters()
-                                    .setMaxVideoSize(480, 270)
-                                    .setMaxVideoBitrate(500000)
+                                    .setMaxVideoSize(360, 270)
+                                    .setMaxVideoBitrate(400000)
                                     .setPreferredAudioLanguage("default")
                                     .build());
 
@@ -247,7 +247,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 // Chỉ thiết lập video source nếu là player mới
                 if (isNewPlayer) {
                     // Thiết lập source với cache
-                    SimpleCache simpleCache = CacheManager.getInstance(context);
+                    simpleCache = CacheManager.getInstance(context);
                     String videoUrl = post.getMedia().get(0);
 
                     // Tạo factory với chất lượng thấp
@@ -259,30 +259,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     MediaSource mediaSource = new ProgressiveMediaSource.Factory(cacheDataSourceFactory)
                             .createMediaSource(MediaItem.fromUri(Uri.parse(videoUrl)));
 
-//                    // Thiết lập các listener
-//                    player.addListener(new Player.Listener() {
-//                        @Override
-//                        public void onPlaybackStateChanged(int playbackState) {
-//                            if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
-//
-//                            if (playbackState == Player.STATE_READY) {
-//                                holder.progressBar.setVisibility(View.GONE);
-//                            } else if (playbackState == Player.STATE_BUFFERING) {
-//                                holder.progressBar.setVisibility(View.VISIBLE);
-//                            } else if (playbackState == Player.STATE_ENDED) {
-//                                holder.progressBar.setVisibility(View.GONE);
-//                            } else if (playbackState == Player.STATE_IDLE) {
-//                                holder.progressBar.setVisibility(View.GONE);
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onPlayerError(@NonNull PlaybackException error) {
-//                            holder.progressBar.setVisibility(View.GONE);
-//                            // Xử lý lỗi
-//                        }
-//                    });
-
                     // Thiết lập MediaSource và prepare
                     player.setMediaSource(mediaSource);
                     player.prepare();
@@ -290,28 +266,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 // Thêm tag position vào view để sử dụng trong scroll listener
                 holder.itemView.setTag(R.id.position_tag, position);
-
-                // Kiểm tra khả năng hiển thị để quyết định phát hay không
-                Rect rect = new Rect();
-                boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
-                int visibleHeight = rect.bottom - rect.top;
-                int totalHeight = holder.itemView.getHeight();
-
-                float visibilityRatio = totalHeight > 0 ? (visibleHeight / (float) totalHeight) : 0;
-
-                // CHỈ PHÁT VIDEO NẾU LÀ VIDEO HIỂN THỊ NHẤT VÀ ĐỦ HIỂN THỊ
-                if (isVisible && visibilityRatio >0.5) {
-                    // Dừng video đang phát (nếu có)
-                    if (currentPlayingPosition != -1 && currentPlayingPosition != position) {
-                        pauseVideoAtPosition(currentPlayingPosition);
-                    }
-
-                    // Phát video hiện tại
-                    player.setPlayWhenReady(true);
-                    currentPlayingPosition = position;
-                } else {
-                    player.setPlayWhenReady(false);
-                }
 
                 // Click listener để phát/dừng video
                 holder.playerView.setOnClickListener(v -> {
@@ -350,14 +304,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (post.getUserID().equals(userID)) {
                 popupMenu.getMenu().getItem(3).setVisible(true);
                 popupMenu.getMenu().getItem(4).setVisible(true);
-                if(post.getCommentMode()){
+                if (post.getCommentMode()) {
                     popupMenu.getMenu().getItem(6).setVisible(true);
-                }
-                else {
+                } else {
                     popupMenu.getMenu().getItem(5).setVisible(true);
                 }
-            }
-            else{
+            } else {
                 popupMenu.getMenu().getItem(2).setVisible(true);
                 postModel.getAllFollowing(userID, followingList -> {
                     ArrayList<String> followingListID = new ArrayList<>();
@@ -367,10 +319,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         followingListID.add(following.getUserID()); // Lưu ID theo dõi
 //                        Toast.makeText(context, "followingListID: " + following.getIdFollowing(), Toast.LENGTH_SHORT).show();
                     }
-                    if(followingListID.isEmpty()){
+                    if (followingListID.isEmpty()) {
                         popupMenu.getMenu().getItem(0).setVisible(true); // Không theo dõi
-                    }
-                    else{
+                    } else {
                         // Kiểm tra xem người dùng có đang theo dõi người đăng bài hay không
                         if (followingListID.contains(post.getUserID())) {
                             popupMenu.getMenu().getItem(1).setVisible(true); // Có theo dõi
@@ -383,8 +334,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             popupMenu.setOnMenuItemClickListener(menuItem -> {
 //                Toast.makeText(context, "Chọn " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
-                if(menuItem.getItemId() == R.id.follow){
-                    postModel.addFollowingUser(userID, new Following("",post.getUserID(), Timestamp.now()), new PostModel.OnAddFollowingCallback(){
+                if (menuItem.getItemId() == R.id.follow) {
+                    postModel.addFollowingUser(userID, new Following("", post.getUserID(), Timestamp.now()), new PostModel.OnAddFollowingCallback() {
                         @SuppressLint("NotifyDataSetChanged")
                         @Override
                         public void onAddFollowing(boolean success) {
@@ -398,18 +349,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         }
                     });
                     return true;
-                }
-                else if(menuItem.getItemId() == R.id.unfollow){
+                } else if (menuItem.getItemId() == R.id.unfollow) {
                     // xóa người dùng trong following
                     postModel.getAllFollowing(userID, followingList -> {
                         String idFollowing = "";
                         for (Following following : followingList) {
-                            if(following.getUserID().equals(post.getUserID())){
+                            if (following.getUserID().equals(post.getUserID())) {
                                 idFollowing = following.getIdFollowing();
                                 break;
                             }
                         }
-                        postModel.removeFollowingUser(userID, idFollowing, new PostModel.OnRemoveFollowingCallback(){
+                        postModel.removeFollowingUser(userID, idFollowing, new PostModel.OnRemoveFollowingCallback() {
 
                             @SuppressLint("NotifyDataSetChanged")
                             @Override
@@ -422,12 +372,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     postModel.getAllFollower(post.getUserID(), followerList -> {
                         String idFollower = "";
                         for (Followers follower : followerList) {
-                            if(follower.getUserID().equals(userID)){
+                            if (follower.getUserID().equals(userID)) {
                                 idFollower = follower.getIdFollower();
                                 break;
                             }
                         }
-                        postModel.removeFollowerUser(post.getUserID(), idFollower, new PostModel.OnRemoveFollowerCallback(){
+                        postModel.removeFollowerUser(post.getUserID(), idFollower, new PostModel.OnRemoveFollowerCallback() {
                             @SuppressLint("NotifyDataSetChanged")
                             @Override
                             public void onRemoveFollower(boolean success) {
@@ -436,15 +386,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     });
 //                    Toast.makeText(context,"Đã bỏ theo dõi", Toast.LENGTH_SHORT).show();
                     return true;
-                }
-                else if(menuItem.getItemId() == R.id.author_infor){
+                } else if (menuItem.getItemId() == R.id.author_infor) {
                     Intent intent = new Intent(context, authorProfileActivity.class);
                     intent.putExtra("userID", userID);
                     intent.putExtra("authorID", post.getUserID());
                     context.startActivity(intent);
                     return true;
-                }
-                else if (menuItem.getItemId() == R.id.edit_post) {
+                } else if (menuItem.getItemId() == R.id.edit_post) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Sửa caption");
 
@@ -458,10 +406,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         public void onClick(DialogInterface dialog, int which) {
                             String newCaption = input.getText().toString();
                             // Xử lý thông tin nhập vào
-                            if(newCaption.isEmpty()){
+                            if (newCaption.isEmpty()) {
                                 Toast.makeText(context, "Vui lòng nhập caption để sửa!", Toast.LENGTH_SHORT).show();
-                            }
-                            else{
+                            } else {
 //                                Toast.makeText(context, "Caption đã nhập: " + newCaption, Toast.LENGTH_SHORT).show();
                                 post.setContent(newCaption);
                                 postModel.postUpdate(post);
@@ -480,8 +427,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     builder.show();
                     return true;
-                }
-                else if (menuItem.getItemId() == R.id.delete_post) {
+                } else if (menuItem.getItemId() == R.id.delete_post) {
                     new AlertDialog.Builder(holder.itemView.getContext())
                             .setTitle("Xác nhận xóa")
                             .setMessage("Bạn có chắc chắn muốn xóa bài đăng này?")
@@ -491,14 +437,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     postModel.deletePost(post, new PostModel.OnPostDeletedCallback() {
                                         @Override
                                         public void onPostDeleted(boolean success) {
-                                            if(success){
-                                                if(position != RecyclerView.NO_POSITION){
+                                            if (success) {
+                                                if (position != RecyclerView.NO_POSITION) {
                                                     posts.remove(position);
                                                     notifyItemRemoved(position);
                                                     Toast.makeText(holder.itemView.getContext(), "Xóa post thành công!", Toast.LENGTH_SHORT).show();
                                                 }
-                                            }
-                                            else {
+                                            } else {
                                                 Toast.makeText(holder.itemView.getContext(), "Lỗi khi xóa bài đăng!", Toast.LENGTH_SHORT).show();
                                             }
                                         }
@@ -514,14 +459,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             .setIcon(android.R.drawable.ic_dialog_alert) // Icon cho hộp thoại
                             .show();
                     return true;
-                }
-                else if(menuItem.getItemId() == R.id.close_comment){
+                } else if (menuItem.getItemId() == R.id.close_comment) {
                     post.setCommentMode(false);
                     postModel.postUpdate(post);
                     holder.comment.setVisibility(View.GONE);
                     holder.commentsCount.setVisibility(View.GONE);
-                }
-                else if (menuItem.getItemId() == R.id.open_comment) {
+                } else if (menuItem.getItemId() == R.id.open_comment) {
                     post.setCommentMode(true);
                     postModel.postUpdate(post);
                     holder.comment.setVisibility(View.VISIBLE);
@@ -553,8 +496,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if (post.getLikedBy().contains(userID)) {
             holder.like.setImageResource(R.drawable.liked);
             holder.like.clearColorFilter();
-        }
-        else {
+        } else {
             holder.like.setImageResource(R.drawable.like);
             holder.like.setColorFilter(context.getResources().getColor(R.color.like_button_color));
         }
@@ -568,8 +510,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.like.setImageResource(R.drawable.like);
                 postModel.postUpdate(post);
                 Toast.makeText(context, "Đã bỏ like", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 post.getLikedBy().add(userID);
                 holder.like.setImageResource(R.drawable.liked);
                 holder.like.clearColorFilter();
@@ -580,29 +521,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         // Load thông tin người dùng
-         postModel.getUserInfor(post.getUserID(), user -> {
-             Picasso.get().load(user.getAvatar()).into(holder.avatar);
-             holder.username.setText(user.getName());
-         });
+        postModel.getUserInfor(post.getUserID(), user -> {
+            Picasso.get().load(user.getAvatar()).into(holder.avatar);
+            holder.username.setText(user.getName());
+        });
 
-         //đếm số comment hiển tại
+        //đếm số comment hiển tại
         commentModel.getAllCommentInPost(post.getPostID(), commentsList -> {
             holder.commentsCount.setText(String.valueOf(commentsList.size()));
         });
 
-         // Sự kiện nút comment
-        if (post.getCommentMode()){
+        // Sự kiện nút comment
+        if (post.getCommentMode()) {
             holder.comment.setOnClickListener(v -> {
                 Intent intent = new Intent(context, commentActivity.class);
                 intent.putExtra("postID", post.getPostID());
                 intent.putExtra("userID", userID);
                 context.startActivity(intent);
             });
-        }
-        else{
+        } else {
             holder.comment.setVisibility(View.GONE);
             holder.commentsCount.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return posts.size();
     }
 
     @Override
@@ -612,13 +557,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.player.setPlayWhenReady(false);
             holder.player.release();
             holder.player = null; // Giải phóng bộ nhớ
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+        setupScrollListener();
+    }
+
+    public void onDataRefreshed() {
+        // Release all existing players
+        onFragmentPause();
+        
+        // Reset tracking variables
+        currentPlayingPosition = -1;
+        hasAddedScrollListener = false;
+        
+        // Re-setup scroll listener if needed
+        if (recyclerView != null) {
+            setupScrollListener();
+        }
+    }
+    
     private void pauseVideoAtPosition(int position) {
+        Log.d("VideoPlayer", "Pausing video at position: " + position);
         ExoPlayer player = playerCache.get(position);
         if (player != null) {
             player.setPlayWhenReady(false);
+            player.pause();
         }
 
-        // Đặt lại biến theo dõi nếu đây là video đang phát
+        // Only reset current playing position if this is the one being played
         if (currentPlayingPosition == position) {
             currentPlayingPosition = -1;
         }
@@ -628,20 +599,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onViewRecycled(@NonNull PostViewHolder holder) {
         super.onViewRecycled(holder);
 
-        // Chỉ detach player khỏi view, không release
-        if (holder.playerView.getPlayer() != null) {
+        if (holder.playerView != null && holder.playerView.getPlayer() != null) {
             holder.playerView.getPlayer().setPlayWhenReady(false);
             holder.playerView.setPlayer(null);
-        }
-    }
-
-    // 3. Thay đổi phương thức onViewDetachedFromWindow
-    @Override
-    public void onViewDetachedFromWindow(@NonNull PostViewHolder holder) {
-        super.onViewDetachedFromWindow(holder);
-        if (holder.playerView.getPlayer() != null) {
-            // Không release, chỉ pause
-            holder.playerView.getPlayer().setPlayWhenReady(false);
+            holder.videoUrl = null;
         }
     }
 
@@ -650,141 +611,73 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onViewAttachedToWindow(@NonNull PostViewHolder holder) {
         super.onViewAttachedToWindow(holder);
 
-        if (holder.videoUrl != null) {
-            ExoPlayer player = new ExoPlayer.Builder(context).build();
-            holder.playerView.setPlayer(player);
+        // Only set up video if this item is a video and doesn't have a player already
+        if (holder.videoUrl != null && holder.getLayoutPosition() >= 0) {
+            int position = holder.getLayoutPosition();
+            // Use the player from cache if available
+            ExoPlayer player = playerCache.get(position);
 
-            MediaItem mediaItem = MediaItem.fromUri(Uri.parse(holder.videoUrl));
-            player.setMediaItem(mediaItem);
-            player.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
-            holder.playerView.setUseController(false);
-
-            player.addListener(new Player.Listener() {
-                @Override
-                public void onPlaybackStateChanged(int playbackState) {
-                    if (playbackState == Player.STATE_READY) {
-                        holder.progressBar.setVisibility(View.GONE);
-                    } else if (playbackState == Player.STATE_BUFFERING) {
-                        holder.progressBar.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-
-            player.prepare();
-            holder.player = player; // Lưu lại player để dừng sau này
-        }
-    }
-
-    public void stopVideoIfNotVisible(PostViewHolder holder) {
-        Rect rect = new Rect();
-        holder.itemView.getGlobalVisibleRect(rect);
-
-        int visibleHeight = rect.height();
-        int itemHeight = holder.itemView.getHeight();
-
-        float visiblePercent = (float) visibleHeight / itemHeight * 100;
-
-        if (visiblePercent < 70) {
-            if (holder.player != null && holder.player.isPlaying()) {
-                holder.player.setPlayWhenReady(false);
-            }
-        } else {
-            if (holder.player != null && !holder.player.isPlaying()) {
-                holder.player.setPlayWhenReady(true);
-        // Kiểm tra và phát video nếu view đủ hiển thị
-        Rect rect = new Rect();
-        boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
-        int height = holder.itemView.getHeight();
-        int visibleHeight = rect.bottom - rect.top;
-
-        if (isVisible && visibleHeight >= height * 0.85) {
-            if (holder.playerView.getPlayer() != null) {
-                holder.playerView.getPlayer().setPlayWhenReady(true);
-            }
-        }
-    }
-
-        // Kiểm tra và phát video nếu view đủ hiển thị
-        Rect rect = new Rect();
-        boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
-        int height = holder.itemView.getHeight();
-        int visibleHeight = rect.bottom - rect.top;
-
-        if (isVisible && visibleHeight >= height * 0.85) {
-            if (holder.playerView.getPlayer() != null) {
-                holder.playerView.getPlayer().setPlayWhenReady(true);
-            }
-        }
-    }
-
-        // Kiểm tra và phát video nếu view đủ hiển thị
-        Rect rect = new Rect();
-        boolean isVisible = holder.itemView.getGlobalVisibleRect(rect);
-        int height = holder.itemView.getHeight();
-        int visibleHeight = rect.bottom - rect.top;
-
-        if (isVisible && visibleHeight >= height * 0.85) {
-            if (holder.playerView.getPlayer() != null) {
-                holder.playerView.getPlayer().setPlayWhenReady(true);
+            if (player != null) {
+                // Player exists in cache, just attach it
+                holder.playerView.setPlayer(player);
+            } else {
+                // No need to create a new player here, it's created in onBindViewHolder
+                Log.d("VideoPlayer", "Position " + position + " has no player in cache");
             }
         }
     }
 
     public void releaseAllPlayers() {
-        // Lấy snapshot của tất cả entries trong cache
-        Map<Integer, ExoPlayer> snapshot = playerCache.snapshot();
+        Log.d("VideoPlayer", "Releasing all players, cache size: " + playerCache.size());
 
-        // Duyệt qua các values của snapshot
-        for (ExoPlayer player : snapshot.values()) {
-            if (player != null) {
-                player.stop();
-                player.clearMediaItems();
-                player.release();
+        try {
+            // Get all player positions from cache using a snapshot to avoid concurrent modification
+            Map<Integer, ExoPlayer> snapshot = playerCache.snapshot();
+
+            // Iterate through each player in the snapshot
+            for (Map.Entry<Integer, ExoPlayer> entry : snapshot.entrySet()) {
+                int position = entry.getKey();
+                ExoPlayer player = entry.getValue();
+
+                if (player != null) {
+                    try {
+                        // Force stop playback first
+                        player.setPlayWhenReady(false);
+                        player.pause();
+
+                        // Then release resources
+                        player.stop();
+                        player.clearMediaItems();
+                        player.release();
+
+                        // Remove from cache immediately
+                        playerCache.remove(position);
+
+                        Log.d("VideoPlayer", "Successfully released player at position: " + position);
+                    } catch (Exception e) {
+                        Log.e("VideoPlayer", "Error releasing player at position " + position, e);
+                    }
+                }
             }
+
+            // Clear the cache completely to be safe
+            playerCache.evictAll();
+            currentPlayingPosition = -1;
+
+            // Release any media cache
+            try {
+                CacheManager.releaseCache();
+            } catch (Exception e) {
+                Log.e("VideoPlayer", "Error releasing cache", e);
+            }
+        } catch (Exception e) {
+            Log.e("VideoPlayer", "Error in releaseAllPlayers", e);
         }
-
-        // Xóa toàn bộ entries trong cache
-        playerCache.evictAll();
-        currentPlayingPosition = -1; // Reset vị trí đang phát
-
-        // Nếu sử dụng cache
-        CacheManager.releaseCache();
     }
 
     // Phương thức thiết lập RecyclerView
     public void setRecyclerView(RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
-    }
-
-    // Phương thức kiểm tra tất cả video hiển thị
-    public void checkVisibleVideos(RecyclerView recyclerView) {
-        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        if (layoutManager != null) {
-            int firstVisible = layoutManager.findFirstVisibleItemPosition();
-            int lastVisible = layoutManager.findLastVisibleItemPosition();
-
-            for (int i = firstVisible; i <= lastVisible; i++) {
-                View view = layoutManager.findViewByPosition(i);
-                if (view != null) {
-                    ExoPlayer player = (ExoPlayer) view.getTag(R.id.player_tag);
-                    if (player != null) {
-                        Rect rect = new Rect();
-                        boolean isVisible = view.getGlobalVisibleRect(rect);
-                        int height = view.getHeight();
-                        int visibleHeight = rect.bottom - rect.top;
-
-                        if (isVisible && visibleHeight >= height * 0.85) {
-                            if (player.getPlaybackState() == Player.STATE_IDLE) {
-                                player.prepare();
-                            }
-                            player.setPlayWhenReady(true);
-                        } else {
-                            player.setPlayWhenReady(false);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void limitActivePlayers(int currentPosition) {
@@ -817,32 +710,42 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         }
     }
-    public void resumeVisiblePlayers(RecyclerView recyclerView) {
-        checkVisibleVideos(recyclerView);
-    }
 
-    public void pauseAllPlayers() {
-        // Lấy snapshot của tất cả entries trong cache
-        Map<Integer, ExoPlayer> snapshot = playerCache.snapshot();
-
-        // Duyệt qua các values của snapshot
-        for (ExoPlayer player : snapshot.values()) {
-            if (player != null && player.isPlaying()) {
-                player.setPlayWhenReady(false);
-            }
-        }
-        // Không reset currentPlayingPosition để có thể tiếp tục phát khi trở lại
-    }
     // Thêm vào constructor hoặc phương thức init
     private void setupScrollListener() {
         if (recyclerView != null && !hasAddedScrollListener) {
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                private int lastScrollState = RecyclerView.SCROLL_STATE_IDLE;
+
                 @Override
                 public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
+
+                    // When starting to scroll, pause the current video
+                    if (lastScrollState == RecyclerView.SCROLL_STATE_IDLE
+                            && newState != RecyclerView.SCROLL_STATE_IDLE) {
+                        if (currentPlayingPosition != -1) {
+                            pauseVideoAtPosition(currentPlayingPosition);
+                        }
+                    }
+
+                    // When scroll stops, find and play the most visible video
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        // Khi scroll dừng lại, tìm video hiển thị nhiều nhất để phát
                         findMostVisibleVideoAndPlay();
+                    }
+
+                    lastScrollState = newState;
+                }
+
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    // Pause video if it's scrolled out of view significantly
+                    if (currentPlayingPosition != -1) {
+                        View view = recyclerView.getLayoutManager().findViewByPosition(currentPlayingPosition);
+                        if (view == null) {
+                            pauseVideoAtPosition(currentPlayingPosition);
+                        }
                     }
                 }
             });
@@ -905,15 +808,46 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
      * Phát video tại vị trí chỉ định
      */
     private void playVideoAtPosition(int position) {
+        Log.d("VideoPlayer", "Attempting to play video at position: " + position);
+    
+        // First stop any currently playing video
+        if (currentPlayingPosition != -1 && currentPlayingPosition != position) {
+            pauseVideoAtPosition(currentPlayingPosition);
+        }
+        
         ExoPlayer player = playerCache.get(position);
         if (player != null) {
-            if (player.getPlaybackState() == Player.STATE_IDLE) {
-                player.prepare();
+            try {
+                // Ensure the player is prepared
+                if (player.getPlaybackState() == Player.STATE_IDLE) {
+                    player.prepare();
+                }
+                
+                // Start playback
+                player.setPlayWhenReady(true);
+                currentPlayingPosition = position;
+                Log.d("VideoPlayer", "Now playing video at position: " + position);
+            } catch (Exception e) {
+                Log.e("VideoPlayer", "Error playing video at position " + position, e);
             }
-            player.setPlayWhenReady(true);
-            currentPlayingPosition = position;
+        } else {
+            Log.d("VideoPlayer", "No player found in cache for position: " + position);
         }
     }
+
+    public void onFragmentPause() {
+        Log.d("VideoPlayer", "Fragment paused/refreshed, releasing all video resources");
+
+        // First pause any currently playing video
+        if (currentPlayingPosition != -1) {
+            pauseVideoAtPosition(currentPlayingPosition);
+            currentPlayingPosition = -1;
+        }
+
+        // Then release all players
+        releaseAllPlayers();
+    }
+
     @OptIn(markerClass = UnstableApi.class)
     private LoadControl createLoadControl() {
         return new DefaultLoadControl.Builder()
@@ -931,12 +865,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new DefaultRenderersFactory(context)
                 .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF);
     }
-
-    @Override
-    public int getItemCount() {
-        return posts.size();
-    }
-
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         ImageView avatar, more_option, like, comment, targetAudience;
@@ -971,15 +899,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             exoPlayer = new ExoPlayer.Builder(itemView.getContext()).build();
             playerView.setPlayer(exoPlayer);
             exoPlayer.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
-
-
-        public void releasePlayer() {
-            if (exoPlayer != null) {
-                exoPlayer.release();
-                exoPlayer = null;
-            }
-            // Thiết lập exoPlayer làm player tag
-            itemView.setTag(R.id.player_tag, exoPlayer);
         }
     }
 }

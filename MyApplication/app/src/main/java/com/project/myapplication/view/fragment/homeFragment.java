@@ -3,7 +3,10 @@ package com.project.myapplication.view.fragment;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +20,17 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.R;
 import com.project.myapplication.controller.homeController;
 
+@UnstableApi
 public class homeFragment extends Fragment {
     private String userID;
 
     private homeController controller;
+
+    public homeController getController() {
+        return controller;
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,48 +94,30 @@ public class homeFragment extends Fragment {
         }
     }
 
-    // Thêm phương thức gọi khi Activity/Fragment pause
-    public void pauseAllPlayers() {
-        for (int i = 0; i < controller.postAdapter.playerCache.size(); i++) {
-            ExoPlayer player = controller.postAdapter.playerCache.get(i);
-            if (player != null) {
-                player.setPlayWhenReady(false);
-            }
-        }
-    }
-
-    // Thêm phương thức gọi khi Activity/Fragment resume
-    public void resumeVisiblePlayers(RecyclerView recyclerView) {
-        controller.postAdapter.checkVisibleVideos(recyclerView);
-    }
-
-    // Trong Activity/Fragment
-
 
     @Override
     public void onPause() {
         super.onPause();
         if (controller.postAdapter != null) {
-            controller.postAdapter.pauseAllPlayers();
-            pauseAllPlayers();
+            controller.postAdapter.releaseAllPlayers();
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (controller.postAdapter != null && controller.postRecyclerView != null) {
-            controller.postAdapter.resumeVisiblePlayers(controller.postRecyclerView);
-        }
-    }
+   @Override
+   public void onResume() {
+       super.onResume();
+       if (controller.postAdapter != null && controller.postRecyclerView != null) {
+           controller.postAdapter.releaseAllPlayers();
+       }
+   }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            // Fragment bị ẩn - dừng video
+            Toast.makeText(getContext(),"Hello",Toast.LENGTH_SHORT).show();
             if (controller.postAdapter != null) {
-                controller.postAdapter.pauseAllPlayers();
+                controller.postAdapter.onFragmentPause();
             }
         }
     }

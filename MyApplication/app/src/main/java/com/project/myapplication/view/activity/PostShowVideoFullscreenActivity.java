@@ -253,6 +253,7 @@ public class PostShowVideoFullscreenActivity extends AppCompatActivity {
 
             // Dừng phát
             player.pause();
+            player.setPlayWhenReady(false); 
         }
     }
 
