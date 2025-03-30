@@ -3,8 +3,6 @@ package com.project.myapplication.view.activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -14,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,16 +21,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.MainActivity;
 import com.project.myapplication.R;
 import com.project.myapplication.model.UserModel;
-import com.project.myapplication.network.NetworkChangeReceiver;
-import com.project.myapplication.network.NetworkUtil;
 import com.project.myapplication.view.components.CustomProgressDialog;
-
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +38,6 @@ public class loginActivity extends AppCompatActivity {
     CustomProgressDialog progressDialog;
 
     View rootview;
-    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +60,6 @@ public class loginActivity extends AppCompatActivity {
         ImageView iconEye = findViewById(R.id.iv_show_password);
 
         rootview = findViewById(android.R.id.content);
-        networkChangeReceiver = new NetworkChangeReceiver(rootview);
 
         textResetPassword.setOnClickListener(v->{
             Intent intent = new Intent(loginActivity.this, resetPasswordActivity.class);
@@ -154,17 +144,5 @@ public class loginActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(networkChangeReceiver);
     }
 }

@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import com.project.myapplication.view.activity.FullscreenImageActivity;
 import com.project.myapplication.view.activity.accountCenterActivity;
 import com.project.myapplication.view.activity.userShowFollowActivity;
 import com.project.myapplication.view.adapter.userPostShowAdapter;
+import com.project.myapplication.view.components.GridSpacingItemDecoration;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
@@ -271,13 +273,19 @@ public class profileFragment extends Fragment {
             }
         });
 
-        RecyclerView recyclerView = view.findViewById(R.id.post_show_recycler_view);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(view.getContext(),3);
+
         postModel.getUserPost(userID, new PostModel.OnUserPostListRetrievedCallback() {
             @Override
             public void getUserPost(ArrayList<Post> postsList) {
-                userPostShowAdapter postShowAdapter = new userPostShowAdapter(view.getContext(), postsList, postModel, userID);
+                RecyclerView recyclerView = view.findViewById(R.id.post_show_recycler_view);
+                int spanCount = calculateOptimalSpanCount();
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(view.getContext(),spanCount);
                 recyclerView.setLayoutManager(gridLayoutManager);
+                int spacing = getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+                recyclerView.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, true));
+
+                userPostShowAdapter postShowAdapter = new userPostShowAdapter(view.getContext(), postsList, postModel, userID);
+
                 recyclerView.setAdapter(postShowAdapter);
             }
         });
@@ -300,6 +308,20 @@ public class profileFragment extends Fragment {
             }
         });
     }
+    private int calculateOptimalSpanCount() {
+        // Lấy kích thước màn hình
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+
+        // Kích thước tối thiểu cho mỗi item (dp)
+        float minItemWidthDp = getResources().getDimension(R.dimen.grid_item_min_size) / displayMetrics.density;
+
+        // Tính toán số cột tối ưu
+        int spanCount = Math.max(3, (int) (screenWidthDp / minItemWidthDp));
+
+        return spanCount;
+    }
+
     public void openImagePicker() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -307,3 +329,4 @@ public class profileFragment extends Fragment {
         imagePickerLauncher.launch(Intent.createChooser(intent, "Chọn ảnh đại diện"));
     }
 }
+
