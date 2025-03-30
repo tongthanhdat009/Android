@@ -1,8 +1,6 @@
 package com.project.myapplication.view.activity;
 
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -41,7 +39,6 @@ public class registerActivity extends AppCompatActivity {
 
     public ImageButton backBTN;
 
-    private NetworkChangeReceiver networkChangeReceiver;
 
     FirebaseAuth auth = FirebaseAuth.getInstance();
     CustomProgressDialog progressDialog;
@@ -55,9 +52,6 @@ public class registerActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        View rootview = findViewById(android.R.id.content);
-        networkChangeReceiver = new NetworkChangeReceiver(rootview);
 
         inputEmail = findViewById(R.id.inputEmail);
         inputPassword = findViewById(R.id.inputPassword);
@@ -258,16 +252,5 @@ public class registerActivity extends AppCompatActivity {
     public interface OnSignUpCallback {
         void onSuccess(String userID);
         void onFailure(String errorMessage);
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(networkChangeReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(networkChangeReceiver);
     }
 }

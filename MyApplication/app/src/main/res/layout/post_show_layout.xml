@@ -1,28 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="150dp"
-    android:layout_height="150dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <!-- Thumbnail nằm phía dưới -->
-
-    <!-- Layer nằm đè lên Thumbnail -->
+    <!-- Existing ImageView for thumbnail -->
     <ImageView
         android:id="@+id/thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="2dp"
-        android:clipToOutline="true"
-        android:scaleType="fitCenter" />
+        android:scaleType="centerCrop" />
 
+    <!-- Existing ImageView for multiple images icon -->
     <ImageView
         android:id="@+id/icon_layer"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:src="@drawable/layer"
-        android:background="@android:color/transparent"
-        app:tint="@color/white"
-        android:layout_margin="5dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
+
+    <!-- Add this new ImageView for video play icon -->
+    <ImageView
+        android:id="@+id/video_play_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 </FrameLayout>

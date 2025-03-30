@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.recyclerview)
+    implementation(libs.media3.common)
+    implementation(libs.media3.exoplayer.hls)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -67,4 +69,6 @@ dependencies {
     implementation (libs.libphonenumber)
     implementation (libs.media3.exoplayer)
     implementation (libs.media3.ui)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 }

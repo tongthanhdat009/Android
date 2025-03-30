@@ -13,8 +13,8 @@ import com.project.myapplication.model.PostModel;
 public class homeController {
     private final View view;
     private final PostModel postModel;
-    private RecyclerView postRecyclerView;
-    private PostAdapter postAdapter;
+    public RecyclerView postRecyclerView;
+    public PostAdapter postAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public homeController(View view) {
@@ -37,9 +37,11 @@ public class homeController {
             postModel.getAllPost(postsList -> {
                 postAdapter = new PostAdapter(view.getContext(), postsList, userID, postModel);
                 postRecyclerView.setAdapter(postAdapter);
+                postAdapter.setRecyclerView(postRecyclerView);
                 swipeRefreshLayout.setRefreshing(false);
             });
         });
+
         postModel.getAllPost(postsList -> {
             postAdapter = new PostAdapter(view.getContext(), postsList, userID, postModel);
             postRecyclerView.setAdapter(postAdapter);

@@ -1,6 +1,7 @@
 [versions]
 agp = "8.5.0"
 appcompatV7 = "28.0.0"
+compiler = "4.16.0"
 exoplayer = "2.19.1"
 firebaseAdmin = "9.1.1"
 firebaseAnalytics = "22.1.2"
@@ -12,6 +13,7 @@ firebaseMessaging = "24.0.3"
 firebaseMessagingVersion = "23.3.1"
 firebaseStorage = "21.0.1"
 firebaseStorageVersion = "20.1.0"
+glide = "4.16.0"
 googleAuthLibraryOauth2Http = "1.16.0"
 googleMaterial = "1.9.0"
 googleServices = "4.4.2"
@@ -39,9 +41,12 @@ recyclerviewVersion = "1.2.1"
 swiperefreshlayout = "1.1.0"
 viewpager2 = "1.1.0"
 recyclerview = "1.3.2"
+media3Common = "1.5.1"
+media3ExoplayerHls = "1.6.0"
 
 [libraries]
 appcompat-v7 = { module = "com.android.support:appcompat-v7", version.ref = "appcompatV7" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
 exoplayer = { module = "com.google.android.exoplayer:exoplayer", version.ref = "exoplayer" }
 exoplayer-ui = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayer" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
@@ -54,6 +59,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging", versio
 firebase-messaging-v2331 = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessagingVersion" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 firebase-storage-v2010 = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorageVersion" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
 google-firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
@@ -82,6 +88,8 @@ recyclerview-v121 = { module = "androidx.recyclerview:recyclerview", version.ref
 swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3ExoplayerHls" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
