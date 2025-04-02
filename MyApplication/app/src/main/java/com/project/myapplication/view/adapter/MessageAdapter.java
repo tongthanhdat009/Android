@@ -14,19 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.myapplication.DTO.Message;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.view.activity.FullscreenImageActivity;
 import com.squareup.picasso.Picasso;
+import android.content.Intent;
+import android.net.Uri;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String userID;
-    private final List<Message> messages;
+    private static List<Message> messages = Collections.emptyList();
     private static final int VIEW_TYPE_SEND = 1;
     private static final int VIEW_TYPE_RECEIVE = 2;
 
     public MessageAdapter(List<Message> messages, String userID) {
         this.userID=userID;
-        this.messages = messages;
+        MessageAdapter.messages = messages;
     }
 
     @Override
@@ -79,6 +83,29 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             messageText = itemView.findViewById(R.id.message_text);
             image = itemView.findViewById(R.id.sender_avatar);
             messageImage = itemView.findViewById(R.id.message_image);
+
+            // Thêm sự kiện nhấn vào image
+            messageImage.setOnClickListener(view -> {
+                String imageUrl = getMessageMediaUrl(getAdapterPosition());
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    openFullScreenImageActivity(view, imageUrl);
+                }
+            });
+        }
+
+        private void openFullScreenImageActivity(View view, String imageUrl) {
+            // Mở Activity mới để hiển thị hình ảnh
+            Intent intent = new Intent(view.getContext(), FullscreenImageActivity.class);
+            intent.putExtra("imageUri", Uri.parse(imageUrl));
+            view.getContext().startActivity(intent);
+        }
+
+        private String getMessageMediaUrl(int position) {
+            Message message = messages.get(position);
+            if (message.getMedia() != null && !message.getMedia().isEmpty()) {
+                return message.getMedia().get(0); // Lấy URL của hình ảnh
+            }
+            return null;
         }
 
         public void bind(Message message) {
