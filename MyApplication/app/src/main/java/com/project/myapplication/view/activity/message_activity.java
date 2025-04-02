@@ -254,7 +254,9 @@ public class message_activity extends AppCompatActivity {
     }
 
     private void chooseImage() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
         pickImageLauncher.launch(intent);
     }
 
