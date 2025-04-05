@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services")
@@ -47,6 +49,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.media3.common)
     implementation(libs.media3.exoplayer.hls)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -70,5 +73,9 @@ dependencies {
     implementation (libs.media3.exoplayer)
     implementation (libs.media3.ui)
     implementation (libs.glide)
+    // Retrofit dependencies
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.google.code.gson:gson:2.8.8")
     annotationProcessor (libs.compiler)
 }

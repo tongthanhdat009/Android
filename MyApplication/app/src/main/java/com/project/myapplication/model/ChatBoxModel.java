@@ -240,6 +240,98 @@ public class ChatBoxModel {
                             });
                 });
     }
+    private void createAIChatBox(String userID) {
+        firestore.collection("users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String userName = documentSnapshot.exists() ? documentSnapshot.getString("Name") : userID;
+                    String avatar = documentSnapshot.exists() ? documentSnapshot.getString("avatar") : null;
+
+                    Map<String, Object> chatBoxData = new HashMap<>();
+                    chatBoxData.put("lastMessage", "Xin chào bạn");
+                    chatBoxData.put("lastMessageTimestamp", FieldValue.serverTimestamp());
+
+                    // Create the "image" map with user's avatar and AI
+                    Map<String, String> imageMap = new HashMap<>();
+                    imageMap.put(userID, avatar);  // User avatar
+                    imageMap.put("Chat bot", "");  // AI avatar
+                    chatBoxData.put("image_url", imageMap);
+
+                    // Create the "name" map with user's name and AI name
+                    Map<String, String> nameMap = new HashMap<>();
+                    nameMap.put(userID, userName);
+                    nameMap.put("Chat bot", "Trợ lý AI");
+                    chatBoxData.put("name", nameMap);
+
+                    // Create the "showed" map with users' IDs
+                    Map<String, Boolean> showedMap = new HashMap<>();
+                    showedMap.put(userID, true);
+//                    showedMap.put("gemini-bot", true);
+                    chatBoxData.put("showed", showedMap);
+
+                    // Add a new chat box document for AI
+                    firestore.collection("chatbox")
+                            .add(chatBoxData)
+                            .addOnSuccessListener(documentReference -> {
+                                String chatBoxId = documentReference.getId();
+
+                                // Fetch the full ChatBox object after creation
+                                firestore.collection("chatbox")
+                                        .document(chatBoxId)
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot2 -> {
+                                            if (documentSnapshot2.exists()) {
+                                                // Create a ChatBox object from the document data
+                                                Map<String,String> imageUrls = (Map<String, String>) documentSnapshot2.get("image_url");
+                                                ChatBox chatBox = documentSnapshot2.toObject(ChatBox.class);
+                                                if (chatBox != null) {
+                                                    chatBox.setImageUrl(imageUrls);
+                                                    chatBox.setId(chatBoxId);
+                                                }
+                                            }
+                                        });
+                            });
+                });
+    }
+    public void checkAndCreateAIChatBox(String userID) {
+        // Kiểm tra nếu có ChatBox AI chưa, nếu không thì tạo mới
+        firestore.collection("chatbox")
+                .get() // Lấy tất cả chatbox
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    boolean aiChatBoxExists = false;
+
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        // Lấy map "name"
+                        Map<String, String> nameMap = (Map<String, String>) documentSnapshot.get("name");
+                        if (nameMap != null) {
+                            // Kiểm tra xem "name" có chứa userID và "Chat bot" không
+                            if (nameMap.containsKey(userID) && nameMap.containsKey("Chat bot")) {
+                                String botName = nameMap.get("Chat bot");
+                                // Kiểm tra nếu giá trị trong map là "Trợ lý AI"
+                                if ("Trợ lý AI".equals(botName)) {
+                                    aiChatBoxExists = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (!aiChatBoxExists) {
+                        // Nếu không tìm thấy, tạo mới ChatBox AI
+                        createAIChatBox(userID);
+                    }
+                });
+    }
+
+
+
+    public boolean isAI(ChatBox chatBox) {
+        // Kiểm tra xem trường "name" có chứa "Chat bot" không
+        if (chatBox.getName() != null && chatBox.getName().containsKey("Chat bot")) {
+            String botName = chatBox.getName().get("Chat bot");
+            return botName != null && botName.equals("Trợ lý AI");
+        }
+        return false;
+    }
 
     public void updateShowedToTrue(String chatBoxId, String userID1, String userID2, ChatBoxCallback2 callback) {
         // Update the "showed" field for the given chat box

@@ -49,7 +49,7 @@ public class chatController extends RecyclerView.Adapter<chatController.ChatView
         Log.d("chatController", "onBindViewHolder: " + chatItem);
         holder.message.setText(chatItem.getLastMessage()!= null? chatItem.getLastMessage():"Không có tin nhắn");
         // Lấy tên theo userID người khác, nếu không thì gán "Tên không có"
-        String username = "Tên không có";
+        String username = "Người dùng Điện tín tức thời";
         if (chatItem.getName() != null) {
             for (Map.Entry<String, String> entry : chatItem.getName().entrySet()) {
                 if (!entry.getKey().equals(userID)) { // Tìm user khác userID

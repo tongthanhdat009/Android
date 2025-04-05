@@ -32,11 +32,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
+import com.google.gson.Gson;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
+import com.project.myapplication.GeminiResponse;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.model.GeminiApiService;
+import com.project.myapplication.model.GeminiRequest;
 import com.project.myapplication.model.MessageModel;
+import com.project.myapplication.util.RetrofitClient;
 import com.project.myapplication.view.adapter.MessageAdapter;
 import com.squareup.picasso.Picasso;
 
@@ -45,6 +50,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class message_activity extends AppCompatActivity {
     private String userID;
@@ -64,6 +73,7 @@ public class message_activity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ChatBoxModel chatBoxModel = new ChatBoxModel();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
@@ -148,8 +158,11 @@ public class message_activity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         // Gửi tin nhắn khi nhấn gửi
-        sendButton.setOnClickListener(v -> sendMessage(chatBox.getId()));
+        sendButton.setOnClickListener(v -> sendMessage(chatBox));
 
+        if(chatBoxModel.isAI(chatBox)){
+            imageButton.setVisibility(View.GONE);
+        }
         // Chọn hình ảnh
         imageButton.setOnClickListener(v -> chooseImage());
 
@@ -228,30 +241,124 @@ public class message_activity extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void sendMessage(String chatboxID) {
+    private void sendMessage(ChatBox chatBox) {
         String content = messageInput.getText().toString();
         MessageModel messageModel = new MessageModel();
         ChatBoxModel chatBoxModel = new ChatBoxModel();
-        Message message = new Message(chatboxID, Timestamp.now(), new ArrayList<>(), false, content, userID);
-        if (!content.isEmpty()) {
-            messageModel.addMessage(chatboxID, message, new MessageModel.AddMessageCallback() {
-                @Override
-                public void onSuccess(String documentId) {
-                    Log.d("Firestore", "Message added with ID: " + documentId);
-                }
 
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e("Firestore", "Error adding message", e);
-                }
-            });
-            chatBoxModel.updateLastMessage(chatboxID, content);
-            chatBoxModel.updateAllShowedToTrue(chatboxID);
-            adapter.notifyDataSetChanged();
-            recyclerView.scrollToPosition(messageList.size() - 1);
-            messageInput.setText("");
+        if (!content.isEmpty()) {
+            // Tạo đối tượng Message cho tin nhắn
+            Message message = new Message(chatBox.getId(), Timestamp.now(), new ArrayList<>(), false, content, userID);
+
+            if (chatBoxModel.isAI(chatBox)) {
+                // Nếu là AI chatbox, gửi tin nhắn lên Firebase và lấy kết quả từ Gemini API
+
+                // Lưu tin nhắn đầu tiên vào Firebase
+                messageModel.addMessage(chatBox.getId(), message, new MessageModel.AddMessageCallback() {
+                    @Override
+                    public void onSuccess(String documentId) {
+                        Log.d("Firestore", "Message added with ID: " + documentId);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("Firestore", "Error adding message", e);
+                    }
+                });
+
+                // Lấy kết quả từ AI (Gemini API)
+                getAIResponse(content, chatBox.getId());
+                messageInput.setText("");
+            } else {
+                // Nếu không phải là AI chatbox, gửi tin nhắn bình thường
+                messageModel.addMessage(chatBox.getId(), message, new MessageModel.AddMessageCallback() {
+                    @Override
+                    public void onSuccess(String documentId) {
+                        Log.d("Firestore", "Message added with ID: " + documentId);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("Firestore", "Error adding message", e);
+                    }
+                });
+                chatBoxModel.updateLastMessage(chatBox.getId(), content);
+                chatBoxModel.updateAllShowedToTrue(chatBox.getId());
+                adapter.notifyDataSetChanged();
+                recyclerView.scrollToPosition(messageList.size() - 1);
+                messageInput.setText("");
+            }
         }
     }
+
+    private void getAIResponse(String content, String chatboxID) {
+        // Gọi API Gemini để lấy phản hồi
+        GeminiApiService apiService = RetrofitClient.getRetrofitInstance().create(GeminiApiService.class);
+
+        // Tạo GeminiRequest với cấu trúc đúng
+        GeminiRequest request = new GeminiRequest();
+        List<GeminiRequest.Content> contents = new ArrayList<>();
+        GeminiRequest.Content contentObj = new GeminiRequest.Content();
+        List<GeminiRequest.Content.Part> parts = new ArrayList<>();
+
+        GeminiRequest.Content.Part part = new GeminiRequest.Content.Part();
+        part.setText("Trả lời câu hỏi sau không quá 50 ký tự: " + content);
+        parts.add(part);
+        contentObj.setParts(parts);
+        contents.add(contentObj);
+        request.setContents(contents);
+
+//        String apiKey = "AIzaSyDh0fdPZzZF3zVnjY6AP1GFDWbkDZlz4sg";
+        String apiKey = "AIzaSyBTRGzEnoln2KcDdcOpIx6a2roZ1PTrn1M";
+
+        // Gửi yêu cầu tới API Gemini
+        Call<GeminiResponse> call = apiService.generateContent(request, apiKey);
+
+        call.enqueue(new Callback<GeminiResponse>() {
+            @Override
+            public void onResponse(Call<GeminiResponse> call, Response<GeminiResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Truy xuất AI response từ body của response
+                    String aiResponse = response.body().getAIResponseText();
+                    String fullResponse = new Gson().toJson(response.body());
+                    Log.d("RawResponse", fullResponse);
+                    Log.e("APIError", "Error: " + response.code() + " - " + response.message());
+                    if (aiResponse != null) {
+                        Log.d("AIResponse", aiResponse);
+
+                        // Lưu kết quả AI vào Firebase
+                        Message aiMessage = new Message(chatboxID, Timestamp.now(), new ArrayList<>(), true, aiResponse, "Chat bot");
+                        MessageModel messageModel = new MessageModel();
+                        messageModel.addMessage(chatboxID, aiMessage, new MessageModel.AddMessageCallback() {
+                            @Override
+                            public void onSuccess(String documentId) {
+                                Log.d("Firestore", "AI Response added with ID: " + documentId);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                Log.e("Firestore", "Error adding AI response", e);
+                            }
+                        });
+
+                        // Cập nhật tin nhắn cuối cùng
+                        ChatBoxModel chatBoxModel = new ChatBoxModel();
+                        chatBoxModel.updateLastMessage(chatboxID, aiResponse);
+                    } else {
+                        Log.d("AIResponse", "AI response is null");
+                    }
+                } else {
+                    Log.e("AIResponse", "Error: " + response.code() + " - " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GeminiResponse> call, Throwable t) {
+                Log.e("AIResponse", "Error fetching AI response", t);
+            }
+        });
+    }
+
 
     private void chooseImage() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);

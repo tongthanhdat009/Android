@@ -64,4 +64,16 @@ public class chatFragment extends Fragment {
         });
         return view;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Kiểm tra và tạo ChatBox AI mỗi khi fragment được hiển thị
+        if (userID != null) {
+            chatBoxModel.checkAndCreateAIChatBox(userID);
+            chatBoxModel.getChatBoxesByUserID(userID, chatBoxList -> {
+                chatController.updateChatBoxes(chatBoxList);
+            });
+        }
+    }
 }
