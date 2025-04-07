@@ -30,6 +30,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         this.userName = userName;
         this.userID = userID;
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -37,10 +38,18 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.bottomsheet, container, false);
         TextView textView = view.findViewById(R.id.name);
         textView.setText(userName);
+
         view.findViewById(R.id.deleteButton).setOnClickListener(v -> {
             ChatBoxModel chatBoxModel = new ChatBoxModel();
-            chatBoxModel.hideChatBox(chatBox.getId(), userID);
-            Toast.makeText(getContext(), "Đã xóa hộp thoại " + userName, Toast.LENGTH_SHORT).show();
+            // Kiểm tra nếu là ChatBox AI thì xóa luôn
+            if (chatBoxModel.isAI(chatBox)) {
+                chatBoxModel.deleteChatBox(chatBox.getId());
+                Toast.makeText(getContext(), "Đã xóa "+ userName, Toast.LENGTH_SHORT).show();
+            } else {
+                // Nếu không phải ChatBox AI, ẩn nó cho người dùng hiện tại
+                chatBoxModel.hideChatBox(chatBox.getId(), userID);
+                Toast.makeText(getContext(), "Đã xóa hộp thoại " + userName, Toast.LENGTH_SHORT).show();
+            }
             dismiss();
         });
 

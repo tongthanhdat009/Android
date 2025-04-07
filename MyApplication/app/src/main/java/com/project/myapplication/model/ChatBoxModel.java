@@ -253,7 +253,7 @@ public class ChatBoxModel {
                     // Create the "image" map with user's avatar and AI
                     Map<String, String> imageMap = new HashMap<>();
                     imageMap.put(userID, avatar);  // User avatar
-                    imageMap.put("Chat bot", "");  // AI avatar
+                    imageMap.put("Chat bot", "https://firebasestorage.googleapis.com/v0/b/insta-clone-2e405.appspot.com/o/avatars%2Fimages.png?alt=media&token=dab50931-2f3f-4242-b248-e5471eeadeaf");  // AI avatar
                     chatBoxData.put("image_url", imageMap);
 
                     // Create the "name" map with user's name and AI name
@@ -323,6 +323,39 @@ public class ChatBoxModel {
     }
 
 
+    public void deleteChatBoxAndSubcollections(String chatBoxId) {
+        firestore.collection("chatbox").document(chatBoxId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Lấy tất cả các subcollection của document
+                        firestore.collection("chatbox").document(chatBoxId)
+                                .collection("messages") // ví dụ về subcollection "messages"
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                                        // Xóa tất cả các document trong subcollection "messages"
+                                        doc.getReference().delete();
+                                    }
+                                    // Sau khi xóa subcollection, xóa chính document chatbox
+                                    deleteChatBox(chatBoxId);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Delete", "Error fetching subcollections", e);
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Delete", "Error fetching document", e);
+                });
+    }
+
+    public void deleteChatBox(String chatBoxId) {
+        // Xóa chatbox khỏi Firestore
+        deleteChatBoxAndSubcollections(chatBoxId);
+        firestore.collection("chatbox").document(chatBoxId)
+                .delete();
+    }
 
     public boolean isAI(ChatBox chatBox) {
         // Kiểm tra xem trường "name" có chứa "Chat bot" không

@@ -308,8 +308,7 @@ public class message_activity extends AppCompatActivity {
         contents.add(contentObj);
         request.setContents(contents);
 
-//        String apiKey = "AIzaSyDh0fdPZzZF3zVnjY6AP1GFDWbkDZlz4sg";
-        String apiKey = "AIzaSyBTRGzEnoln2KcDdcOpIx6a2roZ1PTrn1M";
+//        String apiKey = "AIzaSyBTRGzEnoln2KcDdcOpIx6a2roZ1PTrn1M";
 
         // Gửi yêu cầu tới API Gemini
         Call<GeminiResponse> call = apiService.generateContent(request, apiKey);
@@ -325,7 +324,7 @@ public class message_activity extends AppCompatActivity {
                     Log.e("APIError", "Error: " + response.code() + " - " + response.message());
                     if (aiResponse != null) {
                         Log.d("AIResponse", aiResponse);
-
+                        aiResponse = aiResponse.replaceAll("[\\r\\n]+", " ");
                         // Lưu kết quả AI vào Firebase
                         Message aiMessage = new Message(chatboxID, Timestamp.now(), new ArrayList<>(), true, aiResponse, "Chat bot");
                         MessageModel messageModel = new MessageModel();

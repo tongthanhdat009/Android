@@ -11,6 +11,7 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.project.myapplication.R;
 import com.project.myapplication.databinding.ActivityNavControllerBinding;
+import com.project.myapplication.model.ChatBoxModel;
 import com.project.myapplication.view.fragment.chatFragment;
 import com.project.myapplication.view.fragment.homeFragment;
 import com.project.myapplication.view.fragment.postFragment;
@@ -60,24 +61,37 @@ public class navController extends AppCompatActivity {
         fragment.setArguments(bundle);
         return fragment;
     }
-
+    
     @OptIn(markerClass = UnstableApi.class)
     private void showFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+
         for (Fragment frag : fragmentManager.getFragments()) {
             transaction.hide(frag);
-            if (frag instanceof homeFragment){
+
+            // Kiểm tra nếu là homeFragment
+            if (frag instanceof homeFragment) {
                 ((homeFragment) frag).getController().postDisplay(userID);
             }
+
+            // Kiểm tra nếu là chatFragment
+            if (frag instanceof chatFragment) {
+                // Gọi hàm checkAndCreateAIChatBox trước khi show chatFragment
+                ChatBoxModel chatBoxModel = new ChatBoxModel();  // Khởi tạo ChatBoxModel nếu cần
+                chatBoxModel.checkAndCreateAIChatBox(userID);    // Gọi phương thức
+            }
         }
+
         if (fragment.isAdded()) {
             transaction.show(fragment);
         } else {
             transaction.add(R.id.frame_layout, fragment, fragment.getClass().getName());
         }
+
         transaction.commit();
     }
+
 
     private void updateIcons(int selectedItemId) {
         binding.bottomNavigationView.getMenu().findItem(R.id.home).setIcon(selectedItemId == R.id.home ? R.drawable.home_selected : R.drawable.home);
