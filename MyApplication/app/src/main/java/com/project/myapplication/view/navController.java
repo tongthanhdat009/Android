@@ -14,7 +14,6 @@ import com.project.myapplication.databinding.ActivityNavControllerBinding;
 import com.project.myapplication.model.ChatBoxModel;
 import com.project.myapplication.view.fragment.chatFragment;
 import com.project.myapplication.view.fragment.homeFragment;
-import com.project.myapplication.view.fragment.postFragment;
 import com.project.myapplication.view.fragment.profileFragment;
 import com.project.myapplication.view.fragment.searchFragment;
 
@@ -38,7 +37,7 @@ public class navController extends AppCompatActivity {
         Map<Integer, Fragment> fragmentMap = new HashMap<>();
         fragmentMap.put(R.id.home, createFragmentWithUserID(new homeFragment(), userID));
         fragmentMap.put(R.id.search, createFragmentWithUserID(new searchFragment(), userID));
-        fragmentMap.put(R.id.post, createFragmentWithUserID(new postFragment(), userID));
+//        fragmentMap.put(R.id.post, createFragmentWithUserID(new postFragment(), userID));
         fragmentMap.put(R.id.chat, createFragmentWithUserID(new chatFragment(), userID));
         fragmentMap.put(R.id.profile, createFragmentWithUserID(new profileFragment(), userID));
 

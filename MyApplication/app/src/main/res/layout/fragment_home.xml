@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,16 +11,34 @@
 
     <!-- Header TextView -->
     <!--TITLE-->
-    <TextView
-        android:id="@+id/newPostTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/helvetica_bold"
-        android:padding="8dp"
-        android:text="Home"
-        android:textSize="20sp"
-        android:gravity="center"
-        />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/newPostTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/helvetica_bold"
+            android:padding="8dp"
+            android:text="Home"
+            android:textSize="20sp"
+            android:layout_weight="0.95" />
+
+        <ImageButton
+            android:id="@+id/post_btn"
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:contentDescription="TODO"
+            android:src="@drawable/post"
+            app:tint="@color/icon_default"
+            android:background="@null"
+            android:layout_weight="0.05"
+            android:scaleType="fitCenter"
+            android:layout_marginEnd="10dp"/>
+    </LinearLayout>
+
 
     <!-- RecyclerView để hiển thị các bài đăng -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

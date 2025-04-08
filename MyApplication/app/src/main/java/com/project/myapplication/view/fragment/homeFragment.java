@@ -2,6 +2,7 @@ package com.project.myapplication.view.fragment;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.OptIn;
@@ -14,11 +15,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.R;
 import com.project.myapplication.controller.homeController;
+import com.project.myapplication.view.activity.PostActivity;
 
 @UnstableApi
 public class homeFragment extends Fragment {
@@ -74,6 +77,14 @@ public class homeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         controller = new homeController(view);
         controller.postDisplay(userID);
+        ImageButton openPostActivity = view.findViewById(R.id.post_btn);
+        openPostActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PostActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -101,6 +112,7 @@ public class homeFragment extends Fragment {
         if (controller.postAdapter != null) {
             controller.postAdapter.releaseAllPlayers();
         }
+
     }
 
    @Override
