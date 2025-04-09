@@ -306,11 +306,8 @@ public class ChatBoxModel {
                             // Kiểm tra xem "name" có chứa userID và "Chat bot" không
                             if (nameMap.containsKey(userID) && nameMap.containsKey("Chat bot")) {
                                 String botName = nameMap.get("Chat bot");
-                                // Kiểm tra nếu giá trị trong map là "Trợ lý AI"
-                                if ("Trợ lý AI".equals(botName)) {
                                     aiChatBoxExists = true;
                                     break;
-                                }
                             }
                         }
                     }
@@ -357,13 +354,34 @@ public class ChatBoxModel {
                 .delete();
     }
 
-    public boolean isAI(ChatBox chatBox) {
-        // Kiểm tra xem trường "name" có chứa "Chat bot" không
-        if (chatBox.getName() != null && chatBox.getName().containsKey("Chat bot")) {
-            String botName = chatBox.getName().get("Chat bot");
-            return botName != null && botName.equals("Trợ lý AI");
-        }
-        return false;
+    public void isAI(String chatBoxId, String userId, final OnCheckAIListener listener) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        firestore.collection("chatbox").document(chatBoxId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> nameMap = (Map<String, Object>) documentSnapshot.get("name");
+
+                        if (nameMap != null) {
+                            boolean hasUser = nameMap.containsKey(userId);
+                            boolean hasBot = nameMap.containsKey("Chat bot");
+                                    "Trợ lý AI".equals(nameMap.get("Chat bot"));
+
+                            listener.onCheck(hasUser && hasBot);
+                            return;
+                        }
+                    }
+
+                    listener.onCheck(false); // Không phải chat với AI
+                })
+                .addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    listener.onCheck(false); // Lỗi khi truy xuất
+                });
+    }
+
+    public interface OnCheckAIListener {
+        void onCheck(boolean isAI);
     }
 
     public void updateShowedToTrue(String chatBoxId, String userID1, String userID2, ChatBoxCallback2 callback) {

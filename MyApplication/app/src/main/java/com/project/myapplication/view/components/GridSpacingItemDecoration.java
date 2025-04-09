@@ -1,7 +1,7 @@
 package com.project.myapplication.view.components;
 
 import android.graphics.Rect;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;

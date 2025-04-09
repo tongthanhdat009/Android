@@ -12,10 +12,12 @@ import androidx.media3.common.util.UnstableApi;
 import com.project.myapplication.R;
 import com.project.myapplication.databinding.ActivityNavControllerBinding;
 import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.view.adapter.ShortVideoAdapter;
 import com.project.myapplication.view.fragment.chatFragment;
 import com.project.myapplication.view.fragment.homeFragment;
 import com.project.myapplication.view.fragment.profileFragment;
 import com.project.myapplication.view.fragment.searchFragment;
+import com.project.myapplication.view.fragment.shortFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ public class navController extends AppCompatActivity {
         fragmentMap.put(R.id.search, createFragmentWithUserID(new searchFragment(), userID));
 //        fragmentMap.put(R.id.post, createFragmentWithUserID(new postFragment(), userID));
         fragmentMap.put(R.id.chat, createFragmentWithUserID(new chatFragment(), userID));
+        fragmentMap.put(R.id.shorts, createFragmentWithUserID(new shortFragment(), userID));
         fragmentMap.put(R.id.profile, createFragmentWithUserID(new profileFragment(), userID));
 
         showFragment(fragmentMap.get(R.id.home));
@@ -60,7 +63,7 @@ public class navController extends AppCompatActivity {
         fragment.setArguments(bundle);
         return fragment;
     }
-    
+
     @OptIn(markerClass = UnstableApi.class)
     private void showFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -80,6 +83,13 @@ public class navController extends AppCompatActivity {
                 ChatBoxModel chatBoxModel = new ChatBoxModel();  // Khởi tạo ChatBoxModel nếu cần
                 chatBoxModel.checkAndCreateAIChatBox(userID);    // Gọi phương thức
             }
+
+            if (frag instanceof shortFragment) {
+                ShortVideoAdapter adapter = ((shortFragment) frag).getAdapter();
+                if (adapter != null) {
+                    adapter.pauseAllPlayers();
+                }
+            }
         }
 
         if (fragment.isAdded()) {
@@ -95,8 +105,9 @@ public class navController extends AppCompatActivity {
     private void updateIcons(int selectedItemId) {
         binding.bottomNavigationView.getMenu().findItem(R.id.home).setIcon(selectedItemId == R.id.home ? R.drawable.home_selected : R.drawable.home);
         binding.bottomNavigationView.getMenu().findItem(R.id.search).setIcon(selectedItemId == R.id.search ? R.drawable.search_selected : R.drawable.search);
-        binding.bottomNavigationView.getMenu().findItem(R.id.post).setIcon(selectedItemId == R.id.post ? R.drawable.post_selected : R.drawable.post);
+//        binding.bottomNavigationView.getMenu().findItem(R.id.post).setIcon(selectedItemId == R.id.post ? R.drawable.post_selected : R.drawable.post);
         binding.bottomNavigationView.getMenu().findItem(R.id.chat).setIcon(selectedItemId == R.id.chat ? R.drawable.chat_selected : R.drawable.chat);
+        binding.bottomNavigationView.getMenu().findItem(R.id.shorts).setIcon(selectedItemId == R.id.shorts ? R.drawable.short_video : R.drawable.short_video_selected);
         binding.bottomNavigationView.getMenu().findItem(R.id.profile).setIcon(selectedItemId == R.id.profile ? R.drawable.profile_selected : R.drawable.profile);
     }
 }

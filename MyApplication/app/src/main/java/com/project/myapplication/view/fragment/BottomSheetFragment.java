@@ -41,18 +41,24 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
         view.findViewById(R.id.deleteButton).setOnClickListener(v -> {
             ChatBoxModel chatBoxModel = new ChatBoxModel();
-            // Kiểm tra nếu là ChatBox AI thì xóa luôn
-            if (chatBoxModel.isAI(chatBox)) {
-                chatBoxModel.deleteChatBox(chatBox.getId());
-                Toast.makeText(getContext(), "Đã xóa "+ userName, Toast.LENGTH_SHORT).show();
-            } else {
-                // Nếu không phải ChatBox AI, ẩn nó cho người dùng hiện tại
-                chatBoxModel.hideChatBox(chatBox.getId(), userID);
-                Toast.makeText(getContext(), "Đã xóa hộp thoại " + userName, Toast.LENGTH_SHORT).show();
-            }
-            dismiss();
-        });
 
+            chatBoxModel.isAI(chatBox.getId(), userID, new ChatBoxModel.OnCheckAIListener() {
+                @Override
+                public void onCheck(boolean isAI) {
+                    if (isAI) {
+                        // Nếu là ChatBox AI thì xóa luôn
+                        chatBoxModel.deleteChatBox(chatBox.getId());
+                        Toast.makeText(getContext(), "Đã xóa " + userName, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Nếu không phải ChatBox AI, ẩn nó cho người dùng hiện tại
+                        chatBoxModel.hideChatBox(chatBox.getId(), userID);
+                        Toast.makeText(getContext(), "Đã xóa hộp thoại " + userName, Toast.LENGTH_SHORT).show();
+                    }
+
+                    dismiss();
+                }
+            });
+        });
         return view;
     }
 

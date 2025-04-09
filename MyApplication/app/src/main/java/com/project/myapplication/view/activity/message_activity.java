@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,7 +34,7 @@ import com.google.firebase.Timestamp;
 import com.google.gson.Gson;
 import com.project.myapplication.DTO.ChatBox;
 import com.project.myapplication.DTO.Message;
-import com.project.myapplication.GeminiResponse;
+import com.project.myapplication.model.GeminiResponse;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
 import com.project.myapplication.model.GeminiApiService;
@@ -160,14 +159,24 @@ public class message_activity extends AppCompatActivity {
         // Gửi tin nhắn khi nhấn gửi
         sendButton.setOnClickListener(v -> sendMessage(chatBox));
 
-        if(chatBoxModel.isAI(chatBox)){
-            imageButton.setVisibility(View.GONE);
-        }
+        chatBoxModel.isAI(chatBox.getId(), userID, isAI -> {
+            if (isAI) imageButton.setVisibility(View.GONE);
+        });
+
         // Chọn hình ảnh
         imageButton.setOnClickListener(v -> chooseImage());
 
         // Mở DrawerLayout khi bấm menuButton
-        menuButton.setOnClickListener(v -> drawerLayout.openDrawer(findViewById(R.id.navigation_view)));
+        chatBoxModel.isAI(chatBox.getId(), userID, new ChatBoxModel.OnCheckAIListener() {
+            @Override
+            public void onCheck(boolean isAI) {
+                if (isAI) {
+                    menuButton.setVisibility(View.GONE);
+                } else {
+                    menuButton.setOnClickListener(v -> drawerLayout.openDrawer(findViewById(R.id.navigation_view)));
+                }
+            }
+        });
 
         // Tải danh sách tin nhắn
         loadMessages(chatBox.getId());
@@ -250,44 +259,38 @@ public class message_activity extends AppCompatActivity {
             // Tạo đối tượng Message cho tin nhắn
             Message message = new Message(chatBox.getId(), Timestamp.now(), new ArrayList<>(), false, content, userID);
 
-            if (chatBoxModel.isAI(chatBox)) {
-                // Nếu là AI chatbox, gửi tin nhắn lên Firebase và lấy kết quả từ Gemini API
+            // Kiểm tra xem có phải AI chatbox không (bất đồng bộ)
+            chatBoxModel.isAI(chatBox.getId(), userID, new ChatBoxModel.OnCheckAIListener() {
+                @Override
+                public void onCheck(boolean isAI) {
+                    // Lưu tin nhắn vào Firebase
+                    messageModel.addMessage(chatBox.getId(), message, new MessageModel.AddMessageCallback() {
+                        @Override
+                        public void onSuccess(String documentId) {
+                            Log.d("Firestore", "Message added with ID: " + documentId);
+                        }
 
-                // Lưu tin nhắn đầu tiên vào Firebase
-                messageModel.addMessage(chatBox.getId(), message, new MessageModel.AddMessageCallback() {
-                    @Override
-                    public void onSuccess(String documentId) {
-                        Log.d("Firestore", "Message added with ID: " + documentId);
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.e("Firestore", "Error adding message", e);
+                        }
+                    });
+
+                    if (isAI) {
+                        // Nếu là AI, gọi Gemini API
+                        getAIResponse(content, chatBox.getId());
+                    } else {
+                        // Nếu không phải AI, cập nhật thông tin hiển thị
+                        chatBoxModel.updateLastMessage(chatBox.getId(), content);
+                        chatBoxModel.updateAllShowedToTrue(chatBox.getId());
+                        adapter.notifyDataSetChanged();
+                        recyclerView.scrollToPosition(messageList.size() - 1);
                     }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.e("Firestore", "Error adding message", e);
-                    }
-                });
-
-                // Lấy kết quả từ AI (Gemini API)
-                getAIResponse(content, chatBox.getId());
-                messageInput.setText("");
-            } else {
-                // Nếu không phải là AI chatbox, gửi tin nhắn bình thường
-                messageModel.addMessage(chatBox.getId(), message, new MessageModel.AddMessageCallback() {
-                    @Override
-                    public void onSuccess(String documentId) {
-                        Log.d("Firestore", "Message added with ID: " + documentId);
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.e("Firestore", "Error adding message", e);
-                    }
-                });
-                chatBoxModel.updateLastMessage(chatBox.getId(), content);
-                chatBoxModel.updateAllShowedToTrue(chatBox.getId());
-                adapter.notifyDataSetChanged();
-                recyclerView.scrollToPosition(messageList.size() - 1);
-                messageInput.setText("");
-            }
+                    // Dọn ô input trong cả hai trường hợp
+                    messageInput.setText("");
+                }
+            });
         }
     }
 
@@ -308,7 +311,7 @@ public class message_activity extends AppCompatActivity {
         contents.add(contentObj);
         request.setContents(contents);
 
-//        String apiKey = "AIzaSyBTRGzEnoln2KcDdcOpIx6a2roZ1PTrn1M";
+        String apiKey = "AIzaSyBTRGzEnoln2KcDdcOpIx6a2roZ1PTrn1M";
 
         // Gửi yêu cầu tới API Gemini
         Call<GeminiResponse> call = apiService.generateContent(request, apiKey);

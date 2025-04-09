@@ -67,7 +67,6 @@ public class chatFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         // Kiểm tra và tạo ChatBox AI mỗi khi fragment được hiển thị
         if (userID != null) {
             chatBoxModel.checkAndCreateAIChatBox(userID);
