@@ -1,2 +1,4 @@
 /MyApplication/.idea
 MyApplication/app/src/main/res/raw/dialogflow_credentials.json
+*.class
+/MyApplication/app/bin

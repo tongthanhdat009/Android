@@ -19,10 +19,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.project.myapplication.DTO.Comment;
+import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.CommentModel;
+import com.project.myapplication.model.NotificationModel;
+import com.project.myapplication.model.PostModel;
+import com.project.myapplication.model.UserModel;
 import com.project.myapplication.view.activity.authorProfileActivity;
 import com.squareup.picasso.Picasso;
 
@@ -205,14 +210,37 @@ public class commentAdapter extends RecyclerView.Adapter<commentAdapter.commentV
                 holder.like_comment.setColorFilter(context.getResources().getColor(R.color.like_button_color));
                 holder.like_comment.setImageResource(R.drawable.like);
                 commentModel.commentUpdate(cmt,postID);
-                Toast.makeText(context, "Đã bỏ like "+cmt.getCommentID(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Đã bỏ like "+cmt.getCommentID(), Toast.LENGTH_SHORT).show();
             }
             else {
                 cmt.getLikedBy().add(userID);
                 holder.like_comment.setImageResource(R.drawable.liked);
                 holder.like_comment.clearColorFilter();
                 commentModel.commentUpdate(cmt,postID);
-                Toast.makeText(context, "Đã like", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context, "Đã like", Toast.LENGTH_SHORT).show();
+                UserModel userModel = new UserModel();
+                PostModel postModel = new PostModel();
+                NotificationModel notificationModel = new NotificationModel();
+                userModel.getUserInfor(userID, new UserModel.OnGetUserInfor() {
+                    @Override
+                    public void getInfor(User user) {
+                        postModel.getPostByID(postID, new PostModel.OnGetPostByID() {
+                            @Override
+                            public void getPostByID(Post post) {
+                                if (!user.getUserID().equals(post.getUserID()))
+                                    notificationModel.addNotification(
+                                            user.getName()+" Đã thích bình luận viết của bạn",
+                                            false,
+                                            user.getUserID(),
+                                            Timestamp.now(),
+                                            "Thông báo mới",
+                                            "Like comment",
+                                            post.getUserID()
+                                    );
+                            }
+                        });
+                    }
+                });
             }
             holder.likes_count.setText(String.valueOf(cmt.getLikedBy().size()));
         });

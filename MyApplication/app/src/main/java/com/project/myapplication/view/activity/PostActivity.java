@@ -1,16 +1,21 @@
 package com.project.myapplication.view.activity;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.util.UnstableApi;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseUser;
 import com.project.myapplication.R;
 import com.project.myapplication.view.adapter.PostViewPagerAdapter;
+import com.project.myapplication.view.fragment.homeFragment;
 import com.project.myapplication.view.fragment.postImageFragment;
 import com.project.myapplication.view.fragment.postVideoFragment;
 
@@ -21,6 +26,12 @@ public class PostActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+
+        ImageButton backBTN = findViewById(R.id.backBTN);
+        backBTN.setOnClickListener(v->{
+            finish();
+        });
+
         ViewPager2 viewPager = findViewById(R.id.viewPager);
 
         viewPager.setUserInputEnabled(false);

@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_home_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     android:orientation="vertical"
-    android:id="@+id/fragment_home_container"
     tools:context=".view.fragment.homeFragment">
 
     <!-- Header TextView -->
@@ -20,23 +20,36 @@
             android:id="@+id/newPostTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.9"
             android:fontFamily="@font/helvetica_bold"
             android:padding="8dp"
             android:text="Home"
-            android:textSize="20sp"
-            android:layout_weight="0.95" />
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/noti_btn"
+            android:layout_width="24dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="0.05"
+            android:background="@null"
+            android:contentDescription="TODO"
+            android:scaleType="fitCenter"
+            android:src="@drawable/like"
+            app:tint="@color/icon_default" />
 
         <ImageButton
             android:id="@+id/post_btn"
             android:layout_width="24dp"
             android:layout_height="match_parent"
-            android:contentDescription="TODO"
-            android:src="@drawable/post"
-            app:tint="@color/icon_default"
-            android:background="@null"
+            android:layout_marginEnd="10dp"
             android:layout_weight="0.05"
+            android:background="@null"
+            android:contentDescription="TODO"
             android:scaleType="fitCenter"
-            android:layout_marginEnd="10dp"/>
+            android:src="@drawable/post"
+            app:tint="@color/icon_default" />
+
     </LinearLayout>
 
 
@@ -45,6 +58,7 @@
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/post_recycler_view"
             android:layout_width="match_parent"

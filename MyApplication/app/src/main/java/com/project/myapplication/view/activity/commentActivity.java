@@ -13,10 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.project.myapplication.DTO.Comment;
+import com.project.myapplication.DTO.Post;
+import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.controller.commentController;
 import com.project.myapplication.model.CommentModel;
+import com.project.myapplication.model.NotificationModel;
+import com.project.myapplication.model.PostModel;
+import com.project.myapplication.model.UserModel;
 
 import java.util.ArrayList;
 
@@ -25,10 +31,18 @@ public class commentActivity extends AppCompatActivity {
     private String postID;
     private String userID;
     private commentController controller;
+    private UserModel userModel;
+    private NotificationModel notificationModel;
+    private PostModel postModel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment); // Đảm bảo layout này chứa RecyclerView
+
+        userModel = new UserModel();
+        postModel = new PostModel();
+        notificationModel = new NotificationModel();
 
         EditText commentInput = findViewById(R.id.type_comment);
         ImageView sendComment = findViewById(R.id.send_btn);
@@ -41,10 +55,9 @@ public class commentActivity extends AppCompatActivity {
         commentModel.getAllCommentInPost(postID, new CommentModel.OnCommentListRetrievedCallback() {
             @Override
             public void getAllCommentInPost(ArrayList<Comment> commentsList) {
-                if(commentsList.isEmpty()){
+                if (commentsList.isEmpty()) {
                     notification.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     notification.setVisibility(View.GONE);
                 }
             }
@@ -66,11 +79,31 @@ public class commentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String commentText = commentInput.getText().toString();
                 Toast.makeText(v.getContext(), commentText, Toast.LENGTH_SHORT).show();
-                if(commentInput.getText().toString().isEmpty()){
+                if (commentInput.getText().toString().isEmpty()) {
                     Toast.makeText(v.getContext(), "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                } else {
                     controller.postComment(commentText, postID, userID);
+                    userModel.getUserInfor(userID, new UserModel.OnGetUserInfor() {
+                        @Override
+                        public void getInfor(User user) {
+                            postModel.getPostByID(postID, new PostModel.OnGetPostByID() {
+                                @Override
+                                public void getPostByID(Post post) {
+                                    if (!user.getUserID().equals(post.getUserID()))
+                                        notificationModel.addNotification(
+                                                user.getName() + " Đã bình luận vào bài viết của bạn",
+                                                false,
+                                                user.getUserID(),
+                                                Timestamp.now(),
+                                                "Thông báo mới",
+                                                "Comment",
+                                                post.getUserID()
+                                        );
+                                }
+                            });
+                        }
+                    });
+
                     commentInput.setText(""); // Xóa nội dung sau khi gửi
                 }
 

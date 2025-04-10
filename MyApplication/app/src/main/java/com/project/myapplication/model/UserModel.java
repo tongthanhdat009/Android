@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.project.myapplication.DTO.User;
+import com.project.myapplication.firebase.MyFirebaseMessagingService;
 import com.project.myapplication.network.NetworkUtil;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class UserModel {
         userData.put("Password", user.getPassword());
         userData.put("UserName", user.getUserName());
         userData.put("avatar", "https://firebasestorage.googleapis.com/v0/b/insta-clone-2e405.appspot.com/o/avatars%2Funknow_avatar.jpg?alt=media&token=e28a3dcc-6925-4abc-b4ef-9998c32ec364");
-        userData.put("PhoneNumber","");
+        userData.put("fcmTokens",user.getFcmTokens());
 
         userRef.document(user.getUserID()).set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -87,7 +88,6 @@ public class UserModel {
                                     User user = userDoc.toObject(User.class);
 
                                     if (user != null) {
-                                        // Kiểm tra nếu người dùng chưa đăng nhập từ thiết bị khác
                                         if (user.getLogged().isEmpty()) {
                                             String deviceId = getDeviceId(context);
 
@@ -143,6 +143,7 @@ public class UserModel {
         updates.put("Logged", user.getLogged());
         updates.put("Biography", user.getBiography());
         updates.put("avatar", user.getAvatar());
+        updates.put("fcmTokens", user.getFcmTokens());
         docUser.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -256,10 +257,10 @@ public class UserModel {
                         tempUser.setUserID(document.getId());
                         callback.getInfor(tempUser);
                     } else {
-                        Log.d("PostModel", "No such user with ID: " + userID);
+                        Log.d("UserModel", "No such user with ID: " + userID);
                     }
                 } else {
-                    Log.e("PostModel", "Error getting document: " + task.getException());
+                    Log.e("UserModel", "Error getting document: " + task.getException());
                 }
             }
         });
