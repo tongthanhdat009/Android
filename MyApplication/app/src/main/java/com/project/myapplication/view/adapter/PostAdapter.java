@@ -45,14 +45,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.DTO.Followers;
 import com.project.myapplication.DTO.Following;
 import com.project.myapplication.DTO.Post;
+import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.manager.CacheManager;
 import com.project.myapplication.model.CommentModel;
+import com.project.myapplication.model.NotificationModel;
 import com.project.myapplication.model.PostModel;
+import com.project.myapplication.model.UserModel;
 import com.project.myapplication.view.activity.authorProfileActivity;
 import com.project.myapplication.view.activity.commentActivity;
 import com.squareup.picasso.Picasso;
@@ -61,6 +71,7 @@ import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -78,6 +89,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private ExoPlayer player;
     private int currentPlayingPosition = -1; // Vị trí video đang phát
     public SimpleCache simpleCache;
+    private UserModel userModel;
     public final LruCache<Integer, ExoPlayer> playerCache = new LruCache<Integer, ExoPlayer>(3) {
         @Override
         protected void entryRemoved(boolean evicted, Integer key, ExoPlayer oldValue, ExoPlayer newValue) {
@@ -88,13 +100,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     };
     private RecyclerView recyclerView;
     private boolean hasAddedScrollListener = false;
-
+    private NotificationModel notificationModel;
     public PostAdapter(Context context, ArrayList<Post> posts, String userID, PostModel postModel) {
         this.context = context;
         this.posts = posts;
         this.userID = userID;
         this.postModel = postModel;
         this.commentModel = new CommentModel();
+        this.notificationModel = new NotificationModel();
+        this.userModel = new UserModel();
     }
 
     @NonNull
@@ -515,7 +529,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.like.setImageResource(R.drawable.liked);
                 holder.like.clearColorFilter();
                 postModel.postUpdate(post);
-                Toast.makeText(context, "Đã like", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, FirebaseMessaging.getInstance().getToken().getResult().toString(), Toast.LENGTH_SHORT).show();
+                // Thêm đoạn code test thông báo ở đây
+                userModel.getUserInfor(userID, new UserModel.OnGetUserInfor() {
+                    @Override
+                    public void getInfor(User user) {
+                        if(!user.getUserID().equals(post.getUserID()))
+                            notificationModel.addNotification(
+                                    user.getName()+" Đã thích bài viết của bạn",
+                                    false,
+                                    user.getUserID(),
+                                    Timestamp.now(),
+                                    "Thông báo mới",
+                                    "like",
+                                    post.getUserID()
+                            );
+                    }
+                });
+
             }
             holder.likes_count.setText(String.valueOf(post.getLikedBy().size()));
         });

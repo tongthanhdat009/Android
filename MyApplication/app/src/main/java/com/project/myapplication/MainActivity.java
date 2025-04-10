@@ -9,6 +9,9 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.firebase.MyFirebaseMessagingService;
@@ -26,9 +29,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         String userID = getIntent().getStringExtra("userID");
         View rootview = findViewById(android.R.id.content);
-        if(userID == null){
-            //Mã thiết bị: 5ddada8a6ed6004d
 
+        FirebaseApp.initializeApp(this);
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+        firebaseAppCheck.installAppCheckProviderFactory(
+                PlayIntegrityAppCheckProviderFactory.getInstance()
+        );
+
+        if(userID == null){
             String currentDeviceID = userModel.getDeviceId(MainActivity.this);
             userModel.loggedCheck(currentDeviceID, new UserModel.OnLoggedCheckCallback() {
                 @Override

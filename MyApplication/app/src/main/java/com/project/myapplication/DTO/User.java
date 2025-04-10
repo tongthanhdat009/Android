@@ -9,8 +9,9 @@ public class User {
     private String avatar;
     private String Biography;
     private String Logged;
-    private String PhoneNumber;
-    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography, String Logged, String PhoneNumber) {
+    private String fcmTokens;
+
+    public User(String userID, String Name, String UserName, String Password, String Email, String avatar, String Biography, String Logged, String fcmTokens) {
         this.userID = userID;
         this.Name = Name;
         this.UserName = UserName;
@@ -19,16 +20,16 @@ public class User {
         this.avatar = avatar;
         this.Biography = Biography;
         this.Logged = Logged;
-        this.PhoneNumber = PhoneNumber;
+        this.fcmTokens = fcmTokens;
     }
     public User(){
 
     }
-    public String getPhoneNumber(){
-        return PhoneNumber;
+    public String getFcmTokens(){
+        return fcmTokens;
     }
-    public void setPhoneNumber(String PhoneNumber){
-        this.PhoneNumber = PhoneNumber;
+    public void setFcmTokens(String FcmTokens){
+        this.fcmTokens = FcmTokens;
     }
 
     public String getUserID() {
