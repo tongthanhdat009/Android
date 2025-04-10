@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.project.myapplication.DTO.ShortVideo;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ShortModel;
 import com.project.myapplication.view.adapter.ShortVideoAdapter;
@@ -69,7 +68,7 @@ public class shortFragment extends Fragment {
 
     private void loadShortVideos() {
         shortModel.getAllShortVideos(videos -> {
-            adapter = new ShortVideoAdapter(requireContext(), videos);
+            adapter = new ShortVideoAdapter(requireContext(), videos, userID);
             recyclerView.setAdapter(adapter);
         });
     }

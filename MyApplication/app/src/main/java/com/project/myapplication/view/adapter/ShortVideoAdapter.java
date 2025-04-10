@@ -37,14 +37,16 @@ import java.util.Map;
 
 public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.ShortVideoViewHolder> {
     private final List<ShortVideo> videoList;
+    private final String userID;
     private final Map<String, ExoPlayer> preloadedPlayers = new HashMap<>();
     private final List<ShortVideoViewHolder> activeViewHolders = new ArrayList<>();
 
     @OptIn(markerClass = UnstableApi.class)
-    public ShortVideoAdapter(Context context, List<ShortVideo> videoList) {
+    public ShortVideoAdapter(Context context, List<ShortVideo> videoList, String userID) {
         this.videoList = videoList;
+        this.userID = userID;
+        setHasStableIds(true); // NEW: Tối ưu RecyclerView
 
-        // Preload mỗi video vào một ExoPlayer riêng
         DefaultDataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context);
         for (ShortVideo video : videoList) {
             String url = video.getVideoUrl();
@@ -66,7 +68,7 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
 
     @Override
     public void onBindViewHolder(@NonNull ShortVideoViewHolder holder, int position) {
-        holder.setVideo(videoList.get(position));
+        holder.bind(videoList.get(position));
     }
 
     @Override
@@ -88,6 +90,11 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
         return videoList.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return videoList.get(position).getId().hashCode();
+    }
+
     public void pauseAllPlayers() {
         for (ShortVideoViewHolder holder : activeViewHolders) {
             holder.pause();
@@ -96,23 +103,43 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
 
     class ShortVideoViewHolder extends RecyclerView.ViewHolder {
         private final PlayerView playerView;
-        private boolean isLiked = false;
-        private final ImageView likeButton;
-        private final ImageView commentButton;
+        private final ImageView likeButton, commentButton, avatarImageView;
+        private final TextView userNameTextView, videoCaption, likeCountTextView, commentCountTextView;
+
         private ExoPlayer exoPlayer;
-        private ShortVideo currentVideo; // ✅ Thêm dòng này
+        private ShortVideo currentVideo;
+        private final ShortModel shortModel = new ShortModel();
 
         public ShortVideoViewHolder(@NonNull View itemView) {
             super(itemView);
             playerView = itemView.findViewById(R.id.playerView);
             likeButton = itemView.findViewById(R.id.likeButton);
             commentButton = itemView.findViewById(R.id.commentButton);
+            avatarImageView = itemView.findViewById(R.id.avatarImageView);
+            userNameTextView = itemView.findViewById(R.id.userNameTextView);
+            videoCaption = itemView.findViewById(R.id.videoCaption);
+            likeCountTextView = itemView.findViewById(R.id.likeCountTextView);
+            commentCountTextView = itemView.findViewById(R.id.commentCountTextView);
 
             likeButton.setOnClickListener(v -> {
-                isLiked = !isLiked;
-                likeButton.setImageResource(isLiked ? R.drawable.liked : R.drawable.like);
+                if (currentVideo == null) return;
+                List<String> likeByList = currentVideo.getLikeBy();
+                boolean alreadyLiked = likeByList.contains(userID);
+
+                if (alreadyLiked) {
+                    likeByList.remove(userID);
+                    shortModel.toggleLike(currentVideo.getId(), userID, false);
+                    likeButton.setImageResource(R.drawable.like);
+                    Toast.makeText(itemView.getContext(), "Unliked", Toast.LENGTH_SHORT).show();
+                } else {
+                    likeByList.add(userID);
+                    shortModel.toggleLike(currentVideo.getId(), userID, true);
+                    likeButton.setImageResource(R.drawable.liked);
+                    Toast.makeText(itemView.getContext(), "Liked!", Toast.LENGTH_SHORT).show();
+                }
+
                 likeButton.startAnimation(AnimationUtils.loadAnimation(itemView.getContext(), R.anim.like_scale));
-                Toast.makeText(itemView.getContext(), isLiked ? "Liked!" : "Unliked", Toast.LENGTH_SHORT).show();
+                likeCountTextView.setText(formatCount(likeByList.size()));
             });
 
             commentButton.setOnClickListener(v -> {
@@ -124,58 +151,41 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
 
             playerView.setOnClickListener(v -> {
                 if (exoPlayer != null) {
-                    if (exoPlayer.isPlaying()) {
-                        exoPlayer.pause();
-                    } else {
-                        exoPlayer.play();
-                    }
+                    if (exoPlayer.isPlaying()) exoPlayer.pause();
+                    else exoPlayer.play();
                 }
             });
         }
 
-        @OptIn(markerClass = UnstableApi.class)
-        public void setVideo(ShortVideo video) {
+        public void bind(ShortVideo video) {
             currentVideo = video;
-            String videoUrl = video.getVideoUrl();
-            releasePlayer();
 
-            TextView userNameTextView = itemView.findViewById(R.id.userNameTextView);
-            TextView videoCaption = itemView.findViewById(R.id.videoCaption);
-            TextView likeCountTextView = itemView.findViewById(R.id.likeCountTextView);
-            ImageView avatarImageView = itemView.findViewById(R.id.avatarImageView);
-
-            ShortModel shortModel= new ShortModel();
-            shortModel.getUserInfo(video.getUserID(), new ShortModel.OnUserInfoCallback() {
-                @Override
-                public void onUserInfoRetrieved(User user) {
-                    if (user != null) {
-                        userNameTextView.setText(user.getUserName());
-                        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                            Glide.with(itemView.getContext())
-                                    .load(user.getAvatar())
-                                    .placeholder(R.drawable.unknow_avatar)
-                                    .circleCrop()
-                                    .into(avatarImageView);
-                        } else {
-                            avatarImageView.setImageResource(R.drawable.unknow_avatar);
-                        }
-                    }
-                }
-            });
-            likeCountTextView.setText(formatCount(video.getLikeBy().size()));
             videoCaption.setText(video.getTitle());
 
-            // Dùng ExoPlayer đã preload nếu có
-            if (preloadedPlayers.containsKey(videoUrl)) {
-                exoPlayer = preloadedPlayers.get(videoUrl);
-            } else {
-                // Fallback nếu preload thất bại
-                exoPlayer = new ExoPlayer.Builder(itemView.getContext()).build();
-                MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoUrl));
-                exoPlayer.setMediaItem(mediaItem);
-                exoPlayer.prepare();
-            }
+            // Load user info
+            shortModel.getUserInfo(video.getUserID(), user -> {
+                if (user != null) {
+                    userNameTextView.setText(user.getUserName());
+                    Glide.with(itemView.getContext())
+                            .load(user.getAvatar())
+                            .placeholder(R.drawable.unknow_avatar)
+                            .circleCrop()
+                            .into(avatarImageView);
+                }
+            });
 
+            // Load comment count
+            shortModel.getAllCommentsForShort(video.getId(), comments -> {
+                commentCountTextView.setText(formatCount(comments.size()));
+            });
+
+            // Load like UI
+            boolean isLiked = video.getLikeBy().contains(userID);
+            likeButton.setImageResource(isLiked ? R.drawable.liked : R.drawable.like);
+            likeCountTextView.setText(formatCount(video.getLikeBy().size()));
+
+            // Dùng player đã preload
+            exoPlayer = preloadedPlayers.get(video.getVideoUrl());
             exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
             playerView.setPlayer(exoPlayer);
         }
@@ -187,22 +197,12 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
         public void pause() {
             if (exoPlayer != null) exoPlayer.pause();
         }
-
-        public void releasePlayer() {
-            if (exoPlayer != null) {
-                exoPlayer.setPlayWhenReady(false);
-                exoPlayer.release();
-                exoPlayer = null;
-            }
-        }
     }
+
     private String formatCount(int count) {
-        if (count >= 1000000) {
-            return String.format("%.1fM", count / 1000000.0);
-        } else if (count >= 1000) {
-            return String.format("%.1fK", count / 1000.0);
-        } else {
-            return String.valueOf(count);
-        }
+        if (count >= 1_000_000) return String.format("%.1fM", count / 1_000_000f);
+        if (count >= 1_000) return String.format("%.1fK", count / 1_000f);
+        return String.valueOf(count);
     }
 }
+

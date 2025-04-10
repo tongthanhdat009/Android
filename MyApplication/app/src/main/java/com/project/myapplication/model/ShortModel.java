@@ -36,25 +36,17 @@ public class ShortModel {
     public void getAllShortVideos(OnShortVideosRetrievedCallback callback) {
         firestore.collection("short")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.w("ShortModel", "Listen failed.", error);
-                        return;
-                    }
-
-                    if (value != null && !value.isEmpty()) {
-                        ArrayList<ShortVideo> videos = new ArrayList<>();
-                        for (DocumentSnapshot doc : value.getDocuments()) {
-                            ShortVideo video = doc.toObject(ShortVideo.class);
-                            if (video != null) {
-                                video.setId(doc.getId());
-                                videos.add(video);
-                            }
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<ShortVideo> videos = new ArrayList<>();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        ShortVideo video = doc.toObject(ShortVideo.class);
+                        if (video != null) {
+                            video.setId(doc.getId());
+                            videos.add(video);
                         }
-                        callback.onShortVideosRetrieved(videos);
-                    } else {
-                        callback.onShortVideosRetrieved(new ArrayList<>());
                     }
+                    callback.onShortVideosRetrieved(videos);
                 });
     }
 
@@ -138,6 +130,16 @@ public class ShortModel {
                     }
                 });
     }
+    public void toggleLike(String shortId, String userId, boolean like) {
+        DocumentReference shortRef = FirebaseFirestore.getInstance().collection("short").document(shortId);
+        if (like) {
+            shortRef.update("likeBy", FieldValue.arrayUnion(userId));
+        } else {
+            shortRef.update("likeBy", FieldValue.arrayRemove(userId));
+        }
+    }
+
+
 
     // Interfaces cho callback
     public interface OnShortVideosRetrievedCallback {
