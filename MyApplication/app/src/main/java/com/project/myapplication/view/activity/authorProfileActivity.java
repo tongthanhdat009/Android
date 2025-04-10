@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -24,10 +25,14 @@ import com.project.myapplication.DTO.Post;
 import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ChatBoxModel;
+import com.project.myapplication.model.NotificationModel;
 import com.project.myapplication.model.PostModel;
+import com.project.myapplication.model.UserModel;
 import com.project.myapplication.view.adapter.postShowAdapter;
+import com.project.myapplication.view.components.GridSpacingItemDecoration;
 import com.squareup.picasso.Picasso;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -39,6 +44,8 @@ public class authorProfileActivity extends AppCompatActivity {
     private Button followButton = null;
     private Button unfollowButton = null;
     private final ChatBoxModel chatBoxModel = new ChatBoxModel();
+    private final NotificationModel notificationModel = new NotificationModel();
+    private final UserModel userModel = new UserModel();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -228,17 +235,37 @@ public class authorProfileActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.post_show_recycler_view);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
+
         postModel.getUserPost(authorID, new PostModel.OnUserPostListRetrievedCallback() {
             @Override
             public void getUserPost(ArrayList<Post> postsList) {
-                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel, userID);
+                RecyclerView recyclerView = findViewById(R.id.post_show_recycler_view);
+                int spanCount = calculateOptimalSpanCount();
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),spanCount);
                 recyclerView.setLayoutManager(gridLayoutManager);
+                int spacing =getResources().getDimensionPixelSize(R.dimen.grid_spacing);
+                recyclerView.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, true));
+
+                postShowAdapter postShowAdapter = new postShowAdapter(authorProfileActivity.this, postsList, postModel, userID);
+
                 recyclerView.setAdapter(postShowAdapter);
             }
         });
     }
+
+    private int calculateOptimalSpanCount() {
+        // Lấy kích thước màn hình
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+
+        // Kích thước tối thiểu cho mỗi item (dp)
+        float minItemWidthDp = getResources().getDimension(R.dimen.grid_item_min_size) / displayMetrics.density;
+
+        // Tính toán số cột tối ưu
+
+        return Math.max(3, (int) (screenWidthDp / minItemWidthDp));
+    }
+
     private void updateFollowButton(boolean isFollowing) {
         if (isFollowing) {
             followButton.setVisibility(View.GONE);
@@ -246,6 +273,17 @@ public class authorProfileActivity extends AppCompatActivity {
         } else {
             followButton.setVisibility(View.VISIBLE);
             unfollowButton.setVisibility(View.GONE);
+            userModel.getUserInfor(userID, new UserModel.OnGetUserInfor() {
+                @Override
+                public void getInfor(User user) {
+                    notificationModel.addNotification(user.getName()+" đã theo dõi bạn",
+                            false, userID,
+                            Timestamp.now(),
+                            "Thông báo mới",
+                            "Follow",
+                            authorID);
+                }
+            });
         }
     }
 
