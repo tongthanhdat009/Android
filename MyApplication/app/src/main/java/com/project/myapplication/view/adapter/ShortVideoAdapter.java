@@ -144,7 +144,7 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
 
             commentButton.setOnClickListener(v -> {
                 if (currentVideo != null) {
-                    CommentBottomSheetFragment.newInstance(currentVideo.getId())
+                    CommentBottomSheetFragment.newInstance(currentVideo.getId(), userID)
                             .show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
                 }
             });

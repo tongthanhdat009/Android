@@ -55,7 +55,7 @@ public class ShortModel {
         firestore.collection("short")
                 .document(shortID)
                 .collection("comment")
-                .orderBy("timestamp", Query.Direction.ASCENDING)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Log.w("ShortModel", "Get comments failed.", error);
