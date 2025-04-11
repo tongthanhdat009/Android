@@ -21,11 +21,11 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.ui.PlayerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.project.myapplication.DTO.ShortVideo;
-import com.project.myapplication.DTO.User;
 import com.project.myapplication.R;
 import com.project.myapplication.model.ShortModel;
 import com.project.myapplication.view.fragment.CommentBottomSheetFragment;
@@ -45,7 +45,7 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
     public ShortVideoAdapter(Context context, List<ShortVideo> videoList, String userID) {
         this.videoList = videoList;
         this.userID = userID;
-        setHasStableIds(true); // NEW: Tối ưu RecyclerView
+        setHasStableIds(true);
 
         DefaultDataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context);
         for (ShortVideo video : videoList) {
@@ -56,6 +56,19 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
             player.setMediaSource(mediaSource);
             player.prepare();
             preloadedPlayers.put(url, player);
+        }
+    }
+
+    public void playCurrentVisible(RecyclerView recyclerView) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            int position = layoutManager.findFirstCompletelyVisibleItemPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                ShortVideoViewHolder holder = (ShortVideoViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
+                if (holder != null) {
+                    holder.play();
+                }
+            }
         }
     }
 
@@ -101,7 +114,28 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
         }
     }
 
-    class ShortVideoViewHolder extends RecyclerView.ViewHolder {
+    public void resumeCurrentPlayer() {
+        if (!activeViewHolders.isEmpty()) {
+            ShortVideoViewHolder holder = activeViewHolders.get(0);
+            holder.play();
+        }
+    }
+
+    public void releaseAllPlayers() {
+        for (ExoPlayer player : preloadedPlayers.values()) {
+            player.release();
+        }
+        preloadedPlayers.clear();
+        activeViewHolders.clear();
+    }
+
+    private String formatCount(int count) {
+        if (count >= 1_000_000) return String.format("%.1fM", count / 1_000_000f);
+        if (count >= 1_000) return String.format("%.1fK", count / 1_000f);
+        return String.valueOf(count);
+    }
+
+    public class ShortVideoViewHolder extends RecyclerView.ViewHolder {
         private final PlayerView playerView;
         private final ImageView likeButton, commentButton, avatarImageView;
         private final TextView userNameTextView, videoCaption, likeCountTextView, commentCountTextView;
@@ -162,7 +196,6 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
 
             videoCaption.setText(video.getTitle());
 
-            // Load user info
             shortModel.getUserInfo(video.getUserID(), user -> {
                 if (user != null) {
                     userNameTextView.setText(user.getUserName());
@@ -174,20 +207,21 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
                 }
             });
 
-            // Load comment count
             shortModel.getAllCommentsForShort(video.getId(), comments -> {
                 commentCountTextView.setText(formatCount(comments.size()));
             });
 
-            // Load like UI
             boolean isLiked = video.getLikeBy().contains(userID);
             likeButton.setImageResource(isLiked ? R.drawable.liked : R.drawable.like);
             likeCountTextView.setText(formatCount(video.getLikeBy().size()));
 
-            // Dùng player đã preload
             exoPlayer = preloadedPlayers.get(video.getVideoUrl());
-            exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
-            playerView.setPlayer(exoPlayer);
+            if (exoPlayer != null) {
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ONE);
+                if (playerView.getPlayer() != exoPlayer) {
+                    playerView.setPlayer(exoPlayer);
+                }
+            }
         }
 
         public void play() {
@@ -198,11 +232,4 @@ public class ShortVideoAdapter extends RecyclerView.Adapter<ShortVideoAdapter.Sh
             if (exoPlayer != null) exoPlayer.pause();
         }
     }
-
-    private String formatCount(int count) {
-        if (count >= 1_000_000) return String.format("%.1fM", count / 1_000_000f);
-        if (count >= 1_000) return String.format("%.1fK", count / 1_000f);
-        return String.valueOf(count);
-    }
 }
-

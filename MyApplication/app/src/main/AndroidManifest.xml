@@ -8,6 +8,8 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"
+        tools:ignore="SelectedPhotoAccess" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
@@ -33,6 +35,7 @@
             android:exported="false"
             android:launchMode="singleInstance"
             tools:ignore="ExtraText" />
+        <activity android:name=".view.activity.AddShortActivity" />
         <activity
             android:name=".view.navController"
             android:exported="false" />

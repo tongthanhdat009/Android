@@ -79,7 +79,6 @@ public class navController extends AppCompatActivity {
 
             // Kiểm tra nếu là chatFragment
             if (frag instanceof chatFragment) {
-                // Gọi hàm checkAndCreateAIChatBox trước khi show chatFragment
                 ChatBoxModel chatBoxModel = new ChatBoxModel();  // Khởi tạo ChatBoxModel nếu cần
                 chatBoxModel.checkAndCreateAIChatBox(userID);    // Gọi phương thức
             }
@@ -88,6 +87,14 @@ public class navController extends AppCompatActivity {
                 ShortVideoAdapter adapter = ((shortFragment) frag).getAdapter();
                 if (adapter != null) {
                     adapter.pauseAllPlayers();
+                }
+            }
+            if (fragment instanceof shortFragment) {
+                ShortVideoAdapter adapter = ((shortFragment) fragment).getAdapter();
+                if (adapter != null && ((shortFragment) fragment).getRecyclerView() != null) {
+                    ((shortFragment) fragment).getRecyclerView().post(() ->
+                            adapter.playCurrentVisible(((shortFragment) fragment).getRecyclerView())
+                    );
                 }
             }
         }
